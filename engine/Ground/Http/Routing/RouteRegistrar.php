@@ -16,69 +16,73 @@ class RouteRegistrar
 	];
 
 	/**
-	 * @var @static \Ground\Http\Routing\RouteGroup
+	 * @var \Ground\Http\Routing\Router
 	 */
-	protected static $routeGroup = null;
+	protected $router = null;
 
-	protected static function getRouteGroup()
-	{
-		if (! is_null(self::$routeGroup)) {
-			return self::$routeGroup;
-		}
-		//
-		return self::$routeGroup = new RouteGroup;
-	}
+	/**
+	 * @var \Ground\Http\Routing\RouteGroup
+	 */
+	protected $routeGroup = null;
 
-	protected static function registerRoute(array $methods, string $uri, $handler)
+	protected $routeFactories = [];
+
+	protected function registerRoute(array $methods, string $uri, $handler)
 	{
-		$this->routes[] = $factory = new RouteFactory(
-			$uri, $handler, $methods, self::getRouteGroup()
+		$this->routeFactories[] = $factory = new RouteFactory(
+			$uri, $handler, $methods, $this->routeGroup
 		);
 		//
 		return $factory;
 	}
 
-	public static function get(string $uri, $handler)
+	public function __construct(Router $router)
 	{
-		return self::registerRoute(['GET'], $uri, $handler);
+		$this->router = $router;
+		$this->routeGroup = new RouteGroup();
 	}
 
-	public static function head(string $uri, $handler)
+	public function get(string $uri, $handler = null)
 	{
-		return self::registerRoute(['HEAD'], $uri, $handler);
+		return $this->registerRoute(['GET'], $uri, $handler);
 	}
 
-	public static function post(string $uri, $handler)
+	public function head(string $uri, $handler = null)
 	{
-		return self::registerRoute(['POST'], $uri, $handler);
+		return $this->registerRoute(['HEAD'], $uri, $handler);
 	}
 
-	public static function patch(string $uri, $handler)
+	public function post(string $uri, $handler = null)
 	{
-		return self::registerRoute(['PATCH'], $uri, $handler);
+		return $this->registerRoute(['POST'], $uri, $handler);
 	}
 
-	public static function put(string $uri, $handler)
+	public function patch(string $uri, $handler = null)
 	{
-		return self::registerRoute(['PUT'], $uri, $handler);
+		return $this->registerRoute(['PATCH'], $uri, $handler);
 	}
 
-	public static function options(string $uri, $handler)
+	public function put(string $uri, $handler = null)
 	{
-		return self::registerRoute(['OPTIONS'], $uri, $handler);
+		return $this->registerRoute(['PUT'], $uri, $handler);
 	}
 
-	public static function delete(string $uri, $handler)
+	public function options(string $uri, $handler = null)
 	{
-		return self::registerRoute(['DELETE'], $uri, $handler);
+		return $this->registerRoute(['OPTIONS'], $uri, $handler);
 	}
 
-	public static function any(string $uri, $handler)
+	public function delete(string $uri, $handler = null)
 	{
-		return self::registerRoute(self::HTTP_METHODS, $uri, $handler);
+		return $this->registerRoute(['DELETE'], $uri, $handler);
 	}
 
-	public static function request(array $methods, string $uri, $handler)
+	public function any(string $uri, $handler = null)
+	{
+		return $this->registerRoute(self::HTTP_METHODS, $uri, $handler);
+	}
+
+	public function request(array $methods, string $uri, $handler)
 	{
 		$upperMethods = array_map(function($item) {
 			return strtoupper($item);
@@ -92,43 +96,38 @@ class RouteRegistrar
 			);
 		}
 
-		return self::registerRoute($upperMethods, $uri, $handler);
+		return $this->registerRoute($upperMethods, $uri, $handler);
 	}
 
-	public static function name(string $name)
+	public function name(string $name)
 	{
-		return self::getRouteGroup()->name($name);
+		return $this->routeGroup->name($name);
 	}
 
-	public static function prefix(string $prefix)
+	public function prefix(string $prefix)
 	{
-		return self::getRouteGroup()->prefix($prefix);
+		return $this->routeGroup->prefix($prefix);
 	}
 
-	public static function controller(string $controller)
+	public function controller(string $controller)
 	{
-		return self::getRouteGroup()->controller($controller);
+		return $this->routeGroup->controller($controller);
 	}
 
-	public static function namespace(string $namespace)
+	public function namespace(string $namespace)
 	{
-		return self::getRouteGroup()->namespace($namespace);
+		return $this->routeGroup->namespace($namespace);
 	}
 
-/**
- * @todo define route generator
- */
-/*
-	public static function blergh($path, $controller = null)
+	public function registerRoutes()
 	{
-		$currents = self::getRouteGroup()->getCurrent();
-		//
-		echo '<fieldset><legend>' . $path . '</legend><pre>' . print_r($currents, true) . '</pre></fieldset>';
+		foreach ($this->routeFactories as $factory) {
+			foreach ($factory->fetch() as $route) {
+				$this->router->registerRoute($route);
+			}
+		}
 	}
- */
-	
+
 }
-
-
 
 

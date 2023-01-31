@@ -1,5 +1,5 @@
 <?php
-namespace Ground\Http\Contracts;
+namespace Ground\Http\Interfaces;
 
 use Psr\Http\Message\UriInterface;
 
@@ -8,7 +8,7 @@ interface RouteInterface
 	/**
 	 * Checks if the given $requestUri matches the route.
 	 *
-	 * @param string|UriInterface $requestUri
+	 * @param string|\Psr\Http\Message\UriInterface $requestUri
 	 * @return bool
 	 */
 	public function matches($requestUri);

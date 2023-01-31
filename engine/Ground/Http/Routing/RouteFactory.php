@@ -3,8 +3,8 @@ namespace Ground\Http\Routing;
 
 use Ground\Http\Routing\Route;
 use Ground\Http\Routing\Router;
-use Ground\Http\Contracts\RouteFactoryInterface;
-
+use Ground\Http\Routing\RouteGroup;
+use Ground\Http\Interfaces\RouteFactoryInterface;
 
 /**
  * Implements the RouteFactoryInterface
@@ -12,6 +12,11 @@ use Ground\Http\Contracts\RouteFactoryInterface;
  */
 class RouteFactory implements RouteFactoryInterface 
 {
+	/**
+	 * @var string
+	 */
+	protected const REGEX_IU_PARAM = '/\\{(\\w+)(\\?)?\\}/';
+
 	/**
 	 * @var string
 	 */
@@ -33,49 +38,117 @@ class RouteFactory implements RouteFactoryInterface
 	protected const REGEX_NUMBER = '[0-9]+';
 
 	/**
-	 * @var array $verbs
+	 * @var string[]
 	 */
-	protected $verbs = [];
+	protected $httpMethods = [];
 
 	/**
-	 * @var array $parameters
+	 * @var array
 	 */
 	protected $parameters = [];
 
 	/**
-	 * @var string $path
+	 * @var string
+	 */
+	protected $name;
+
+	/**
+	 * @var string
 	 */
 	protected $path;
+
+	/**
+	 * @var mixed
+	 */
+	protected $handler;
+
+	/**
+	 * @var \Ground\Http\Routing\RouteGroup
+	 */
+	protected $routeGroup;
+
+	/**
+	 * Translates a route path into a regex that may be used to collect
+	 * named parameters easily.
+	 *
+	 * Use the second parameter to override the default regex piece for
+	 * one or more parameters, so you can add custom constraints for, e.g.,
+	 * alphanumeric. The default piece matches anything but forward slashes.
+	 *
+	 * @param string $path
+	 * @param array $paramRegex
+	 * @return string|false
+	 */
+	protected static function compileRegex(string $path, array $paramRegex = [])
+	{
+		if (preg_match_all(self::REGEX_IU_PARAM, $path, $matches, PREG_SET_ORDER)) {
+			$regex = $path;
+			//
+			foreach ($matches as $match) {
+				$regexp = self::REGEX_ANY;
+				//
+				// override a parameter regex piece if set
+				if (array_key_exists($match[1], $paramRegex)) {
+					$regexp = $paramRegex[$match[1]];
+				}
+				//
+				$piece = '(?P<' . $match[1] . '>' . $regexp . ')';
+				//
+				// if parameter is defined as optional...
+				if (isset($match[2])) {
+					$piece .= '?';
+				}
+				//
+				$regex = str_replace($match[0], $piece, $regex);
+			}
+			//
+			return $regex;
+		}
+		//
+		return false;
+	}
 
 	/**
 	 * Apply the given $regex restrictor to the given $parameter
 	 *
 	 * @param string $path
 	 * @param string $regex = null
+	 * @return self
 	 */
 	protected function constrictParameterTo(
 		string $parameter, string $regex = null
 	) {
 		$this->parameters[$parameter] = $regex ?? self::REGEX_ANY;
+		//
+		return $this;
 	}
 
 	/**
 	 * Starts a new RouteFactory instance
 	 *
 	 * @param string $path
-	 * @param string ...$verbs
+	 * @param mixed $handler
+	 * @param array $httpMethods
+	 * @param \Ground\Http\Routing\RouteGroup $routeGroup
 	 */
-	public function __construct(string $path, string ...$verbs)
-	{
+	public function __construct(
+		string $path, $handler, array $httpMethods, RouteGroup $routeGroup
+	) {
 		$this->path = $path;
-		//
-		if (empty($verbs)) {
-			$this->verbs[] = 'GET'
-		} else {
-			foreach ($verbs as $verb) {
-				$this->verbs[] = $verb;
-			}
-		}
+		$this->handler = $handler;
+		$this->httpMethods = $httpMethods;
+		$this->routeGroup = $routeGroup;
+	}
+
+	/**
+	 * Adds an alpha regex constraint to the given $parameter.
+	 *
+	 * @param string $parameter
+	 * @return self
+	 */
+	public function name(string $name)
+	{
+		return $this->name = $name;
 	}
 
 	/**
@@ -93,7 +166,7 @@ class RouteFactory implements RouteFactoryInterface
 				$this->constrictParameterTo($param, $rgx);
 			}
 		} elseif (is_string($parameter)) {
-			$this->constrictParameterTo($parameter, $rgx);
+			$this->constrictParameterTo($parameter, $regex);
 		}
 		//
 		return $this;
@@ -107,8 +180,7 @@ class RouteFactory implements RouteFactoryInterface
 	 */
 	public function whereAlpha(string $parameter)
 	{
-		$this->constrictParameterTo($parameter, self::REGEX_ALPHA);
-		return $this;
+		return $this->constrictParameterTo($parameter, self::REGEX_ALPHA);
 	}
 
 	/**
@@ -119,8 +191,7 @@ class RouteFactory implements RouteFactoryInterface
 	 */
 	public function whereNumber(string $parameter)
 	{
-		$this->constrictParameterTo($parameter, self::REGEX_NUMBER);
-		return $this;
+		return $this->constrictParameterTo($parameter, self::REGEX_NUMBER);
 	}
 
 	/**
@@ -131,8 +202,7 @@ class RouteFactory implements RouteFactoryInterface
 	 */
 	public function whereAlphaNumeric(string $parameter)
 	{
-		$this->constrictParameterTo($parameter, self::REGEX_ALPHANUMERIC);
-		return $this;
+		return $this->constrictParameterTo($parameter, self::REGEX_ALPHANUMERIC);
 	}
 
 	/**
@@ -145,8 +215,26 @@ class RouteFactory implements RouteFactoryInterface
 	public function whereIn(string $parameter, array $values)
 	{
 		$regex = '(' . implode('|', $values) . ')';
-		$this->constrictParameterTo($parameter, $regex);
-		return $this;
+		//
+		return $this->constrictParameterTo($parameter, $regex);
+	}
+
+	protected function getAttributesWithGrouped()
+	{
+		$currents = $this->routeGroup->getCurrent();
+		//
+		$name = empty($current['name'])
+			? $this->name
+			: $current['name'] . '.' . $this->name;
+		//
+		$path = empty($current['prefix'])
+			? $this->path
+			: $current['prefix'] . '/' . $this->path;
+		//
+		$current['name'] = $name;
+		$current['prefix'] = str_replace('//', '/', $path);
+		//
+		return $current;
 	}
 
 	/**
@@ -156,13 +244,21 @@ class RouteFactory implements RouteFactoryInterface
 	 */
 	public function fetch()
 	{
-		return new Route(
-			$this->path,
-			Router::pathToRegex($this->path, $this->parameters),
-			$this->verbs
-		);
+		$routes = [];
+		$attributes = $this->getAttributesWithGrouped();
+		//
+		foreach ($this->httpMethods as $method) {
+			$routes[] = new Route(
+				$attributes['name'],
+				$method,
+				$attributes['prefix'],
+				$this->handler,
+				self::compileRegex($this->path, $this->parameters)
+			);
+		}
+		//
+		return $routes;
 	}
 
 }
-
 

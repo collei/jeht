@@ -1,7 +1,7 @@
 <?php
-namespace Ground\Http\Contracts;
+namespace Ground\Http\Interfaces;
 
-use Ground\Http\Contracts\RouteInterface
+use Ground\Http\Interfaces\RouteInterface
 
 interface RouteFactoryInterface 
 {

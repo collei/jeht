@@ -2,6 +2,7 @@
 namespace Ground\Http\Routing;
 
 use Ground\Http\Routing\Router;
+use InvalidArgumentException;
 
 use Ground\Http\Contracts\RouteInterface;
 use Psr\Http\Message\UriInterface;
@@ -10,40 +11,59 @@ use Psr\Http\Message\UriInterface;
  * Represents a Route in the system.
  *
  */
-class Route implements RouteInterface
+class Route //implements RouteInterface
 {
 	/**
-	 * @var array $verbs
+	 * @var string
 	 */
-	private $verbs = [];
+	private $name;
 
 	/**
-	 * @var string $path
+	 * @var string
+	 */
+	private $httpMethod;
+
+	/**
+	 * @var string
 	 */
 	private $path;
 
 	/**
-	 * @var string $regex = NULL
+	 * @var string
 	 */
-	private $regex = NULL;
+	private $regex = null;
 
 	/**
-	 * @var array $parameters
+	 * @var mixed
+	 */
+	private $handler;
+
+	/**
+	 * @var array
 	 */
 	private $parameters = [];
 
 	/**
 	 * Builds a new Route
 	 *
+	 * @param string $name
+	 * @param string $httpMethod
 	 * @param string $path
-	 * @param string $regex = null
-	 * @param string ...$verbs
+	 * @param mixed $handler
+	 * @param string|null $regex
 	 */
-	public function __construct(string $path, string $regex = null, string ...$verbs)
-	{
+	public function __construct(
+		string $name,
+		string $httpMethod,
+		string $path,
+		$handler = null,
+		string $regex = null
+	) {
+		$this->name = $name;
 		$this->path = $path;
+		$this->handler = $handler;
 		$this->regex = $regex ?? str_replace('/', '\\/', $path);
-		$this->verbs = !empty($verbs) ? $verbs : ['GET'];
+		$this->httpMethod = !empty($httpMethod) ? $httpMethod : 'GET';
 	}
 
 	/**
@@ -69,22 +89,56 @@ class Route implements RouteInterface
 	/**
 	 * Checks if the given $requestUri matches the route.
 	 *
+	 * @param string $httpMethod
 	 * @param string|UriInterface $requestUri
 	 * @return bool
 	 */
-	public function matches($requestUri)
+	public function matches(string $httpMethod, $requestUri)
 	{
+		if (($httpMethod !== $this->httpMethod) && ('*' !== $this->httpMethod)) {
+			return false;
+		}
+		//
 		// type checking / conformation
 		if ($requestUri instanceof UriInterface) {
 			$requestUri = $requestUri->getPath();
 		} elseif (!is_string($requestUri)) {
-			$message = 'parameter must be a string or an instanceof '
-				. '\Psr\Http\Message\UriInterface'
+			$message = 'parameter must be a string or an instanceof ' . UriInterface::class . '.';
 			//
-			throw new \InvalidArgumentException($message);
+			throw new InvalidArgumentException($message);
 		}
 		//
 		return $this->matchAndSetParameters($requestUri);
+	}
+
+	/**
+	 * Returns the route name
+	 *
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * Returns the route path
+	 *
+	 * @return string
+	 */
+	public function getPath()
+	{
+		return $this->path;
+	}
+
+	/**
+	 * Returns the route handler
+	 *
+	 * @return mixed
+	 */
+	public function getHandler()
+	{
+		return $this->handler;
 	}
 
 	/**
@@ -114,5 +168,3 @@ class Route implements RouteInterface
 
 
 }
-
-
