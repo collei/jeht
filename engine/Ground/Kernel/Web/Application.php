@@ -4,6 +4,7 @@ namespace Ground\Kernel\Web;
 use Ground\Kernel\Loaders\Autoloader;
 use Ground\Container\Container;
 use Ground\Http\Routing\Router;
+use Ground\Http\Routing\RouteFacade;
 use Ground\Http\Request\HttpRequest;
 
 class Application extends Container
@@ -38,9 +39,19 @@ class Application extends Container
 	private $baseDir;
 
 	/**
+	 * @var \Ground\Http\Routing\Router
+	 */
+	private $router;
+
+	/**
 	 * @var string[]
 	 */
 	private $configuredFolder = [];
+
+	/**
+	 * @var string[]
+	 */
+	private $configFiles = [];
 
 	/**
 	 * Register a given folder with the application
@@ -108,6 +119,17 @@ class Application extends Container
 		$this->autoloader = Autoloader::register();
 	}
 
+	protected function intiailizeRoutes()
+	{
+		$filename = $this->configFiles['route'] ?? false;
+
+		if ($filename && file_exists($filename)) {
+			$this->router = RouteFacade::registerRoutesAndRetrieveRouter();
+		}
+
+		echo '<fieldset><legend>ROUTER, ROUTES</legend><pre>' . print_r($this->router,true) . '</pre></fieldset>';
+	}
+
 	/**
 	 * Loads config files for the application 
 	 *
@@ -122,7 +144,11 @@ class Application extends Container
 		if ($files) {
 			foreach ($files as $file) {
 				if (strcasecmp('.php', substr($file, -4)) === 0) {
-					require $configPath . DIRECTORY_SEPARATOR . $file;
+					$this->configFiles[$file] = (
+						$configFile = $configPath . DIRECTORY_SEPARATOR . $file
+					);
+					//
+					require $configFile;
 				}
 			}
 		}
@@ -138,6 +164,7 @@ class Application extends Container
 		$this->configureFolders();
 		$this->registerAutoloader();
 		$this->loadConfigFiles();
+		$this->intiailizeRoutes();
 	}
 
 	/**

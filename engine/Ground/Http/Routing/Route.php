@@ -2,6 +2,8 @@
 namespace Ground\Http\Routing;
 
 use Ground\Http\Routing\Router;
+use Ground\Support\Arr;
+use Ground\Support\Str;
 use InvalidArgumentException;
 
 use Ground\Http\Contracts\RouteInterface;
@@ -19,9 +21,9 @@ class Route //implements RouteInterface
 	private $name;
 
 	/**
-	 * @var string
+	 * @var string[]
 	 */
-	private $httpMethod;
+	private $httpMethods;
 
 	/**
 	 * @var string
@@ -43,27 +45,43 @@ class Route //implements RouteInterface
 	 */
 	private $parameters = [];
 
+
+	protected function setHttpMethods($httpMethods)
+	{
+		if (empty($httpMethods)) {
+			$this->httpMethods = array('GET','HEAD');
+			return;
+		}
+		//
+		if (!is_array($httpMethods) && !is_string($httpMethods)) {
+			throw new InvalidArgumentException('Parameter must be a string or array');
+		}
+		//
+		$this->httpMethod = Arr::wrap($httpMethods);
+	}
+
 	/**
 	 * Builds a new Route
 	 *
-	 * @param string $name
-	 * @param string $httpMethod
+	 * @param string|array $httpMethods
 	 * @param string $path
 	 * @param mixed $handler
 	 * @param string|null $regex
+	 * @param string|null $name
 	 */
 	public function __construct(
-		string $name,
-		string $httpMethod,
+		$httpMethods,
 		string $path,
-		$handler = null,
-		string $regex = null
+		$handler,
+		string $regex = null,
+		string $name = null
 	) {
-		$this->name = $name;
+		$this->name = $name ?? Str::randomize();
 		$this->path = $path;
 		$this->handler = $handler;
 		$this->regex = $regex ?? str_replace('/', '\\/', $path);
-		$this->httpMethod = !empty($httpMethod) ? $httpMethod : 'GET';
+		//
+		$this->setHttpMethods($httpMethods);
 	}
 
 	/**

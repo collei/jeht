@@ -122,10 +122,17 @@ class RouteRegistrar
 	public function registerRoutes()
 	{
 		foreach ($this->routeFactories as $factory) {
-			foreach ($factory->fetch() as $route) {
-				$this->router->registerRoute($route);
-			}
+			$this->router->registerRoute(
+				$factory->fetch()
+			);
 		}
+	}
+
+	public function registerRoutesAndRetrieveRouter()
+	{
+		$this->registerRoutes();
+
+		return $this->router;
 	}
 
 }

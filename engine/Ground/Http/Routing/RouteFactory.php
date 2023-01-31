@@ -221,7 +221,10 @@ class RouteFactory implements RouteFactoryInterface
 
 	protected function getAttributesWithGrouped()
 	{
-		$currents = $this->routeGroup->getCurrent();
+		$current = $this->routeGroup->getCurrent();
+
+		echo '<fieldset><pre>'.print_r($current,true).'</pre></fieldset>';
+
 		//
 		$name = empty($current['name'])
 			? $this->name
@@ -233,6 +236,8 @@ class RouteFactory implements RouteFactoryInterface
 		//
 		$current['name'] = $name;
 		$current['prefix'] = str_replace('//', '/', $path);
+		//
+		$current['controller'] = $this->handler ?? $current['controller'];
 		//
 		return $current;
 	}
@@ -247,17 +252,13 @@ class RouteFactory implements RouteFactoryInterface
 		$routes = [];
 		$attributes = $this->getAttributesWithGrouped();
 		//
-		foreach ($this->httpMethods as $method) {
-			$routes[] = new Route(
-				$attributes['name'],
-				$method,
-				$attributes['prefix'],
-				$this->handler,
-				self::compileRegex($this->path, $this->parameters)
-			);
-		}
-		//
-		return $routes;
+		return new Route(
+			$this->httpMethods,
+			$attributes['prefix'],
+			$this->handler,
+			self::compileRegex($this->path, $this->parameters),
+			$attributes['name']
+		);
 	}
 
 }
