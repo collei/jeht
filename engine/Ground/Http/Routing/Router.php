@@ -41,7 +41,7 @@ class Router
 	{
 		$this->routes[] = $route;
 
-		echo '<fieldset><legend>' . $route->getPath() . '</legend><pre>' . print_r($route,true) . '</pre></fieldset>';
+		echo '<fieldset><legend>' . $route->getPath() . '</legend><textarea style="width:100%;" rows="10">' . print_r($route,true) . '</textarea></fieldset>';
 	}
 
 

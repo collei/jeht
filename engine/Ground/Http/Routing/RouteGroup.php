@@ -78,13 +78,9 @@ class RouteGroup
 		--$this->currentLevel;
 	}
 
-	public static $counter = 0;
-
 	public function __construct()
 	{
-		++self::$counter;
-
-		echo '<div>Group #' . self::$counter . ': ' . Str::randomize(16, '0123456789ABCDEF') . '</div>'; 
+		//
 	}
 
 	/**

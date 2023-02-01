@@ -3,7 +3,6 @@ namespace Ground\Http\Routing;
 
 use Ground\Http\Routing\Route;
 use Ground\Http\Routing\Router;
-use Ground\Http\Routing\RouteGroup;
 use Ground\Http\Interfaces\RouteFactoryInterface;
 
 /**
@@ -50,22 +49,17 @@ class RouteFactory implements RouteFactoryInterface
 	/**
 	 * @var string
 	 */
-	protected $name;
+	protected $name = null;
 
 	/**
 	 * @var string
 	 */
-	protected $path;
+	protected $path = null;
 
 	/**
 	 * @var mixed
 	 */
-	protected $handler;
-
-	/**
-	 * @var \Ground\Http\Routing\RouteGroup
-	 */
-	protected $routeGroup;
+	protected $handler = null;
 
 	/**
 	 * Translates a route path into a regex that may be used to collect
@@ -127,17 +121,17 @@ class RouteFactory implements RouteFactoryInterface
 	 * Starts a new RouteFactory instance
 	 *
 	 * @param string $path
-	 * @param mixed $handler
 	 * @param array $httpMethods
-	 * @param \Ground\Http\Routing\RouteGroup $routeGroup
+	 * @param mixed $handler
+	 * @param string|null $name
 	 */
 	public function __construct(
-		string $path, $handler, array $httpMethods, RouteGroup $routeGroup
+		string $path, array $httpMethods, $handler, string $name = null
 	) {
 		$this->path = $path;
 		$this->handler = $handler;
 		$this->httpMethods = $httpMethods;
-		$this->routeGroup = $routeGroup;
+		$this->name = $name;
 	}
 
 	/**
@@ -219,29 +213,6 @@ class RouteFactory implements RouteFactoryInterface
 		return $this->constrictParameterTo($parameter, $regex);
 	}
 
-	protected function getAttributesWithGrouped()
-	{
-		$current = $this->routeGroup->getCurrent();
-
-		echo '<fieldset><pre>'.print_r($current,true).'</pre></fieldset>';
-
-		//
-		$name = empty($current['name'])
-			? $this->name
-			: $current['name'] . '.' . $this->name;
-		//
-		$path = empty($current['prefix'])
-			? $this->path
-			: $current['prefix'] . '/' . $this->path;
-		//
-		$current['name'] = $name;
-		$current['prefix'] = str_replace('//', '/', $path);
-		//
-		$current['controller'] = $this->handler ?? $current['controller'];
-		//
-		return $current;
-	}
-
 	/**
 	 * Generates and returns the resulting RouteInterface instance.
 	 *
@@ -249,15 +220,12 @@ class RouteFactory implements RouteFactoryInterface
 	 */
 	public function fetch()
 	{
-		$routes = [];
-		$attributes = $this->getAttributesWithGrouped();
-		//
 		return new Route(
 			$this->httpMethods,
-			$attributes['prefix'],
+			$this->path,
 			$this->handler,
 			self::compileRegex($this->path, $this->parameters),
-			$attributes['name']
+			$this->name ?? Str::randomize(32)
 		);
 	}
 

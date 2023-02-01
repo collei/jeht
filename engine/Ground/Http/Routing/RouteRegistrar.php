@@ -27,10 +27,34 @@ class RouteRegistrar
 
 	protected $routeFactories = [];
 
+	protected function aggregateAttributes(string $withUriSuffix, $withHandler)
+	{
+		$current = $this->routeGroup->getCurrent();
+		//
+		$uri = !empty($current['prefix'])
+			? ($current['prefix'] . '/' . $withUriSuffix)
+			: $withUriSuffix;
+		//
+		$uri = str_replace('//', '/', $uri);
+		//
+		$name = !empty($current['name'])
+			? $current['name']
+			: null;
+		//
+		$handler = $withHandler ?? $current['handler'] ?? null;
+		//
+		return array($uri, $name, $handler);
+	}
+
 	protected function registerRoute(array $methods, string $uri, $handler)
 	{
+		// Aggregate path prefixes into a uri with the current 'suffix'
+		// and also provides convenient method of override the handler
+		// of the current group.
+		[$uri, $name, $handler] = $this->aggregateAttributes($uri, $handler);
+		//
 		$this->routeFactories[] = $factory = new RouteFactory(
-			$uri, $handler, $methods, $this->routeGroup
+			$uri, $methods, $handler, $name
 		);
 		//
 		return $factory;
