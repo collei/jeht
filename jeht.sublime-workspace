@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"Contain",
+				"ContainerContract"
+			],
+			[
 				"htt",
 				"httpMethods"
 			],
@@ -510,60 +514,11 @@
 			[
 				"comm",
 				"commandLine"
-			],
-			[
-				"res",
-				"result"
 			]
 		]
 	},
 	"buffers":
 	[
-		{
-			"file": "engine/Ground/Http/Routing/RouteRegistrar.php",
-			"settings":
-			{
-				"buffer_size": 3598,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/Ground/Http/Routing/Router.php",
-			"settings":
-			{
-				"buffer_size": 1051,
-				"encoding": "UTF-8",
-				"line_ending": "Windows",
-				"name": "<?php"
-			}
-		},
-		{
-			"file": "engine/Ground/Http/Routing/RouteFactory.php",
-			"settings":
-			{
-				"buffer_size": 4806,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/Ground/Http/Routing/RouteGroup.php",
-			"settings":
-			{
-				"buffer_size": 3536,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/Ground/Http/Routing/Route.php",
-			"settings":
-			{
-				"buffer_size": 3372,
-				"line_ending": "Windows"
-			}
-		},
 		{
 			"file": "/D/_server/apache/sites/kazuha.local/contacta/config/route.php",
 			"settings":
@@ -583,10 +538,36 @@
 			}
 		},
 		{
-			"file": "engine/Ground/Kernel/Web/Application.php",
+			"file": "engine/Ground/Container/BindingResolutionException.php",
 			"settings":
 			{
-				"buffer_size": 4276,
+				"buffer_size": 145,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/Ground/Interfaces/Container/ContextualBindingBuilder.php",
+			"settings":
+			{
+				"buffer_size": 418,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/Ground/Interfaces/Container/Container.php",
+			"settings":
+			{
+				"buffer_size": 3883,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/Ground/Container/Container.php",
+			"settings":
+			{
+				"buffer_size": 29843,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -634,19 +615,26 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Interfaces",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Support",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr/Container",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Interfaces",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Interfaces/Container",
 		"/D/_server/apache/sites/kazuha.local/jeht/storage",
-		"/D/_server/apache/sites/kazuha.local/contacta",
-		"/D/_server/apache/sites/kazuha.local/contacta/app",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Controllers",
-		"/D/_server/apache/sites/kazuha.local/contacta/config"
+		"/D/_server/apache/sites/kazuha.local/contacta"
 	],
 	"file_history":
 	[
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/RouteGroup.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/RewindableGenerator.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/composer.json",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Support/Facades/Facade.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Kernel/Web/Application.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/Container.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/ContextualBindingBuilderContract.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/Novo Documento de Texto - Copia (4).txt",
+		"/C/Users/ujunio/AppData/Local/Temp/Temp1_Container.pdf.a.zip/Container.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/RouteRegistrar.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/Router.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/RouteFactory.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/Route.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/RouteGroup.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Support/Str.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Support/Arr.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Support/Arr - Copia.php",
@@ -670,7 +658,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Interfaces/RouteInterface.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Contracts/RouteFactoryInterface.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/ContainerException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/Container.php",
 		"/C/Users/ujunio/Downloads/IRPF2023.PDF.b/Router.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr/Http/Message/UriInterface.php",
 		"/C/Users/ujunio/Downloads/IRPF2023.PDF.b/RouteGroup.php",
@@ -679,7 +666,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Interfaces/Container/IContainer.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Container/NotFoundException.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Kernel/Loaders/Autoloader.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Kernel/Web/Application.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Database/DB.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Illuminate/Container/ContextualBindingBuilder.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Illuminate/Container/LICENSE.md",
@@ -695,17 +681,14 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Contracts/Container/BindingResolutionException.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Contracts/Container/ContextualBindingBuilder.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Kernel/Container/ContainerException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/RouteFactory.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Servlets/IndexServlet.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Application/Web/Kernel.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Models/User.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Application/Loaders/Autoloader.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/README.md",
 		"/D/_server/apache/sites/kazuha.local/jeht/.gitignore",
-		"/D/_server/apache/sites/kazuha.local/jeht/composer.json",
 		"/D/_server/apache/sites/kazuha.local/Bravessign.cha",
 		"/D/_server/apache/sites/kazuha.local/jeht/index.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Routing/Router.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/route.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Ground/Http/Request/HttpRequestFactory.php",
 		"/D/_server/apache/sites/kazuha.local/faruzan/engine/Ground/Http/Routing/RouteInterface.php",
@@ -766,13 +749,7 @@
 		"/D/_server/apache/sites/kazuha.local/asta/lib/Utils/Includer.php",
 		"/D/_server/apache/sites/kazuha.local/asta/README.md",
 		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Query/Clauses/JoinClause.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Query/Builder.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Query/Expression.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Processors/Processor.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Query/Grammars/Grammar.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Connections/ConnectionInterface.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Connections/Connection.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Query/Clauses/WhereClause.php"
+		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Database/Asta/Query/Builder.php"
 	],
 	"find":
 	{
@@ -791,6 +768,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"ContextualBindingBuilder",
 			"plim",
 			"routeGroup",
 			">';",
@@ -893,157 +871,11 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 4,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "engine/Ground/Http/Routing/RouteRegistrar.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3598,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2843,
-								2845
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2158.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "engine/Ground/Http/Routing/Router.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1051,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1028,
-								1028
-							]
-						],
-						"settings":
-						{
-							"auto_name": "<?php",
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 396.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "engine/Ground/Http/Routing/RouteFactory.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4806,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4793,
-								4793
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 3454.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "engine/Ground/Http/Routing/RouteGroup.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3536,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1345,
-								1345
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1608.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "engine/Ground/Http/Routing/Route.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3372,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1190,
-								1190
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2508.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
 					"file": "/D/_server/apache/sites/kazuha.local/contacta/config/route.php",
 					"semi_transient": false,
 					"settings":
@@ -1067,11 +899,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 1,
 					"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
 					"semi_transient": false,
 					"settings":
@@ -1099,20 +931,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "engine/Ground/Kernel/Web/Application.php",
+					"buffer": 2,
+					"file": "engine/Ground/Container/BindingResolutionException.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4276,
+						"buffer_size": 145,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2659,
-								2659
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1120,10 +952,97 @@
 							"syntax": "Packages/PHP/PHP.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2310.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "engine/Ground/Interfaces/Container/ContextualBindingBuilder.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 418,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								80,
+								80
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "engine/Ground/Interfaces/Container/Container.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3883,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								117,
+								117
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "engine/Ground/Container/Container.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 29843,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								210,
+								304
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

@@ -2,15 +2,15 @@
 namespace Ground\Container;
 
 use Ground\Support\Arr;
-use Ground\Container\ContainerContract;
-use Ground\Container\ContextualBindingBuilderContract;
+use Ground\Interfaces\Container\Container;
+use Ground\Interfaces\Container\ContextualBindingBuilder as ContextualBindingBuilderContract;
 
 class ContextualBindingBuilder implements ContextualBindingBuilderContract
 {
 	/**
 	 * The underlying container instance.
 	 *
-	 * @var \Ground\Container\ContainerContract
+	 * @var \Ground\Interfaces\Container\Container
 	 */
 	protected $container;
 
@@ -31,11 +31,11 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
 	/**
 	 * Create a new contextual binding builder.
 	 *
-	 * @param  \Ground\Container\ContainerContract  $container
+	 * @param  \Ground\Interfaces\Container\Container  $container
 	 * @param  string|array  $concrete
 	 * @return void
 	 */
-	public function __construct(ContainerContract $container, $concrete)
+	public function __construct(Container $container, $concrete)
 	{
 		$this->concrete = $concrete;
 		$this->container = $container;

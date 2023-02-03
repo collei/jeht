@@ -1,7 +1,7 @@
 <?php
-namespace Ground\Container;
+namespace Ground\Interfaces\Container;
 
-interface ContextualBindingBuilderContract
+interface ContextualBindingBuilder
 {
 	/**
 	 * Define the abstract target that depends on the context.

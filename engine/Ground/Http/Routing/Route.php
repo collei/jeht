@@ -6,7 +6,7 @@ use Ground\Support\Arr;
 use Ground\Support\Str;
 use InvalidArgumentException;
 
-use Ground\Http\Contracts\RouteInterface;
+use Ground\Interfaces\Http\RouteInterface;
 use Psr\Http\Message\UriInterface;
 
 /**

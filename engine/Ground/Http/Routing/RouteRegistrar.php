@@ -6,6 +6,8 @@ use Ground\Http\Routing\RouteFactory;
 use Ground\Http\Routing\RouteGroup;
 use Ground\Http\Servlets\HttpServlet;
 
+use Ground\Kernel\Web\Application;
+
 class RouteRegistrar
 {
 	/**
@@ -14,6 +16,11 @@ class RouteRegistrar
 	protected const HTTP_METHODS = [
 		'GET','POST','PUT','PATCH','OPTIONS','HEAD','DELETE'
 	];
+
+	/**
+	 * @var \Ground\Kernel\Web\Application
+	 */
+	protected $app;
 
 	/**
 	 * @var \Ground\Http\Routing\Router
@@ -62,8 +69,10 @@ class RouteRegistrar
 
 	public function __construct(Router $router)
 	{
+		$this->app = Application::getInstance();
 		$this->router = $router;
-		$this->routeGroup = new RouteGroup();
+		//
+		$this->routeGroup = $this->app->make(RouteGroup::class);
 	}
 
 	public function get(string $uri, $handler = null)

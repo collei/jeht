@@ -10,11 +10,6 @@ use Ground\Http\Request\HttpRequest;
 class Application extends Container
 {
 	/**
-	 * @var @static self
-	 */
-	private static $instance;
-
-	/**
 	 * @var @static string[]
 	 */
 	private static $folders = [
@@ -126,8 +121,6 @@ class Application extends Container
 		if ($filename && file_exists($filename)) {
 			$this->router = RouteFacade::registerRoutesAndRetrieveRouter();
 		}
-
-		echo '<fieldset><legend>ROUTER, ROUTES</legend><pre>' . print_r($this->router,true) . '</pre></fieldset>';
 	}
 
 	/**
@@ -163,8 +156,32 @@ class Application extends Container
 	{
 		$this->configureFolders();
 		$this->registerAutoloader();
+		//
+		$this->registerCoreSingletons();
+		$this->registerCoreContainerAliases();
+		//
 		$this->loadConfigFiles();
 		$this->intiailizeRoutes();
+	}
+
+	protected function registerCoreSingletons()
+	{
+		$this->singleton(\Ground\Http\Routing\RouteGroup::class);
+	}
+
+	protected function registerCoreContainerAliases()
+	{
+		$coreConfigured = [
+			'app' => [self::class, \Ground\Interfaces\Container\Container::class, \Ground\Interfaces\Kernel\Application::class, \Psr\Container\ContainerInterface::class],
+			'route.router' => [\Ground\Http\Routing\Router::class],
+			'route.registrar' => [\Ground\Http\Routing\RouteRegistrar::class],
+		];
+		//
+		foreach ($coreConfigured as $key => $aliases) {
+			foreach ($aliases as $alias) {
+				$this->alias($key, $alias);
+			}
+		}
 	}
 
 	/**

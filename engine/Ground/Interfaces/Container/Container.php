@@ -1,10 +1,10 @@
 <?php
-namespace Ground\Container;
+namespace Ground\Interfaces\Container;
 
 use Closure;
 use Psr\Container\ContainerInterface;
 
-interface ContainerContract extends ContainerInterface
+interface Container extends ContainerInterface
 {
 	/**
 	 * Determine if the given abstract type has been bound.

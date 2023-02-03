@@ -3,7 +3,7 @@ namespace Ground\Http\Routing;
 
 use Ground\Http\Routing\Route;
 use Ground\Http\Routing\Router;
-use Ground\Http\Interfaces\RouteFactoryInterface;
+use Ground\Interfaces\Http\RouteFactoryInterface;
 
 /**
  * Implements the RouteFactoryInterface

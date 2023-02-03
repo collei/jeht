@@ -7,6 +7,8 @@ use ArrayAccess;
 use LogicException;
 use ReflectionClass;
 use ReflectionParameter;
+use Ground\Interfaces\Container\Container as ContainerContract;
+use Ground\Interfaces\Container\ContextualBindingBuilder as ContextualBindingBuilderContract;
 use Ground\Support\Arr;
 
 /**
@@ -140,7 +142,7 @@ class Container implements ArrayAccess, ContainerContract
 	 * Define a contextual binding.
 	 *
 	 * @param  array|string  $concrete
-	 * @return \Ground\Container\ContextualBindingBuilderContract
+	 * @return \Ground\Interfaces\Container\ContextualBindingBuilder
 	 */
 	public function when($concrete)
 	{
