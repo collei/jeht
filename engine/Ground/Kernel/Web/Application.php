@@ -4,8 +4,10 @@ namespace Ground\Kernel\Web;
 use Ground\Kernel\Loaders\Autoloader;
 use Ground\Container\Container;
 use Ground\Http\Routing\Router;
-use Ground\Http\Routing\RouteFacade;
+//use Ground\Http\Routing\RouteFacade;
 use Ground\Http\Request\HttpRequest;
+
+use Ground\Support\Facades\Facade;
 
 class Application extends Container
 {
@@ -157,6 +159,8 @@ class Application extends Container
 		$this->configureFolders();
 		$this->registerAutoloader();
 		//
+		Facade::setFacadeApplication($this);
+		//
 		$this->registerCoreSingletons();
 		$this->registerCoreContainerAliases();
 		//
@@ -178,7 +182,10 @@ class Application extends Container
 		];
 		//
 		foreach ($coreConfigured as $key => $aliases) {
+			$this->singleton($aliases[1] ?? $aliases[0], $aliases[0]);
+			//
 			foreach ($aliases as $alias) {
+				$this->singleton($alias);
 				$this->alias($key, $alias);
 			}
 		}

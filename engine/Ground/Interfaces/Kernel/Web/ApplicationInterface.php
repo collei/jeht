@@ -1,11 +1,6 @@
 <?php
 namespace Ground\Interfaces\Kernel\Web;
 
-use Ground\Kernel\Loaders\Autoloader;
-use Ground\Http\Routing\Router;
-use Ground\Http\Routing\RouteFacade;
-use Ground\Http\Request\HttpRequest;
-
 use Ground\Interfaces\Container\Container;
 
 interface ApplicationInterface extends Container
