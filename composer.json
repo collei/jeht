@@ -14,7 +14,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Ground\\": "engine/Ground",
+			"Jeht\\": "engine/Jeht",
 			"Psr\\": "engine/Psr"
 		}
 	}
