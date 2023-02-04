@@ -1,8 +1,8 @@
 <?php
-namespace Ground\Http\Uri;
+namespace Jeht\Http\Uri;
 
 use Psr\Http\Message\UriFactoryInterface;
-use Ground\Http\Uri\Uri;
+use Jeht\Http\Uri\Uri;
 
 class UriFactory implements UriFactoryInterface
 {

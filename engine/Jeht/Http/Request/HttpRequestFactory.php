@@ -1,11 +1,12 @@
 <?php
-namespace Ground\Http\Request;
+namespace Jeht\Http\Request;
 
 use Psr\Http\Message\RequestFactoryInterface;
-use Ground\Http\Request\HttpRequest;
-use Ground\Http\Uri\UriFactory;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Jeht\Http\Request\HttpRequest;
+use Jeht\Http\Uri\UriFactory;
 
-class HttpRequestFactory implements RequestFactoryInterface
+class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
 {
 	/**
 	 * Create a new request.
@@ -25,6 +26,22 @@ class HttpRequestFactory implements RequestFactoryInterface
 		//
 		return $request->withUri($uriInterface);
 	}
+
+	/**
+	 * Create a new server request.
+	 *
+	 * @param string $method The HTTP method associated with the request.
+	 * @param UriInterface|string $uri The URI associated with the request. 
+	 * @param array $serverParams An array of Server API (SAPI) parameters with
+	 *	 which to seed the generated request instance.
+	 */
+	public function createServerRequest(
+		string $method, $uri, array $serverParams = []
+	): ServerRequestInterface {
+		$request = $this->createRequest($method, $uri)
+			->1'''''''''''''''
+	}
+
 
 }
 
