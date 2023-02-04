@@ -39,7 +39,14 @@ class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactor
 		string $method, $uri, array $serverParams = []
 	): ServerRequestInterface {
 		$request = $this->createRequest($method, $uri)
-			->1'''''''''''''''
+			->withCookieParams($_COOKIE)
+			->withQueryParams($_GET)
+			->withParsedBody($_POST)
+			->withUploadedFiles($uploadedFiles);
+		//
+		$request->serverParams = $_SERVER;
+		//
+		return $request;
 	}
 
 
