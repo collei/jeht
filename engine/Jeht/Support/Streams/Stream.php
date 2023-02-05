@@ -415,4 +415,38 @@ class Stream implements StreamInterface
 		return $meta[$key] ?? null;
 	}
 
+	/**
+	 * Validates $mode parameter for use with fopen().
+	 *
+	 * @param string $mode
+	 * @return bool
+	 */
+	public static function isValidMode(string $mode)
+	{
+		return array_key_exists($mode, self::READABLE_MODES)
+			|| array_key_exists($mode, self::WRITABLE_MODES);
+	}
+
+	/**
+	 * Checks if $mode parameter is a readable mode for fopen().
+	 *
+	 * @param string $mode
+	 * @return bool
+	 */
+	public static function isReadableMode(string $mode)
+	{
+		return array_key_exists($mode, self::READABLE_MODES);
+	}
+
+	/**
+	 * Checks if $mode parameter is a writable mode for fopen().
+	 *
+	 * @param string $mode
+	 * @return bool
+	 */
+	public static function isWritableMode(string $mode)
+	{
+		return array_key_exists($mode, self::WRITABLE_MODES);
+	}
+
 }

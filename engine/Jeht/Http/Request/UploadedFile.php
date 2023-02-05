@@ -1,23 +1,15 @@
 <?php
 namespace Jeht\Http\Request;
 
+use RuntimeException;
 use Jeht\Filesystem\Stream;
 
 use Psr\Http\Message\UploadedFileInterface;
 
-class UploadedFile extends File implements UploadedFileInterface
+class UploadedFile implements UploadedFileInterface
 {
 	/**
 	 * Retrieve a stream representing the uploaded file.
-	 *
-	 * This method MUST return a StreamInterface instance, representing the
-	 * uploaded file. The purpose of this method is to allow utilizing native PHP
-	 * stream functionality to manipulate the file upload, such as
-	 * stream_copy_to_stream() (though the result will need to be decorated in a
-	 * native PHP stream wrapper to work with such functions).
-	 *
-	 * If the moveTo() method has been called previously, this method MUST raise
-	 * an exception.
 	 *
 	 * @return StreamInterface Stream representation of the uploaded file.
 	 * @throws \RuntimeException in cases when no stream is available.

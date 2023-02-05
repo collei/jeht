@@ -35,20 +35,18 @@ class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactor
 	 * @param array $serverParams An array of Server API (SAPI) parameters with
 	 *	 which to seed the generated request instance.
 	 */
-	public function createServerRequest(
-		string $method, $uri, array $serverParams = []
-	): ServerRequestInterface {
+	public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
+	{
 		$request = $this->createRequest($method, $uri)
 			->withCookieParams($_COOKIE)
 			->withQueryParams($_GET)
 			->withParsedBody($_POST)
 			->withUploadedFiles($uploadedFiles);
 		//
-		$request->serverParams = $_SERVER;
+		$request->serverParams = !empty($serverParams) ? $serverParams : $_SERVER;
 		//
 		return $request;
 	}
-
 
 }
 

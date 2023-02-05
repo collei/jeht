@@ -27,34 +27,64 @@ class HttpRequest implements HttpRequestInterface
 	];
 
 	/**
-	 * @var UriInterface $uri
+	 * @var UriInterface
 	 */
 	protected $uri;
 
 	/**
-	 * @var string $request_target
+	 * @var string
 	 */
 	protected $request_target = '/';
 
 	/**
-	 * @var string $method
+	 * @var string
 	 */
 	protected $method = '';
 
 	/**
-	 * @var string $http_version
+	 * @var string
 	 */
 	protected $http_version = '';
 
 	/**
-	 * @var string[] $headers
+	 * @var string[]
 	 */
 	protected $headers = [];
 
 	/**
-	 * @var string $body
+	 * @var string
 	 */
 	protected $body = '';
+
+	/**
+	 * @var array
+	 */
+	protected $serverParams;
+
+	/**
+	 * @var array
+	 */
+	protected $cookieParams;
+
+	/**
+	 * @var array
+	 */
+	protected $queryStringParams;
+
+	/**
+	 * @var array
+	 */
+	protected $uploadedFiles;
+
+	/**
+	 * @var mixed
+	 */
+	protected $parsedBodyContent;
+
+	/**
+	 * @var array
+	 */
+	protected $attributes;
 
 	/**
 	 * Instantiates a HttpRequest object
