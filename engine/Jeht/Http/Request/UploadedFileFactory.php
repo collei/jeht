@@ -3,8 +3,11 @@ namespace Psr\Http\Message;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 
-interface UploadedFileFactoryInterface
+use Jeht\Support\Streams\Stream;
+
+interface UploadedFileFactory extends UploadedFileFactoryInterface
 {
 	/**
 	 * Create a new uploaded file.
@@ -30,6 +33,14 @@ interface UploadedFileFactoryInterface
 		int $error = \UPLOAD_ERR_OK,
 		string $clientFilename = null,
 		string $clientMediaType = null
-	): UploadedFileInterface;
+	): UploadedFileInterface {
+		return new UploadedFile(
+			$stream,
+			$size ?? $stream->getSize(),
+			$error,
+			$clientFilename,
+			$clientMediaType
+		);
+	}
 }
 
