@@ -1,6 +1,7 @@
 <?php
 namespace Jeht\Routing;
 
+use Jeht\Routing\Router;
 use Jeht\Ground\Application;
 
 class RouteRegistrar

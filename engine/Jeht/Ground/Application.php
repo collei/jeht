@@ -163,24 +163,31 @@ class Application extends Container implements ApplicationInterface
 
 	protected function registerCoreSingletons()
 	{
-		$this->singleton(\Jeht\Routing\RouteGroup::class);
+		$routee = $this->make(\Jeht\Routing\Router::class);
+
+		$this->singleton(\Jeht\Routing\Route::class, function() use ($routee){
+			return $routee;
+		});
+
+		$this->instance(\Jeht\Routing\Router::class, $routee);
+		$this->instance(\Jeht\Routing\RouteRegistrar::class, $this->make(\Jeht\Routing\RouteRegistrar::class, [$routee]));
 	}
 
 	protected function registerCoreContainerAliases()
 	{
 		$coreConfigured = [
 			'app' => [self::class, \Jeht\Interfaces\Container\Container::class, \Jeht\Interfaces\Ground\Application::class, \Psr\Container\ContainerInterface::class],
-			'route' => [Jeht\Routing\Route::class],
-			'route.router' => [\Jeht\Routing\Router::class],
+			//'route' => [\Jeht\Routing\Route::class],
+			//'route.router' => [\Jeht\Routing\Router::class],
 			'route.registrar' => [\Jeht\Routing\RouteRegistrar::class],
 		];
 		//
 		foreach ($coreConfigured as $key => $aliases) {
-			$this->singleton($aliases[1] ?? $aliases[0], $aliases[0]);
+			$this->singleton($key, $aliases[1] ?? $aliases[0]);
 			//
 			foreach ($aliases as $alias) {
-				$this->singleton($alias);
-				$this->alias($alias, $key);
+				$this->singleton($key, $alias);
+				$this->alias($key, $alias);
 			}
 		}
 	}

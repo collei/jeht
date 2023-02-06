@@ -8,6 +8,11 @@ class Router
 	 */
 	private $routes = [];
 
+	public function __construct()
+	{
+		//
+	}
+
 
 	/**
 	 * Tests the given $requestUri against $regex.
