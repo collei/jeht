@@ -586,6 +586,33 @@ abstract class Arr
 		return is_array($thing) ? $thing : array($thing);
 	}
 
+	/**
+	 *	Modifies the given array's leafs using the given closure
+	 *
+	 *	@param	array	&$target
+	 *	@param	\Closure	$callback
+	 *	@param	bool	$unsetNulls = false
+	 *	@return	void
+	 */
+	public static function treeMapLeafs(array &$target, Closure $callback, bool $unsetNulls = false)
+	{
+		foreach ($target as $index => $item) {
+			if (is_array($item)) {
+				// if array, goes deeper on it
+				static::treeMapLeafs($item, $callback);
+				//
+				// then unset nullified items if requested
+				if (is_null($item) && $unsetNulls) {
+					unset($target[$index]);
+				} else {
+					$target[$index] = $item;
+				}
+			} else {
+				// if not, just applies the transform result from callback 
+				$target = $callback($target);
+				return;
+			}
+		}
+	}
+
 }
-
-

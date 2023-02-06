@@ -1,8 +1,6 @@
 <?php
 namespace Jeht\Routing;
 
-use Jeht\Routing\RouteGroup;
-
 class Router
 {
 	/**
@@ -41,7 +39,7 @@ class Router
 	{
 		$this->routes[] = $route;
 
-		echo '<fieldset><legend>' . $route->getPath() . '</legend><textarea style="width:100%;" rows="10">' . print_r($route,true) . '</textarea></fieldset>';
+		//echo '<fieldset><legend>' . $route->getPath() . '</legend><textarea style="width:100%;" rows="10">' . print_r($route,true) . '</textarea></fieldset>';
 	}
 
 

@@ -1,8 +1,6 @@
 <?php
 namespace Jeht\Routing;
 
-use Jeht\Routing\Route;
-use Jeht\Routing\Router;
 use Jeht\Interfaces\Routing\RouteFactoryInterface;
 
 /**

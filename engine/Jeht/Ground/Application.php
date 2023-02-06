@@ -136,6 +136,7 @@ class Application extends Container implements ApplicationInterface
 						$configFile = $configPath . DIRECTORY_SEPARATOR . $file
 					);
 					//
+					echo "<div>Application::loadConfigFiles: $configFile</div>";
 					require $configFile;
 				}
 			}
@@ -151,11 +152,10 @@ class Application extends Container implements ApplicationInterface
 	{
 		$this->configureFolders();
 		$this->registerAutoloader();
-		//
-		Facade::setFacadeApplication($this);
-		//
 		$this->registerCoreSingletons();
 		$this->registerCoreContainerAliases();
+		//
+		Facade::setFacadeApplication($this);
 		//
 		$this->loadConfigFiles();
 		$this->intiailizeRoutes();
@@ -170,6 +170,7 @@ class Application extends Container implements ApplicationInterface
 	{
 		$coreConfigured = [
 			'app' => [self::class, \Jeht\Interfaces\Container\Container::class, \Jeht\Interfaces\Ground\Application::class, \Psr\Container\ContainerInterface::class],
+			'route' => [Jeht\Routing\Route::class],
 			'route.router' => [\Jeht\Routing\Router::class],
 			'route.registrar' => [\Jeht\Routing\RouteRegistrar::class],
 		];

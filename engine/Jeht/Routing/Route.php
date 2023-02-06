@@ -1,7 +1,6 @@
 <?php
 namespace Jeht\Routing;
 
-use Jeht\Routing\Router;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use InvalidArgumentException;

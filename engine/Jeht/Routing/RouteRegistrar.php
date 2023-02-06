@@ -1,10 +1,6 @@
 <?php
 namespace Jeht\Routing;
 
-use Jeht\Routing\Router;
-use Jeht\Routing\RouteFactory;
-use Jeht\Routing\RouteGroup;
-
 use Jeht\Ground\Application;
 
 class RouteRegistrar

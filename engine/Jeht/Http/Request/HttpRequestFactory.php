@@ -4,13 +4,49 @@ namespace Jeht\Http\Request;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 
-use Jeht\Http\Message\UploadFileFactory;
 use Jeht\Http\Request\HttpRequest;
+use Jeht\Http\Request\UploadFileFactory;
 use Jeht\Http\Uri\UriFactory;
+use Jeht\Support\Streams\StreamFactory;
 
 class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
 {
+	/**
+	 * @var array
+	 */
+	protected const UPLOADED_FILE_PARAMETERS = [
+		'name',
+		'type',
+		'tmp_name',
+		'error',
+		'size'
+	];
+
+	/**
+	 * @var \Jeht\Support\Streams\StreamFactory
+	 */
+	protected $uriFactory;
+
+	/**
+	 * @var \Jeht\Support\Streams\StreamFactory
+	 */
 	protected $streamFactory;
+
+	/**
+	 * @var \Jeht\Http\Request\UploadFileFactory
+	 */
+	protected $uploadedFileFactory;
+
+	/**
+	 * Initializes factories and stuff
+	 *
+	 */
+	public function __construct()
+	{
+		$this->uriFactory = new UriFactory;
+		$this->streamFactory = new StreamFactory;
+		$this->uploadedFileFactory = new UploadFileFactory;
+	}
 
 	/**
 	 * Create a new request.
@@ -26,7 +62,7 @@ class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactor
 			return $request->withUri($uri);
 		}
 		//
-		$uriInterface = (new UriFactory)->createUri($uri);
+		$uriInterface = $this->uriFactory->createUri($uri);
 		//
 		return $request->withUri($uriInterface);
 	}
@@ -55,26 +91,47 @@ class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactor
 		return $request;
 	}
 
-	protected const UPLOADED_FILE_PARAMETERS = [
-		'name',
-		'type',
-		'tmp_name',
-		'error',
-		'size'
-	];
+	/**
+	 * Reaps a tree of UploadedFileInterface instances from the $_FILES global
+	 *
+	 * @return array
+	 */
+	protected function fetchUploadedFilesFromGlobal()
+	{
+		$self = $this;
+		//
+		$uploadedFiles = $this->fetchNormalizedUploaded($_FILES);
+		//
+		Arr::treeMapLeafs($uploadedFiles, function($file) use ($self) {
+			if (! empty($file['name'])) {
+				return $self->createUploadedFile(
+					$file['tmp_name'],
+					$file['size'],
+					$file['error'],
+					$file['name'],
+					$file['type']
+				);
+			} else {
+				return null;
+			}
+		}, true);
+		//
+		return $received;
+	}
 
 	/**
-	 * Returns a normalized version of the $_FILES global
+	 * Returns a normalized version of the given $files
 	 *
 	 * Thenks to Mrten <https://gist.github.com/Mrten> (see link below)
 	 * @link https://gist.github.com/umidjons/9893735?permalink_comment_id=3495051#gistcomment-3495051
 	 *
-	 * @return array
+	 * @param	array	$files	The uploaded file tree to process. Usually, the $_FILES global
+	 * @return	array
 	 */
-	protected function fetchNormalizedUploadedGlobal() {
+	protected function fetchNormalizedUploaded(array $files) {
 		$out = [];
 		//
-		foreach ($_FILES as $key => $file) {
+		foreach ($files as $key => $file) {
 			if (isset($file['name']) && is_array($file['name'])) {
 				$new = [];
 				//
@@ -94,40 +151,35 @@ class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactor
 		return $out;
 	}
 
-	protected function fetchArrayedUploadedFiles(array $files, $level = null)
-	{
-		$uploadedFiles = [];
-		//
-		$sentFiles = $this->fetchNormalizedUploadedGlobal();
-		//
-		foreach ($files as $index => $file) {
-			if (is_array($file['name'])) {
-				
-				$others = fetchArrayedUploadedFiles($file, $index);
-			} else {
-				$singleUpload = $this->fetchAsUploadedFile(
-					$file['tmp_name'],
-					$file['error'],
-					$file['name'],
-					$file['type']
-				);
-			}
-		}
-	}
-
-
-
-	protected function fetchAsUploadedFile(
+	/**
+	 * Create a new uploaded file.
+	 *
+	 * @see \Jeht\Http\Request\UploadedFileFactory
+	 *
+	 * @param string $filename The name of uploade file (usually from $file['tmp_name']).
+	 * @param int $size The size of the file in bytes (usually from $file['size']).
+	 * @param int $error The PHP file upload error (usually from $file['error']).
+	 * @param string $clientFilename The filename as provided by the client, if any.
+	 * @param string $clientMediaType The media type as provided by the client, if any.
+	 *
+	 * @throws \InvalidArgumentException If the file is not readable.
+	 */
+	protected function createUploadedFile(
 		string $filename,
+		int $size = null,
 		int $error = \UPLOAD_ERR_OK,
 		string $clientFilename = null,
 		string $clientMediaType = null
 	) {
+		if (! is_readable($filename)) {
+			throw new InvalidArgumentException("The file [{$filename}] is not readable.");
+		}
+		//
 		$stream = $this->streamFactory->createStreamFromFile($filename, 'r');
 		//
-		return $factory->createUploadedFile(
+		return $this->uploadedFileFactory->createUploadedFile(
 			$stream,
-			filesize($filename),
+			$size ?? filesize($filename),
 			$error,
 			$clientFilename,
 			$clientMediaType
