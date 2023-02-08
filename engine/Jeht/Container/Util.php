@@ -16,13 +16,16 @@ class Util
 	/**
 	 * Get the class name of the given parameter's type, if possible.
 	 *
-	 *
 	 * @param  \ReflectionParameter  $parameter
 	 * @return string|null
 	 */
 	public static function getParameterClassName($parameter)
 	{
 		$type = $parameter->getType();
+		//
+		if ($className = self::getClassNameWhileAutoloading($type)) {
+			return $className;
+		}
 		//
 		if (! $type instanceof ReflectionNamedType || $type->isBuiltin()) {
 			return;
@@ -41,6 +44,24 @@ class Util
 		}
 		//
 		return $name;
+	}
+
+	/**
+	 * Returns the class name if it does exist. It triggers autoloading.
+	 * Returns null if not found anywhere.
+	 *
+	 * @param	\ReflectionNamedType|\Stringable|string	$type
+	 * @return	string|null
+	 */
+	protected static function getClassNameWhileAutoloading($type)
+	{
+		$className = '' . $type . '';
+		//
+		if (class_exists($className)) {
+			return $className;
+		}
+		//
+		return null;
 	}
 
 }
