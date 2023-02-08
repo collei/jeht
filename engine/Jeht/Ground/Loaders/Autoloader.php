@@ -26,26 +26,32 @@ class Autoloader
 
 	protected function autoloadRegister()
 	{
-		$self = $this;
+		\spl_autoload_register([$this, 'load'], true, true);
+	}
+
+	public function load($class)
+	{
+		// ignore non-'client' classes
+		if ('App\\' !== substr($class, 0, 4)) {
+			return;
+		}
 		//
-		\spl_autoload_register(function ($class) use ($self){
-			if ($file = $self->loadedExists($class)) {
-				require_once $file;
-				return;
-			}
-			//
-			$file = $self->rootPath . DIRECTORY_SEPARATOR
-				. \str_replace('\\', DIRECTORY_SEPARATOR, $class)
-				. '.php';
+		if ($file = $this->loadedExists($class)) {
+			require_once $file;
+			return;
+		}
+		//
+		$file = $this->rootPath . DIRECTORY_SEPARATOR
+			. \str_replace('\\', DIRECTORY_SEPARATOR, $class)
+			. '.php';
 
-			echo "<div>app autoloader: tried reap class <b>$class</b> from <b>$file</b></div>";
+		echo "<div>app autoloader: tried reap class <b>$class</b> from <b>$file</b></div>";
 
-			//
-			if (\file_exists($file)) {
-				$self->addLoaded($class, $file);
-				require_once $file;
-			}
-		});
+		//
+		if (\file_exists($file)) {
+			$this->addLoaded($class, $file);
+			require_once $file;
+		}
 	}
 
 	public function __construct(string $namespace, string $rootPath)
