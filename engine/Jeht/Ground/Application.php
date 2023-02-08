@@ -1,11 +1,13 @@
 <?php
 namespace Jeht\Ground;
 
+use RuntimeException;
 use Jeht\Interfaces\Ground\ApplicationInterface;
 use Jeht\Ground\Loaders\Autoloader;
 use Jeht\Container\Container;
 use Jeht\Routing\Router;
 
+use Jeht\Support\Data;
 use Jeht\Support\Facades\Facade;
 
 class Application extends Container implements ApplicationInterface
@@ -32,7 +34,22 @@ class Application extends Container implements ApplicationInterface
 	/**
 	 * @var string
 	 */
-	private $baseDir;
+	private $basePath;
+
+	/**
+	 * @var string
+	 */
+	private $appPath;
+
+	/**
+	 * @var string
+	 */
+	private $kernelPath;
+
+	/**
+	 * @var string
+	 */
+	private $namespace;
 
 	/**
 	 * @var \Jeht\Routing\Router
@@ -50,6 +67,107 @@ class Application extends Container implements ApplicationInterface
 	private $configFiles = [];
 
 	/**
+	 * Initializes the application
+	 *
+	 * @param string $name
+	 * @param string $basePath
+	 */
+	public function __construct(string $name, string $basePath)
+	{
+		$this->name = $name;
+		//
+		$this->detectKernelPath();
+		//
+		if (! $this->basePath) {
+			$this->setBasePath($basePath);
+		}
+		//
+		$this->registerAutoloader();
+		$this->registerBaseBindings();
+		$this->registerCoreContainerAliases();
+	}
+
+	protected function detectKernelPath()
+	{
+		$this->kernelPath = dirname(__DIR__, 3);
+	}
+
+	/**
+	 * Register the class autoloader for the application
+	 *
+	 * @return void;
+	 */
+	protected function registerAutoloader()
+	{
+		$this->autoloader = Autoloader::register(
+			$this->namespace, $this->basePath
+		);
+	}
+
+	/**
+	 * Set the application basepath 
+	 *
+	 * @param string $basePath
+	 * @return this
+	 */
+	protected function setBasePath(string $basePath)
+	{
+		$this->basePath = rtrim($basePath, '\/');
+		//
+		$this->appPath = $this->basePath.DIRECTORY_SEPARATOR.'app';
+		//
+		$this->namespace = $this->getNamespace();
+		//
+		$this->configureFolders();
+	}
+
+	/**
+	 * Get the application basepath 
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function path(string $path = '')
+	{
+		$appPath = $this->appPath ?: ($this->basePath.DIRECTORY_SEPARATOR.'app');
+		//
+		return $appPath . ($path ? DIRECTORY_SEPARATOR.$path : $path);
+	}
+
+	/**
+	 * Get the framework kernel path 
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function kernelPath(string $path = '')
+	{
+		return $this->kernelPath . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+	}
+
+	/**
+	 * Get the application basepath 
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function basePath(string $path = '')
+	{
+		return $this->basePath . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+	}
+
+	/**
+	 * Get the application basepath 
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function appPath(string $path = '')
+	{
+		return $this->appPath . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+	}
+
+	/**
 	 * Register a given folder with the application
 	 *
 	 * @param string $folder
@@ -58,7 +176,7 @@ class Application extends Container implements ApplicationInterface
 	 */
 	protected function configureFolder(string $folder, string $relativePath)
 	{
-		$path = $this->baseDir . DIRECTORY_SEPARATOR . $relativePath;
+		$path = $this->basePath . DIRECTORY_SEPARATOR . $relativePath;
 		//
 		// Recreate folder if it does not exist yet
 		if (! is_dir($path)) {
@@ -100,13 +218,19 @@ class Application extends Container implements ApplicationInterface
 	}
 
 	/**
-	 * Register the class autoloader for the application
+	 * Returns the path for the given $folder
 	 *
-	 * @return void;
+	 * @param string $name
+	 * @return string|null;
 	 */
-	protected function registerAutoloader()
+	protected function registerBaseBindings()
 	{
-		$this->autoloader = Autoloader::register();
+		static::setInstance($this);
+		//
+		Facade::setFacadeApplication($this);
+		//
+		$this->instance('app', $this);
+		$this->instance(Container::class, $this);
 	}
 
 	protected function intiailizeRoutes()
@@ -136,29 +260,10 @@ class Application extends Container implements ApplicationInterface
 						$configFile = $configPath . DIRECTORY_SEPARATOR . $file
 					);
 					//
-					echo "<div>Application::loadConfigFiles: $configFile</div>";
-					require $configFile;
+					require_once $configFile;
 				}
 			}
 		}
-	}
-
-	/**
-	 * Prepares the application for running 
-	 *
-	 * @return void;
-	 */
-	protected function configureApplication()
-	{
-		$this->configureFolders();
-		$this->registerAutoloader();
-		$this->registerCoreSingletons();
-		$this->registerCoreContainerAliases();
-		//
-		Facade::setFacadeApplication($this);
-		//
-		$this->loadConfigFiles();
-		$this->intiailizeRoutes();
 	}
 
 	protected function registerCoreSingletons()
@@ -183,34 +288,11 @@ class Application extends Container implements ApplicationInterface
 		];
 		//
 		foreach ($coreConfigured as $key => $aliases) {
-			$this->singleton($key, $aliases[1] ?? $aliases[0]);
-			//
 			foreach ($aliases as $alias) {
-				$this->singleton($key, $alias);
 				$this->alias($key, $alias);
 			}
 		}
 	}
-
-	/**
-	 * Initializes the application
-	 *
-	 * @param string $name
-	 * @param string $baseDir
-	 */
-	public function __construct(string $name, string $baseDir)
-	{
-		$this->name = $name;
-		$this->baseDir = $baseDir;
-		//
-		static::setInstance($this);
-		//
-		$this->configureApplication();
-	}
-
-	///////////////////////////////////
-	///// STATIC HELPERS //////////////
-	///////////////////////////////////
 
 	/**
 	 * Returns the application instance
@@ -227,12 +309,50 @@ class Application extends Container implements ApplicationInterface
 	 *
 	 * @static
 	 * @param string $name
-	 * @param string $baseDir
+	 * @param string $basePath
 	 * @return static
 	 */
-	public static function initialize(string $name, string $baseDir)
+	public static function initialize(string $name, string $basePath)
 	{
-		return (self::$instance = new static($name, $baseDir));
+		return (self::$instance = new static($name, $basePath));
 	}
+
+
+
+	/**
+	 * Get the application namespace.
+	 *
+	 * Obtained from Laravel's \Illuminate\Foundation\Application::getNamespace
+	 * @link https://github.com/laravel/framework/blob/8.x/src/Illuminate/Foundation/Application.php
+	 *
+	 * @return string
+	 * @throws \RuntimeException
+	 */
+	public function getNamespace()
+	{
+		if (! is_null($this->namespace)) {
+			return $this->namespace;
+		}
+
+
+		return $this->namespace = 'App\\';
+
+		//
+		$composer = json_decode(file_get_contents($this->kernelPath('composer.json')), true);
+		//
+		foreach ((array) Data::get($composer, 'autoload.psr-4') as $namespace => $path) {
+			foreach ((array) $path as $pathChoice) {
+
+				echo "<div>namespace ($namespace) of path ($pathChoice)</div>";
+
+				if (realpath($this->path()) === realpath($this->basePath($pathChoice))) {
+					return $this->namespace = $namespace;
+				}
+			}
+		}
+		//
+		throw new RuntimeException('Unable to detect application namespace.');
+	}
+
 
 }

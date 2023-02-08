@@ -1,5 +1,5 @@
 <?php
-namespace Ground\Http\Request;
+namespace Jeht\Http\Request;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;

@@ -1,6 +1,7 @@
 <?php
 namespace Jeht\Http\Uri;
 
+use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Jeht\Http\Uri\Uri;
 

@@ -14,7 +14,7 @@ class Uri implements UriInterface
 		'path' => '',
 		'query' => '',
 		'fragment' => '',
-	]
+	];
 
 	/**
 	 * Creates a new Uri instance

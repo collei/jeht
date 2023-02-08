@@ -5,6 +5,9 @@ class Autoloader
 {
 	private $previouslyLoaded = [];
 
+	private $namespace;
+	private $rootPath;
+
 	private static $instance = null;
 
 	protected function addLoaded(string $class, string $file)
@@ -27,28 +30,35 @@ class Autoloader
 		//
 		\spl_autoload_register(function ($class) use ($self){
 			if ($file = $self->loadedExists($class)) {
-				require $file;
-				return true;
+				require_once $file;
+				return;
 			}
 			//
-			$file = \str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+			$file = $self->rootPath . DIRECTORY_SEPARATOR
+				. \str_replace('\\', DIRECTORY_SEPARATOR, $class)
+				. '.php';
+
+			echo "<div>app autoloader: tried reap class <b>$class</b> from <b>$file</b></div>";
+
+			//
 			if (\file_exists($file)) {
 				$self->addLoaded($class, $file);
-				require $file;
-				return true;
+				require_once $file;
 			}
-			return false;
 		});
 	}
 
-	public function __construct()
+	public function __construct(string $namespace, string $rootPath)
 	{
+		$this->namespace = $namespace;
+		$this->rootPath = $rootPath;
+		//
 		$this->autoloadRegister();
 	}
 
-	public static function register()
+	public static function register(string $namespace, string $rootPath)
 	{
-		return (self::$instance = new self());
+		return (self::$instance = new self($namespace, $rootPath));
 	}
 	
 }
