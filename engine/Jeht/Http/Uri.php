@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Http\Uri;
+namespace Jeht\Http;
 
 use Psr\Http\Message\UriInterface;
 

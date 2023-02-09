@@ -1,13 +1,11 @@
 <?php
-namespace Jeht\Http\Request;
+namespace Jeht\Http;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 
 use Jeht\Interfaces\Http\Request as RequestInterface;
-use Jeht\Http\Uri\Uri;
-use Jeht\Http\Uri\UriFactory;
 
 class Request implements RequestInterface
 {
@@ -89,18 +87,12 @@ class Request implements RequestInterface
 	/**
 	 * Instantiates a HttpRequest object
 	 *
-	 * @param string $method
-	 * @param UriInterface|string $uri
 	 */
-	public function __construct(string $method, $uri)
+	public function __construct()
 	{
-		$this->method = $method;
+		$this->method = $_SERVER['REQUEST_METHOD'];
 		//
-		if ($uri instanceof UriInterface) {
-			$this->uri = $uri;
-		} elseif (is_string($uri)) {
-			$this->uri = (new UriFactory)->createUri($uri);
-		}
+		$this->uri = (new UriFactory)->createUri($_SERVER['REQUEST_URI']);
 	}
 
 	/**
@@ -492,6 +484,21 @@ class Request implements RequestInterface
 	}
 
 	/**
+	 * Return an instance with the specified server parameters.
+	 *
+	 * @param array $server Array of server parameters, typically from $_SERVER.
+	 * @return static
+	 */
+	public function withServerParams(array $server)
+	{
+		$cloned = clone $this;
+		//
+		$cloned->serverParams = $server;
+		//
+		return $cloned;
+	}
+
+	/**
 	 * Retrieves cookies sent by the client to the server.
 	 *
 	 * @return array
@@ -671,6 +678,17 @@ class Request implements RequestInterface
 		//
 		return $cloned;
 	}
+
+	/**
+	 * Captures a request with a help of its factory
+	 *
+	 * @return \Jeht\Http\Request\Request
+	 */
+	public static function capture()
+	{
+		return RequestFactory::captureRequest();
+	}
+
 
 }
 

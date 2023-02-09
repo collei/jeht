@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Http\Request;
+namespace Jeht\Http;
 
 use RuntimeException;
 use Jeht\Filesystem\Stream;

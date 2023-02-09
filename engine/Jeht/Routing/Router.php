@@ -1,16 +1,23 @@
 <?php
 namespace Jeht\Routing;
 
+use Jeht\Ground\Application;
+
 class Router
 {
 	/**
-	 * @var array[][RouteInterface, HttpServlet]
+	 * @var Jeht\Ground\Application
+	 */
+	private $app;
+
+	/**
+	 * @var array
 	 */
 	private $routes = [];
 
-	public function __construct()
+	public function __construct(Application $app)
 	{
-		//
+		$this->app = $app;
 	}
 
 
@@ -43,8 +50,20 @@ class Router
 	public function registerRoute(Route $route)
 	{
 		$this->routes[] = $route;
+	}
 
-		//echo '<fieldset><legend>' . $route->getPath() . '</legend><textarea style="width:100%;" rows="10">' . print_r($route,true) . '</textarea></fieldset>';
+	public function dispatch($request)
+	{
+		foreach ($this->routes as $route) {
+
+			echo '<fieldset>' . json_encode(print_r($route,true)) . '</fieldset>';
+
+			if ($route->matches($request)) {
+				return $route->runRoute($request);
+			}
+		}
+		//
+		return 'PIMBA'; //null;
 	}
 
 

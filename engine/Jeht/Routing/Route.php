@@ -6,6 +6,7 @@ use Jeht\Support\Str;
 use InvalidArgumentException;
 
 use Jeht\Interfaces\Routing\RouteInterface;
+use Jeht\Interfaces\Http\Request;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -44,19 +45,22 @@ class Route implements RouteInterface
 	 */
 	private $parameters = [];
 
-
+	/**
+	 * Set the methods this route must respond to
+	 *
+	 * @param	string|array	...$httpMethods
+	 * @return	void
+	 */
 	protected function setHttpMethods($httpMethods)
 	{
+		$httpMethods = is_array($httpMethods) ? $httpMethods : func_get_args();
+		//
 		if (empty($httpMethods)) {
 			$this->httpMethods = array('GET','HEAD');
 			return;
 		}
 		//
-		if (!is_array($httpMethods) && !is_string($httpMethods)) {
-			throw new InvalidArgumentException('Parameter must be a string or array');
-		}
-		//
-		$this->httpMethod = Arr::wrap($httpMethods);
+		$this->httpMethods = Arr::wrap($httpMethods);
 	}
 
 	/**
@@ -106,26 +110,19 @@ class Route implements RouteInterface
 	/**
 	 * Checks if the given $requestUri matches the route.
 	 *
-	 * @param string $httpMethod
-	 * @param string|UriInterface $requestUri
+	 * @param Jeht\Interfaces\Http\Request $request
 	 * @return bool
 	 */
-	public function matches(string $httpMethod, $requestUri)
+	public function matches(Request $request)
 	{
-		if (($httpMethod !== $this->httpMethod) && ('*' !== $this->httpMethod)) {
+		$method = $request->getMethod();
+		$uri = $request->getUri()->getPath();
+		//
+		if (! in_array($method, $this->httpMethods)) {
 			return false;
 		}
 		//
-		// type checking / conformation
-		if ($requestUri instanceof UriInterface) {
-			$requestUri = $requestUri->getPath();
-		} elseif (!is_string($requestUri)) {
-			$message = 'parameter must be a string or an instanceof ' . UriInterface::class . '.';
-			//
-			throw new InvalidArgumentException($message);
-		}
-		//
-		return $this->matchAndSetParameters($requestUri);
+		return $this->matchAndSetParameters($uri);
 	}
 
 	/**

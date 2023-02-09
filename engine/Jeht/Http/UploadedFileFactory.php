@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Http\Request;
+namespace Jeht\Http;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -8,7 +8,7 @@ use Psr\Http\Message\UploadedFileFactoryInterface;
 use Jeht\Support\Streams\Stream;
 use Jeht\Support\Streams\StreamFactory;
 
-interface UploadedFileFactory extends UploadedFileFactoryInterface
+class UploadedFileFactory implements UploadedFileFactoryInterface
 {
 	/**
 	 * Create a new uploaded file.

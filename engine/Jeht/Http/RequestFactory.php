@@ -1,13 +1,13 @@
 <?php
-namespace Jeht\Http\Request;
+namespace Jeht\Http;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 
-use Jeht\Http\Request\Request;
-use Jeht\Http\Request\UploadFileFactory;
-use Jeht\Http\Uri\UriFactory;
 use Jeht\Support\Streams\StreamFactory;
+use Jeht\Support\Arr;
 
 class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
 {
@@ -33,7 +33,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	protected $streamFactory;
 
 	/**
-	 * @var \Jeht\Http\Request\UploadFileFactory
+	 * @var \Jeht\Http\Request\UploadedFileFactory
 	 */
 	protected $uploadedFileFactory;
 
@@ -45,7 +45,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	{
 		$this->uriFactory = new UriFactory;
 		$this->streamFactory = new StreamFactory;
-		$this->uploadedFileFactory = new UploadFileFactory;
+		$this->uploadedFileFactory = new UploadedFileFactory;
 	}
 
 	/**
@@ -56,7 +56,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	 */
 	public function createRequest(string $method, $uri): RequestInterface
 	{
-		$request = (new HttpRequest)->withMethod($method);
+		$request = (new Request)->withMethod($method);
 		//
 		if ($uri instanceof UriInterface) {
 			return $request->withUri($uri);
@@ -86,7 +86,9 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 			$request = $request->withUploadedFiles($uploadedFiles);
 		}
 		//
-		$request->serverParams = !empty($serverParams) ? $serverParams : $_SERVER;
+		$request = $request->withServerParams(
+			empty($serverParams) ? $serverParams : $_SERVER
+		);
 		//
 		return $request;
 	}
@@ -116,7 +118,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 			}
 		}, true);
 		//
-		return $received;
+		return $uploadedFiles;
 	}
 
 	/**
@@ -184,6 +186,24 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 			$clientFilename,
 			$clientMediaType
 		);
+	}
+
+	/**
+	 * Captures and returns a request
+	 *
+	 * @return \Jeht\Http\Request\Request
+	 */
+	public static function captureRequest()
+	{
+		$factory = new static;
+		//
+		$request = $factory->createServerRequest(
+			$_SERVER['REQUEST_METHOD'],
+			$_SERVER['REQUEST_URI'],
+			$_SERVER
+		);
+		//
+		return $request;
 	}
 
 }
