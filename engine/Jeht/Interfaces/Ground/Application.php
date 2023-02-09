@@ -3,7 +3,7 @@ namespace Jeht\Interfaces\Ground;
 
 use Jeht\Interfaces\Container\Container;
 
-interface ApplicationInterface extends Container
+interface Application extends Container
 {
 	/**
 	 * Returns the path for the given $folder

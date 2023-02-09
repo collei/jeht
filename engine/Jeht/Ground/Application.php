@@ -2,7 +2,7 @@
 namespace Jeht\Ground;
 
 use RuntimeException;
-use Jeht\Interfaces\Ground\ApplicationInterface;
+use Jeht\Interfaces\Ground\Application as ApplicationInterface;
 use Jeht\Ground\Loaders\Autoloader;
 use Jeht\Container\Container;
 use Jeht\Routing\Router;

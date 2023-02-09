@@ -3,7 +3,7 @@ namespace Jeht\Interfaces\Http;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-interface HttpRequestInterface extends ServerRequestInterface
+interface Request extends ServerRequestInterface
 {
 	/**
 	 * Returns if the specified request attribute exists.

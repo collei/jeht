@@ -4,12 +4,12 @@ namespace Jeht\Http\Request;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 
-use Jeht\Http\Request\HttpRequest;
+use Jeht\Http\Request\Request;
 use Jeht\Http\Request\UploadFileFactory;
 use Jeht\Http\Uri\UriFactory;
 use Jeht\Support\Streams\StreamFactory;
 
-class HttpRequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
+class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
 {
 	/**
 	 * @var array

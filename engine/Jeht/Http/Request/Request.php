@@ -5,11 +5,11 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 
-use Jeht\Interfaces\Http\HttpRequestInterface;
+use Jeht\Interfaces\Http\Request as RequestInterface;
 use Jeht\Http\Uri\Uri;
 use Jeht\Http\Uri\UriFactory;
 
-class HttpRequest implements HttpRequestInterface
+class Request implements RequestInterface
 {
 	/**
 	 * @var array METHODS
