@@ -82,7 +82,10 @@ class Route implements RouteInterface
 		$this->name = $name ?? Str::randomize();
 		$this->path = $path;
 		$this->handler = $handler;
-		$this->regex = $regex ?? str_replace('/', '\\/', $path);
+		//
+		$regex = !empty($regex) ? $regex : str_replace('/', '\\/', $path);
+		//
+		$this->regex = "#^{$regex}\s*$#";
 		//
 		$this->setHttpMethods($httpMethods);
 	}
@@ -180,5 +183,9 @@ class Route implements RouteInterface
 		return null;
 	}
 
+	public function runRoute(Request $request)
+	{
+		return (new RouteDispatcher)->dispatch($request, $this->handler);
+	}
 
 }

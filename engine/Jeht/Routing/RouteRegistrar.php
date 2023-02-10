@@ -21,12 +21,14 @@ class RouteRegistrar
 	/**
 	 * @var \Jeht\Ground\Routing\Router
 	 */
-	protected $router = null;
+	protected $router;
 
 	/**
 	 * @var \Jeht\Ground\Routing\RouteGroup
 	 */
-	protected $routeGroup = null;
+	protected $routeGroup;
+
+	protected $appBaseUri = '/contacta';
 
 	protected $routeFactories = [];
 
@@ -57,7 +59,7 @@ class RouteRegistrar
 		[$uri, $name, $handler] = $this->aggregateAttributes($uri, $handler);
 		//
 		$this->routeFactories[] = $factory = new RouteFactory(
-			$uri, $methods, $handler, $name
+			$this->appBaseUri . $uri, $methods, $handler, $name
 		);
 		//
 		$this->router->registerRoute($factory->fetch());
@@ -65,12 +67,14 @@ class RouteRegistrar
 		return $factory;
 	}
 
-	public function __construct(Application $app, Router $router)
+	public function __construct(Application $app, Router $router, RouteGroup $routeGroup)
 	{
 		$this->app = $app;
 		$this->router = $router;
+		$this->routeGroup = $routeGroup;
 		//
-		$this->routeGroup = $this->app->make(RouteGroup::class);
+		$this->app->instance(Router::class, $router);
+		$this->app->instance(RouteGroup::class, $routeGroup);
 	}
 
 	public function get(string $uri, $handler = null)
