@@ -54,6 +54,8 @@ class Router
 
 	public function dispatch($request)
 	{
+		echo '<div>'.__METHOD__.'('.__LINE__.'): instanceof '.__CLASS__.' has memorized '.count($this->routes).' routes</div>';
+
 		foreach ($this->routes as $route) {
 
 			echo '<fieldset>' . json_encode(print_r($route,true)) . '</fieldset>';

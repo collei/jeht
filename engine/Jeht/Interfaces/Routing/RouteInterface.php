@@ -2,17 +2,17 @@
 namespace Jeht\Interfaces\Routing;
 
 use Psr\Http\Message\UriInterface;
+use Jeht\Interfaces\Http\Request;
 
 interface RouteInterface
 {
 	/**
 	 * Checks if the given $requestUri matches the route.
 	 *
-	 * @param string $httpMethod
-	 * @param string|\Psr\Http\Message\UriInterface $requestUri
+	 * @param \Jeht\Interfaces\Http\Request $request
 	 * @return bool
 	 */
-	public function matches(string $httpMethod, $requestUri);
+	public function matches(Request $request);
 
 	/**
 	 * Checks if the last call to matches() method has generated any parameters.

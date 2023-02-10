@@ -85,6 +85,10 @@ class Application extends Container implements ApplicationInterface
 		$this->registerAutoloader();
 		$this->registerBaseBindings();
 		$this->registerCoreContainerAliases();
+
+		$this->loadConfigFiles();
+		$this->registerCoreSingletons();
+		$this->intiailizeRoutes();
 	}
 
 	protected function detectKernelPath()
@@ -230,6 +234,7 @@ class Application extends Container implements ApplicationInterface
 		Facade::setFacadeApplication($this);
 		//
 		$this->instance('app', $this);
+		$this->instance(Application::class, $this);
 		$this->instance(Container::class, $this);
 	}
 
@@ -282,14 +287,14 @@ class Application extends Container implements ApplicationInterface
 	{
 		$coreConfigured = [
 			'app' => [self::class, \Jeht\Interfaces\Container\Container::class, \Jeht\Interfaces\Ground\Application::class, \Psr\Container\ContainerInterface::class],
-			//'route' => [\Jeht\Routing\Route::class],
-			//'route.router' => [\Jeht\Routing\Router::class],
+			'route' => [\Jeht\Routing\Route::class],
+			'route.router' => [\Jeht\Routing\Router::class],
 			'route.registrar' => [\Jeht\Routing\RouteRegistrar::class],
 		];
 		//
 		foreach ($coreConfigured as $key => $aliases) {
 			foreach ($aliases as $alias) {
-				$this->alias($key, $alias);
+				$this->alias($alias, $key);//, $alias);
 			}
 		}
 	}
@@ -322,36 +327,15 @@ class Application extends Container implements ApplicationInterface
 	/**
 	 * Get the application namespace.
 	 *
-	 * Obtained from Laravel's \Illuminate\Foundation\Application::getNamespace
-	 * @link https://github.com/laravel/framework/blob/8.x/src/Illuminate/Foundation/Application.php
-	 *
 	 * @return string
-	 * @throws \RuntimeException
 	 */
 	public function getNamespace()
 	{
 		if (! is_null($this->namespace)) {
 			return $this->namespace;
 		}
-
-
+		//
 		return $this->namespace = 'App\\';
-
-		//
-		$composer = json_decode(file_get_contents($this->kernelPath('composer.json')), true);
-		//
-		foreach ((array) Data::get($composer, 'autoload.psr-4') as $namespace => $path) {
-			foreach ((array) $path as $pathChoice) {
-
-				echo "<div>namespace ($namespace) of path ($pathChoice)</div>";
-
-				if (realpath($this->path()) === realpath($this->basePath($pathChoice))) {
-					return $this->namespace = $namespace;
-				}
-			}
-		}
-		//
-		throw new RuntimeException('Unable to detect application namespace.');
 	}
 
 

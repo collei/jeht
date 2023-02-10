@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Routing;
 
-//use Illuminate\Contracts\Debug\ExceptionHandler;
+use Jeht\Interfaces\Debug\ExceptionHandler;
 use Jeht\Interfaces\Support\Responsable;
 use Jeht\Http\Request;
 use Jeht\Pipeline\Pipeline as BasePipeline;
@@ -36,26 +36,25 @@ class Pipeline extends BasePipeline
 	 *
 	 * @throws \Throwable
 	 */
-/*
 	protected function handleException($passable, Throwable $e)
 	{
 		if (! $this->container->bound(ExceptionHandler::class) ||
 			! $passable instanceof Request) {
 			throw $e;
 		}
-
+		//
 		$handler = $this->container->make(ExceptionHandler::class);
-
+		//
 		$handler->report($e);
-
+		//
 		$response = $handler->render($passable, $e);
-
+		//
 		if (is_object($response) && method_exists($response, 'withException')) {
 			$response->withException($e);
 		}
-
+		//
 		return $response;
 	}
-*/
+
 }
 

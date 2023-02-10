@@ -60,12 +60,14 @@ class RouteRegistrar
 			$uri, $methods, $handler, $name
 		);
 		//
+		$this->router->registerRoute($factory->fetch());
+		//
 		return $factory;
 	}
 
-	public function __construct(Router $router)
+	public function __construct(Application $app, Router $router)
 	{
-		$this->app = Application::getInstance();
+		$this->app = $app;
 		$this->router = $router;
 		//
 		$this->routeGroup = $this->app->make(RouteGroup::class);

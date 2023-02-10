@@ -2,6 +2,7 @@
 namespace Jeht\Routing;
 
 use Jeht\Interfaces\Routing\RouteFactoryInterface;
+use Jeht\Support\Str;
 
 /**
  * Implements the RouteFactoryInterface

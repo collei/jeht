@@ -62,7 +62,7 @@ class Pipeline implements PipelineInterface
 	public function send($passable)
 	{
 		$this->passable = $passable;
-
+		//
 		return $this;
 	}
 
@@ -75,7 +75,7 @@ class Pipeline implements PipelineInterface
 	public function through($pipes)
 	{
 		$this->pipes = is_array($pipes) ? $pipes : func_get_args();
-
+		//
 		return $this;
 	}
 
@@ -88,7 +88,7 @@ class Pipeline implements PipelineInterface
 	public function via($method)
 	{
 		$this->method = $method;
-
+		//
 		return $this;
 	}
 
