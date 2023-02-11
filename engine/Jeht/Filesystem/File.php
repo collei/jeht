@@ -16,7 +16,7 @@ class File implements FileInterface
 	protected $path;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
 	protected $pathInfo;
 
@@ -34,6 +34,17 @@ class File implements FileInterface
 	 * @var bool
 	 */
 	protected $moved;
+
+	/**
+	 * Creates and returns a File instance
+	 *
+	 * @param string $path	Must be the full path of the file.
+	 * @return static
+	 */
+	public static function for(string $path)
+	{
+		return new static($path);
+	}
 
 	/**
 	 * Builds a File instance
@@ -65,6 +76,20 @@ class File implements FileInterface
 	}
 
 	/**
+	 * Returns the filename of the file.
+	 *
+	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile.txt"
+	 * as string, without the leading dot, and without change case or
+	 * something else.
+	 *
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->pathInfo['filename'];
+	}
+
+	/**
 	 * Returns the name of the file.
 	 *
 	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile" as string,
@@ -72,7 +97,7 @@ class File implements FileInterface
 	 *
 	 * @return string
 	 */
-	public function getName()
+	public function getBaseName()
 	{
 		return $this->pathInfo['basename'];
 	}
@@ -91,17 +116,14 @@ class File implements FileInterface
 	}
 
 	/**
-	 * Returns the filename of the file.
-	 *
-	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile.txt"
-	 * as string, without the leading dot, and without change case or
-	 * something else.
+	 * Alias of getName()
+	 * @see getName()
 	 *
 	 * @return string
 	 */
 	public function getFileName()
 	{
-		return $this->pathInfo['filename'];
+		return $this->getName();
 	}
 	
 	/**
@@ -156,6 +178,17 @@ class File implements FileInterface
 		return $this->exists() ? @filesize($this->path) : false;
 	}
 	
+	/**
+	 * Alias of getPath().
+	 * @see getPath()
+	 *
+	 * @return string
+	 */
+	public function path()
+	{
+		return $this->getPath();
+	}
+
 	/**
 	 * Returns if the file exists or not.
 	 *

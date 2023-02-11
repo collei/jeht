@@ -16,7 +16,7 @@ class Application extends Container implements ApplicationInterface
 	 * @var @static string[]
 	 */
 	private static $folders = [
-		'app','config','public','resources','storage','test'
+		'app','config','public','resources','routes','storage','test'
 	];
 
 	/**
@@ -183,6 +183,23 @@ class Application extends Container implements ApplicationInterface
 	public function appPath(string $path = '')
 	{
 		return $this->appPath . ($path ? DIRECTORY_SEPARATOR . $path : $path);
+	}
+
+	/**
+	 * Get the application config path 
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	public function configPath(string $path = '')
+	{
+		if (! isset($this->configuredFolder['app'])) {
+			$this->configuredFolder('config', 'config');
+		}
+		//
+		return $this->configuredFolder['app'] . (
+			$path ? DIRECTORY_SEPARATOR.$path : $path
+		);
 	}
 
 	/**

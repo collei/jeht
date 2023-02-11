@@ -803,6 +803,17 @@ abstract class Str
 		return \str_repeat($char, $size);
 	}
 
+	/**
+	 *	Converts a wildcarded string to its regex version.
+	 *
+	 *	@param	string	$wildcarded
+	 *	@return	string
+	 */
+	public static function wildcardToRegex(string $wildcarded)
+	{
+		return str_replace(['.','?','*'], ['\\.','.','.*'], $wildcarded);
+	}
+
 
 }
 
