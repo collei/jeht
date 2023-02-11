@@ -54,20 +54,14 @@ class Router
 
 	public function dispatch($request)
 	{
-		echo '<div>'.__METHOD__.'('.__LINE__.'):<br> instanceof '.__CLASS__.' has memorized '.count($this->routes).' routes<br>trying: '.$request->getUri()->getPath().'</div>';
-
 		foreach ($this->routes as $route) {
-
-			echo '<fieldset><textarea style="width:100%;" rows="10">' . print_r($route,true) . '</textarea></fieldset>';
-
 			if ($route->matches($request)) {
 				return $route->runRoute($request);
 			}
 		}
 		//
-		return 'PIMBA'; //null;
+		throw new \Exception('Route not found for request URI: ' . $request->getUri());
 	}
-
 
 }
 

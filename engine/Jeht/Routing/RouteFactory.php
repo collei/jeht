@@ -48,17 +48,17 @@ class RouteFactory implements RouteFactoryInterface
 	/**
 	 * @var string
 	 */
-	protected $name = null;
+	protected $name;
 
 	/**
 	 * @var string
 	 */
-	protected $path = null;
+	protected $path;
 
 	/**
 	 * @var mixed
 	 */
-	protected $handler = null;
+	protected $handler;
 
 	/**
 	 * Translates a route path into a regex that may be used to collect
@@ -134,14 +134,20 @@ class RouteFactory implements RouteFactoryInterface
 	}
 
 	/**
-	 * Adds an alpha regex constraint to the given $parameter.
+	 * Adds a name to the route. In a group, suffixes it.
 	 *
 	 * @param string $parameter
 	 * @return self
 	 */
 	public function name(string $name)
 	{
-		return $this->name = $name;
+		$name = trim($name, ' 	.');
+		//
+		$this->name = !empty($this->name)
+			? (rtrim($this->name, '.').'.'.$name)
+			: $name;
+		//
+		return $this;
 	}
 
 	/**

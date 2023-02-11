@@ -2,6 +2,7 @@
 namespace Jeht\Routing;
 
 use Jeht\Support\Str;
+use Jeht\Ground\Application;
 
 class RouteGroup
 {
@@ -14,6 +15,16 @@ class RouteGroup
 		'controller' => 'controllers',
 		'namespace' => 'namespaces',
 	];
+
+	/**
+	 * @var \Jeht\Ground\Application
+	 */
+	private $app;
+
+	/**
+	 * @var \Jeht\Routing\RouteRegistrar
+	 */
+	private $routeRegistrar;
 
 	/**
 	 * @var array
@@ -78,9 +89,26 @@ class RouteGroup
 		--$this->currentLevel;
 	}
 
-	public function __construct()
+	/**
+	 * Initializes the route grouper
+	 *
+	 * @param	\Jeht\Ground\Application	$app
+	 */
+	public function __construct(Application $app)
 	{
-		//
+		$this->app = $app;
+	}
+
+	/**
+	 * Sets the route registrar to work with
+	 *
+	 * @param \Jeht\Routing\RouteRegistrar $routeRegistrar
+	 * @return self
+	 */
+	public function setRouteRegistrar(RouteRegistrar $routeRegistrar)
+	{
+		$this->routeRegistrar = $routeRegistrar;
+		return $this;
 	}
 
 	/**
@@ -141,8 +169,25 @@ class RouteGroup
 	public function group($callback)
 	{
 		$this->beginGroup();
+		//
 		$callback();
+		//
 		$this->endGroup();
+		//
+		$this->tellRouteRegistrarToFetchRoutes();
+	}
+
+	/**
+	 * Tells the route registrar to fetch any pending routes
+	 * and to register them. 
+	 *
+	 * @return void
+	 */
+	protected function tellRouteRegistrarToFetchRoutes()
+	{
+		if ($this->routeRegistrar) {
+			$this->routeRegistrar->registerRoutes();
+		}
 	}
 
 	/**
@@ -153,7 +198,17 @@ class RouteGroup
 	 */
 	public function getCurrentName(string $separator = null)
 	{
-		return implode(($separator ?? ''), $this->names);
+		$qualified = implode(($separator ?? ''), $this->names);
+		//
+		if ($separator) {
+			$qualified = str_replace(
+				[$separator.$separator.$separator, $separator.$separator],
+				[$separator, $separator],
+				$qualified
+			);
+		}
+		//
+		return $qualified;
 	}
 
 	/**
@@ -202,7 +257,7 @@ class RouteGroup
 	public function getCurrent()
 	{
 		return array(
-			'name' => $this->getCurrentName(),
+			'name' => $this->getCurrentName('.'),
 			'prefix' => $this->getCurrentPrefix(),
 			'controller' => $this->getCurrentController(),
 			'namespace' => $this->getCurrentNamespace()

@@ -290,8 +290,8 @@ class Uri implements UriInterface
 		}
 		//
 		if (!empty($this->parts['path'])) {
-			$path = $this->parts['path'];
-			$authority = $this->parts['authority'];
+			$path = $this->parts['path'] ?? null;
+			$authority = $this->parts['authority'] ?? null;
 			//
 			if ('/' != substr($path, 0, 1)) {
 				// If the path is rootless and an authority is present,

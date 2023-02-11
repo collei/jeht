@@ -96,6 +96,19 @@ class Application extends Container implements ApplicationInterface
 		$this->kernelPath = dirname(__DIR__, 3);
 	}
 
+	protected function detectAppRootUri()
+	{
+		list($basePath, $docRoot) = str_replace(
+			'\\', '/', [$this->basePath, $_SERVER['DOCUMENT_ROOT']]
+		);
+		//
+		$appRootUri = str_replace($docRoot, '', $basePath);
+		//
+		$this->appRootUri = '/' . trim($appRootUri, '/');
+		//
+		$this->instance('app.rooturi', $this->appRootUri);
+	}
+
 	/**
 	 * Register the class autoloader for the application
 	 *
@@ -123,6 +136,7 @@ class Application extends Container implements ApplicationInterface
 		$this->namespace = $this->getNamespace();
 		//
 		$this->configureFolders();
+		$this->detectAppRootUri();
 	}
 
 	/**
@@ -338,5 +352,5 @@ class Application extends Container implements ApplicationInterface
 		return $this->namespace = 'App\\';
 	}
 
-
 }
+
