@@ -89,6 +89,16 @@ class Stream implements StreamInterface
 	}
 
 	/**
+	 * Removes the resource from memory and free resource
+	 *
+	 * @return void
+	 */
+	public function __destruct()
+	{
+		$this->close();
+	}
+
+	/**
 	 * Reads all data from the stream into a string, from the beginning to end.
 	 *
 	 * This method MUST attempt to seek to the beginning of the stream before

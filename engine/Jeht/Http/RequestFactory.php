@@ -7,6 +7,7 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 
 use Jeht\Support\Streams\StreamFactory;
+use Jeht\Support\Streams\StringStream;
 use Jeht\Support\Arr;
 
 class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
@@ -53,6 +54,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	 *
 	 * @param string $method The HTTP method associated with the request.
 	 * @param UriInterface|string $uri The URI associated with the request. 
+	 * @return \Jeht\Http\Request
 	 */
 	public function createRequest(string $method, $uri): RequestInterface
 	{
@@ -74,6 +76,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	 * @param UriInterface|string $uri The URI associated with the request. 
 	 * @param array $serverParams An array of Server API (SAPI) parameters with
 	 *	 which to seed the generated request instance.
+	 * @return \Jeht\Http\Request
 	 */
 	public function createServerRequest(string $method, $uri, array $serverParams = []): ServerRequestInterface
 	{
@@ -100,11 +103,22 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	 */
 	protected function fetchUploadedFilesFromGlobal()
 	{
+		return $this->fetchUploadedFilesFrom(
+			$array = $this->fetchNormalizedUploaded($_FILES)
+		);
+	}
+
+	/**
+	 * Reaps a tree of UploadedFileInterface instances from a normalized
+	 * $array obtained from fetchNormalizedUploaded()
+	 *
+	 * @return array
+	 */
+	protected function fetchUploadedFilesFrom(array $array)
+	{
 		$self = $this;
 		//
-		$uploadedFiles = $this->fetchNormalizedUploaded($_FILES);
-		//
-		Arr::treeMapLeafs($uploadedFiles, function($file) use ($self) {
+		Arr::treeMapLeafs($array, function($file) use ($self) {
 			if (! empty($file['name'])) {
 				return $self->createUploadedFile(
 					$file['tmp_name'],
@@ -118,7 +132,7 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 			}
 		}, true);
 		//
-		return $uploadedFiles;
+		return $array;
 	}
 
 	/**
@@ -205,6 +219,138 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 		//
 		return $request;
 	}
+
+	/**
+	 * Adapted from Symfony's Symfony\Component\HttpFoundation\Request::create
+	 * @link https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/HttpFoundation/Request.php
+	 * @link https://github.com/symfony/symfony/blob/6.3/src/Symfony/Component/HttpFoundation/Request.php#L321
+	 *
+	 * Creates a Request based on a given URI and configuration.
+	 *
+	 * The information contained in the URI always take precedence
+	 * over the other information (server and parameters).
+	 *
+	 * @param string	$uri		The URI
+	 * @param string	$method		The HTTP method
+	 * @param array		$parameters	The query (GET) or request (POST) parameters
+	 * @param array		$cookies	The request cookies ($_COOKIE)
+	 * @param array		$files		The request files ($_FILES)
+	 * @param array		$server		The server parameters ($_SERVER)
+	 * @param string|resource|null $content	The raw body data
+	 * @return Jeht\Http\Request
+	 */
+	public function createFromParts(
+		string $uri, string $method = 'GET',
+		array $parameters = [], array $cookies = [], array $files = [], array $server = [], $content = null
+	): Request {
+		$server = array_replace([
+			'SERVER_NAME' => 'localhost',
+			'SERVER_PORT' => 80,
+			'HTTP_HOST' => 'localhost',
+			'HTTP_USER_AGENT' => 'Jeht & Benben',
+			'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+			'HTTP_ACCEPT_LANGUAGE' => 'en-us,en;q=0.5',
+			'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+			'REMOTE_ADDR' => '127.0.0.1',
+			'SCRIPT_NAME' => '',
+			'SCRIPT_FILENAME' => '',
+			'SERVER_PROTOCOL' => 'HTTP/1.1',
+			'REQUEST_TIME' => time(),
+			'REQUEST_TIME_FLOAT' => microtime(true),
+		], $server);
+
+		$server['PATH_INFO'] = '';
+		$server['REQUEST_METHOD'] = strtoupper($method);
+
+		$components = parse_url($uri);
+		if (isset($components['host'])) {
+			$server['SERVER_NAME'] = $components['host'];
+			$server['HTTP_HOST'] = $components['host'];
+		}
+
+		if (isset($components['scheme'])) {
+			if ('https' === $components['scheme']) {
+				$server['HTTPS'] = 'on';
+				$server['SERVER_PORT'] = 443;
+			} else {
+				unset($server['HTTPS']);
+				$server['SERVER_PORT'] = 80;
+			}
+		}
+
+		if (isset($components['port'])) {
+			$server['SERVER_PORT'] = $components['port'];
+			$server['HTTP_HOST'] .= ':'.$components['port'];
+		}
+
+		if (isset($components['user'])) {
+			$server['PHP_AUTH_USER'] = $components['user'];
+		}
+
+		if (isset($components['pass'])) {
+			$server['PHP_AUTH_PW'] = $components['pass'];
+		}
+
+		if (!isset($components['path'])) {
+			$components['path'] = '/';
+		}
+
+		switch (strtoupper($method)) {
+			case 'POST':
+			case 'PUT':
+			case 'DELETE':
+				if (!isset($server['CONTENT_TYPE'])) {
+					$server['CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
+				}
+				// no break
+			case 'PATCH':
+				$request = $parameters;
+				$query = [];
+				break;
+			default:
+				$request = [];
+				$query = $parameters;
+				break;
+		}
+
+		$queryString = '';
+		if (isset($components['query'])) {
+			parse_str(html_entity_decode($components['query']), $qs);
+
+			if ($query) {
+				$query = array_replace($qs, $query);
+				$queryString = http_build_query($query, '', '&');
+			} else {
+				$query = $qs;
+				$queryString = $components['query'];
+			}
+		} elseif ($query) {
+			$queryString = http_build_query($query, '', '&');
+		}
+
+		$server['REQUEST_URI'] = $components['path'].('' !== $queryString ? '?'.$queryString : '');
+		$server['QUERY_STRING'] = $queryString;
+
+		if (! empty($files)) {
+			$files = $this->fetchUploadedFilesFrom($files);
+		}
+
+		$request = $this->createRequest($method, $uri)
+			->withCookieParams($cookies)
+			->withQueryParams($query)
+			->withParsedBody($request)
+			->withUploadedFiles($files)
+			->withServerParams($server);
+
+		if (is_array($content) || is_object($content)) {
+			$request = $request->withParsedBody($content);
+		} elseif (is_string($content)) {
+			$request = $request->withBody(new StringStream($content));
+		}
+		//
+		return $request;
+	}
+
 
 }
 

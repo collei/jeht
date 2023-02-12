@@ -58,7 +58,6 @@ class Util
 		$className = '' . $type . '';
 		//
 		if (class_exists($className, true) || interface_exists($className, true)) {
-			echo "<div>Util::arg($className) does exist</div>";
 			return $className;
 		}
 		//

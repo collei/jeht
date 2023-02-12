@@ -6,6 +6,7 @@ use Jeht\Interfaces\Ground\Application as ApplicationInterface;
 use Jeht\Interfaces\Ground\CachesConfiguration;
 use Jeht\Interfaces\Ground\CachesRoutes;
 use Jeht\Ground\Loaders\Autoloader;
+use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Routing\RoutingServiceProvider;
 use Jeht\Collections\Collection;
 use Jeht\Support\Arr;
@@ -13,7 +14,7 @@ use Jeht\Support\Arr;
 class Application extends Container implements ApplicationInterface, CachesConfiguration, CachesRoutes
 {
 	/**
-	 * The base path for the Laravel installation.
+	 * The base path for the client webapp.
 	 *
 	 * @var string
 	 */
@@ -146,7 +147,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	protected $absoluteCachePathPrefixes = ['/', '\\'];
 
 	/**
-	 * Create a new Illuminate application instance.
+	 * Create a new webapp kernel application instance.
 	 *
 	 * @param  string|null  $basePath
 	 * @return void
@@ -187,7 +188,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		static::setInstance($this);
 		//
 		$this->instance('app', $this);
-		$this->instance(\Jeht\Interfaces\Ground\Application::class, $this);
+		$this->instance(ApplicationInterface::class, $this);
 		$this->instance(Container::class, $this);
 	}
 
@@ -278,9 +279,9 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	public function setBasePath($basePath)
 	{
 		$this->basePath = rtrim($basePath, '\/');
-
+		//
 		$this->bindPathsInContainer();
-
+		//
 		return $this;
 	}
 
@@ -302,14 +303,12 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	protected function detectAppRootUri()
 	{
 		list($basePath, $docRoot) = str_replace(
-			'\\', '/', [$this->basePath, $_SERVER['DOCUMENT_ROOT']]
+			'\\', '/', array($this->basePath, $_SERVER['DOCUMENT_ROOT'])
 		);
 		//
-		$appRootUri = str_replace($docRoot, '', $basePath);
+		$appRootUri = '/' . trim(str_replace($docRoot, '', $basePath), '/');
 		//
-		$this->appRootUri = '/' . trim($appRootUri, '/');
-		//
-		$this->instance('app.rooturi', $this->appRootUri);
+		$this->instance('app.rooturi', $this->appRootUri = $appRootUri);
 	}
 
 	/**
@@ -320,7 +319,9 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	protected function registerClientAutoloader()
 	{
 		if (! $this->clientAutoloader) {
-			$this->clientAutoloader = Autoloader::register($this->getNamespace(), $this['path']);
+			$this->clientAutoloader = Autoloader::register(
+				$this->getNamespace(), $this['path']
+			);
 		}
 	}
 
@@ -1332,10 +1333,8 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
 			'router' => [\Jeht\Routing\Router::class], //, \Jeht\Interfaces\Routing\Registrar::class, \Jeht\Interfaces\Routing\BindingRegistrar::class],
 			'url' => [\Jeht\Http\UriFactory::class, \Psr\Http\Message\UriInterface::class],
-/*
-			'session' => [\Jeht\Session\SessionManager::class],
-			'session.store' => [\Jeht\Session\Store::class, \Jeht\Interfaces\Session\Session::class],
-*/
+//			'session' => [\Jeht\Session\SessionManager::class],
+//			'session.store' => [\Jeht\Session\Store::class, \Jeht\Interfaces\Session\Session::class],
 //			'validator' => [\Jeht\Validation\Factory::class, \Jeht\Interfaces\Validation\Factory::class],
 //			'view' => [\Jeht\View\Factory::class, \Jeht\Interfaces\View\Factory::class],
 		] as $key => $aliases) {

@@ -37,6 +37,18 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
 	}
 
 	/**
+	 * Exerts the same task of laravel's collect() helper.
+	 *
+	 * @static
+	 * @param  mixed  $value
+	 * @return static
+	 */
+	public static function collect($value = null)
+	{
+		return new static($value);
+	}
+
+	/**
 	 * Create a collection with the given range.
 	 *
 	 * @param  int  $from
