@@ -15,7 +15,7 @@ abstract class Facade
 	/**
 	 * The application instance being facaded.
 	 *
-	 * @var \Jeht\Interfaces\Ground\ApplicationInterface
+	 * @var \Jeht\Interfaces\Ground\Application
 	 */
 	protected static $app;
 

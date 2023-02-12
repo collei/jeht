@@ -22,9 +22,9 @@ class RouteGroup
 	private $app;
 
 	/**
-	 * @var \Jeht\Routing\RouteRegistrar
+	 * @var \Jeht\Routing\Router
 	 */
-	private $routeRegistrar;
+	private $router;
 
 	/**
 	 * @var array
@@ -100,14 +100,14 @@ class RouteGroup
 	}
 
 	/**
-	 * Sets the route registrar to work with
+	 * Sets the route to work with
 	 *
-	 * @param \Jeht\Routing\RouteRegistrar $routeRegistrar
+	 * @param \Jeht\Routing\Router $router
 	 * @return self
 	 */
-	public function setRouteRegistrar(RouteRegistrar $routeRegistrar)
+	public function setRouter(Router $router)
 	{
-		$this->routeRegistrar = $routeRegistrar;
+		$this->router = $router;
 		return $this;
 	}
 
@@ -174,7 +174,7 @@ class RouteGroup
 		//
 		$this->endGroup();
 		//
-		$this->tellRouteRegistrarToFetchRoutes();
+		$this->tellRouterToFetchRoutes();
 	}
 
 	/**
@@ -183,10 +183,10 @@ class RouteGroup
 	 *
 	 * @return void
 	 */
-	protected function tellRouteRegistrarToFetchRoutes()
+	protected function tellRouterToFetchRoutes()
 	{
-		if ($this->routeRegistrar) {
-			$this->routeRegistrar->registerRoutes();
+		if ($this->router) {
+			$this->router->registerRoutes();
 		}
 	}
 

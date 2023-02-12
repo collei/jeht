@@ -8,7 +8,7 @@ class Route extends Facade
 {
 	protected static function getFacadeAccessor()
 	{
-		return 'route.registrar';
+		return 'router';
 	}
 }
 

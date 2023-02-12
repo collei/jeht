@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Ground\Config;
+namespace Jeht\Config;
 
 use ArrayAccess;
 use Jeht\Interfaces\Config\Repository as RepositoryInterface;

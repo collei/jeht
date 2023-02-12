@@ -3,6 +3,11 @@ namespace Jeht\Interfaces\Debug;
 
 use Throwable;
 
+/**
+ * Adapted from Laravel's Illuminate\Contracts\Debug\ExceptionHandler
+ * @link https://laravel.com/api/8.x/Illuminate/Contracts/Debug/ExceptionHandler.html
+ * @link https://github.com/laravel/framework/blob/8.x/src/Illuminate/Contracts/Debug/ExceptionHandler.php
+ */
 interface ExceptionHandler
 {
 	/**

@@ -85,6 +85,11 @@ class Request implements RequestInterface
 	protected $attributes;
 
 	/**
+	 * @var \Jeht\Routing\Route
+	 */
+	protected $route;
+
+	/**
 	 * Instantiates a HttpRequest object
 	 *
 	 */
@@ -677,6 +682,16 @@ class Request implements RequestInterface
 		unset($cloned->attributes[$name]);
 		//
 		return $cloned;
+	}
+
+	/**
+	 * Returns the route bound with the request.
+	 *
+	 * @return \Jeht\Routing\Route
+	 */
+	public function route()
+	{
+		return $this->route;
 	}
 
 	/**
