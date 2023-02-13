@@ -1135,8 +1135,8 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 * @param  array  $headers
 	 * @return never
 	 *
-	 * @throws \Symfony\Component\HttpKernel\Exception\HttpException
-	 * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+	 * @throws \Jeht\Exceptions\Http\HttpException
+	 * @throws \Jeht\Exceptions\Http\NotFoundHttpException
 	 */
 	public function abort($code, $message = '', array $headers = [])
 	{
