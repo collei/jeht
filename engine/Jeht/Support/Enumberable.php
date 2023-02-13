@@ -7,6 +7,11 @@ use Jeht\Interfaces\Support\Jsonable;
 use IteratorAggregate;
 use JsonSerializable;
 
+/**
+ * Adapted from Laravel's Illuminate\Support\Enumerable
+ * @link https://laravel.com/api/8.x/Illuminate/Support/Enumerable.html
+ * @link https://github.com/laravel/framework/blob/8.x/src/Illuminate/Collections/Enumerable.php
+ */
 interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, JsonSerializable
 {
 	/**

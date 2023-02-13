@@ -234,7 +234,7 @@ class Folder implements FolderInterface
 	protected function cachedScanFor(int $target, bool $forceRefresh = false)
 	{
 		if (empty($this->items) || $forceRefresh) {
-			$this->items = $this->scanFor($path);
+			$this->items = $this->scanFor($target);
 		}
 		//
 		return $this;
@@ -250,28 +250,19 @@ class Folder implements FolderInterface
 	protected function scanFor(int $target)
 	{
 		$items = scandir($this->path);
-		$filtered = [];
 		$result = [];
 		//
 		foreach ($items as $key => $name) {
-			$fullPath = $this->path . DIRECTORY_SEPARATOR . $name;
-			//
 			if ('.' === $name || '..' === $name) {
 				continue;
 			}
 			//
+			$fullPath = $this->path.DIRECTORY_SEPARATOR.$name;
+			//
 			if (self::TYPE_FILE === $target && is_file($fullPath)) {
-				$filtered[$name] = array($fullPath, self::TYPE_FILE);
+				$result[$name] = File::for($fullPath);
 			} elseif (self::TYPE_FOLDER === $target && is_dir($fullPath)) {
-				$filtered[$name] = array($fullPath, self::TYPE_FOLDER);
-			}
-		}
-		//
-		foreach ($filtered as $name => $parameters) {
-			if (self::TYPE_FILE === $parameters[1]) {
-				$result[$name] = File::get($parameters[0]);
-			} elseif (self::TYPE_FOLDER === $parameters[1]) {
-				$result[$name] = static::get($parameters[0])
+				$result[$name] = static::for($fullPath);
 			}
 		}
 		//
@@ -341,4 +332,5 @@ class Folder implements FolderInterface
 	}
 
 }
+
 

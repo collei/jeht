@@ -807,13 +807,19 @@ abstract class Str
 	 *	Converts a wildcarded string to its regex version.
 	 *
 	 *	@param	string	$wildcarded
+	 *	@param	string	$delimiter = null
 	 *	@return	string
 	 */
-	public static function wildcardToRegex(string $wildcarded)
+	public static function wildcardToRegex(string $wildcarded, string $delimiter = null)
 	{
-		return str_replace(['.','?','*'], ['\\.','.','.*'], $wildcarded);
+		$regex = str_replace(['.','?','*'], ['\\.','.','.*'], $wildcarded);
+		//
+		if ($delimiter) {
+			return $delimiter.$regex.$delimiter;
+		}
+		//
+		return $regex;
 	}
-
 
 }
 

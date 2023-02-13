@@ -4,7 +4,7 @@ namespace Jeht\Ground\Bootstrap;
 use Exception;
 use Jeht\Interfaces\Ground\Application;
 use Jeht\Interfaces\Config\Repository as RepositoryInterface;
-use Jeht\Ground\Config\Repository;
+use Jeht\Config\Repository;
 use Jeht\Filesystem\Folder;
 use Jeht\Interfaces\Filesystem\File;
 

@@ -279,6 +279,38 @@ class Router
 	}
 
 	/**
+	 * Groups all routes declared inside.
+	 *
+	 * @param	\Closure|string	$routes
+	 * @return	void
+	 */
+	public function group($routes)
+	{
+		if ($routes instanceof Closure) {
+			$this->routeGroup->group($routes);
+		} else {
+			$this->routeGroup->group(function() use ($routes){
+				(new RouteFileRegistrar($this))->register($routes);
+			});
+		}
+	}
+
+	/**
+	 * Load the provided routes.
+	 *
+	 * @param  \Closure|string  $routes
+	 * @return void
+	 */
+	protected function loadRoutes($routes)
+	{
+		if ($routes instanceof Closure) {
+			$routes($this);
+		} else {
+			(new RouteFileRegistrar($this))->register($routes);
+		}
+	}
+
+	/**
 	 * Register the pending routes with the Router, cleaning the queue
 	 * of pending ones.
 	 *
