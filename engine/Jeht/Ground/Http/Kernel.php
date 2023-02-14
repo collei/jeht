@@ -93,7 +93,7 @@ class Kernel implements KernelContract
 		$this->app = $app;
 		$this->router = $router;
 
-		$this->syncMiddlewareToRouter();
+		//$this->syncMiddlewareToRouter();
 	}
 
 	/**
