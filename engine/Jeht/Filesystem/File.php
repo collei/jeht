@@ -43,6 +43,9 @@ class File implements FileInterface
 	 */
 	public static function for(string $path)
 	{
+
+die(__FILE__.', '.__LINE__.': '.print_r('ok',true));
+
 		return new static($path);
 	}
 

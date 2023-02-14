@@ -320,7 +320,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	{
 		if (! $this->clientAutoloader) {
 			$this->clientAutoloader = Autoloader::register(
-				$this->getNamespace(), $this['path']
+				$this->getNamespace(), $this['path.base']
 			);
 		}
 	}
