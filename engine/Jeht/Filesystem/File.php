@@ -79,23 +79,20 @@ die(__FILE__.', '.__LINE__.': '.print_r('ok',true));
 	}
 
 	/**
-	 * Returns the filename of the file.
-	 *
-	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile.txt"
-	 * as string, without the leading dot, and without change case or
-	 * something else.
+	 * Alias of getBaseName()
+	 * @see getBaseName()
 	 *
 	 * @return string
 	 */
 	public function getName()
 	{
-		return $this->pathInfo['filename'];
+		return $this->getBaseName();
 	}
 
 	/**
 	 * Returns the name of the file.
 	 *
-	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile" as string,
+	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile.txt" as string,
 	 * without change case or something else.
 	 *
 	 * @return string
@@ -119,14 +116,17 @@ die(__FILE__.', '.__LINE__.': '.print_r('ok',true));
 	}
 
 	/**
-	 * Alias of getName()
-	 * @see getName()
+	 * Returns the filename of the file (the part without extension).
+	 *
+	 * e. g., for "/home/xyz/myfile.txt", it should return "myfile"
+	 * as string, without the leading dot, and without change case or
+	 * something else.
 	 *
 	 * @return string
 	 */
 	public function getFileName()
 	{
-		return $this->getName();
+		return $this->pathInfo['filename'];
 	}
 	
 	/**

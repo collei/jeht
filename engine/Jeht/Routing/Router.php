@@ -38,6 +38,26 @@ class Router
 	protected $routeFactories = [];
 
 	/**
+	 * @var array
+	 */
+	protected $middleware = [];
+
+	/**
+	 * @var array
+	 */
+	protected $middlewareGroups = [];
+
+	/**
+	 * @var \Jeht\Routing\Route
+	 */
+	protected $currentRoute = [];
+
+	/**
+	 * @var \Jeht\Http\Request
+	 */
+	protected $currentRequest = [];
+
+	/**
 	 * Aggregate uri and name segments, occasionally applying the handler
 	 * if specified.
 	 *
@@ -381,6 +401,121 @@ class Router
 		//
 		throw new \Exception('Route not found for request URI: ' . $request->getUri());
 	}
+
+
+	/**
+	 * Get all of the defined middleware short-hand names.
+	 *
+	 * @return array
+	 */
+	public function getMiddleware()
+	{
+		return $this->middleware;
+	}
+
+	/**
+	 * Register a short-hand name for a middleware.
+	 *
+	 * @param  string  $name
+	 * @param  string  $class
+	 * @return $this
+	 */
+	public function aliasMiddleware($name, $class)
+	{
+		$this->middleware[$name] = $class;
+
+		return $this;
+	}
+
+	/**
+	 * Check if a middlewareGroup with the given name exists.
+	 *
+	 * @param  string  $name
+	 * @return bool
+	 */
+	public function hasMiddlewareGroup($name)
+	{
+		return array_key_exists($name, $this->middlewareGroups);
+	}
+
+	/**
+	 * Get all of the defined middleware groups.
+	 *
+	 * @return array
+	 */
+	public function getMiddlewareGroups()
+	{
+		return $this->middlewareGroups;
+	}
+
+	/**
+	 * Register a group of middleware.
+	 *
+	 * @param  string  $name
+	 * @param  array  $middleware
+	 * @return $this
+	 */
+	public function middlewareGroup($name, array $middleware)
+	{
+		$this->middlewareGroups[$name] = $middleware;
+
+		return $this;
+	}
+
+	/**
+	 * Add a middleware to the beginning of a middleware group.
+	 *
+	 * If the middleware is already in the group, it will not be added again.
+	 *
+	 * @param  string  $group
+	 * @param  string  $middleware
+	 * @return $this
+	 */
+	public function prependMiddlewareToGroup($group, $middleware)
+	{
+		if (isset($this->middlewareGroups[$group]) && ! in_array($middleware, $this->middlewareGroups[$group])) {
+			array_unshift($this->middlewareGroups[$group], $middleware);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add a middleware to the end of a middleware group.
+	 *
+	 * If the middleware is already in the group, it will not be added again.
+	 *
+	 * @param  string  $group
+	 * @param  string  $middleware
+	 * @return $this
+	 */
+	public function pushMiddlewareToGroup($group, $middleware)
+	{
+		if (! array_key_exists($group, $this->middlewareGroups)) {
+			$this->middlewareGroups[$group] = [];
+		}
+
+		if (! in_array($middleware, $this->middlewareGroups[$group])) {
+			$this->middlewareGroups[$group][] = $middleware;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Flush the router's middleware groups.
+	 *
+	 * @return $this
+	 */
+	public function flushMiddlewareGroups()
+	{
+		$this->middlewareGroups = [];
+
+		return $this;
+	}
+
+
+
 
 }
 

@@ -79,16 +79,14 @@ class Folder implements FolderInterface
 	}
 
 	/**
-	 * Returns the name of the folder.
-	 *
-	 * e. g., for "/home/xyz/myfolder", it should return "myfolder" as string,
-	 * without change case or something else.
+	 * Alias of getBaseName()
+	 * @see getBaseName()
 	 *
 	 * @return string
 	 */
 	public function getName()
 	{
-		return $this->pathInfo['basename'];
+		return $this->getBaseName();
 	}
 
 	/**
