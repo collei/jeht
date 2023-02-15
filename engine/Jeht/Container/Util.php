@@ -14,6 +14,32 @@ namespace Jeht\Container;
 class Util
 {
 	/**
+	 * If the given value is not an array and not null, wrap it in one.
+	 *
+	 * @param  mixed  $value
+	 * @return array
+	 */
+	public static function arrayWrap($value)
+	{
+		if (is_null($value)) {
+			return [];
+		}
+		//
+		return is_array($value) ? $value : [$value];
+	}
+
+	/**
+	 * Return the default value of the given value.
+	 *
+	 * @param  mixed  $value
+	 * @return mixed
+	 */
+	public static function unwrapIfClosure($value)
+	{
+		return $value instanceof Closure ? $value() : $value;
+	}
+
+	/**
 	 * Get the class name of the given parameter's type, if possible.
 	 *
 	 * @param  \ReflectionParameter  $parameter
@@ -53,7 +79,7 @@ class Util
 	 * @param	\ReflectionNamedType|\Stringable|string	$type
 	 * @return	string|null
 	 */
-	protected static function getClassNameWhileAutoloading($type)
+	public static function getClassNameWhileAutoloading($type)
 	{
 		$className = '' . $type . '';
 		//

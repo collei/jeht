@@ -11,6 +11,7 @@ use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Routing\RoutingServiceProvider;
 use Jeht\Collections\Collection;
 use Jeht\Filesystem\Filesystem;
+use Jeht\Filesystem\FolderTreeCreator;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Support\Env\Env;
@@ -152,12 +153,48 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	protected $absoluteCachePathPrefixes = ['/', '\\'];
 
 	/**
+	 * The basic structure tree of the client webapp.
+	 *
+	 * @var array
+	 */
+	protected $basicFolderTree = [
+		'app',
+		'bootstrap/cache',
+		'config',
+		'public',
+		'resources',
+		'resources/css',
+		'resources/js',
+		'resources/media',
+		'resources/views',
+		'routes',
+		'storage/logging',
+		'storage/cache',
+		'test',
+	]; 
+
+	/**
 	 * Create a new webapp kernel application instance.
 	 *
 	 * @param  string|null  $basePath
 	 * @return void
 	 */
 	public function __construct($basePath = null)
+	{
+		$this->initWebappTree($basePath);
+		//
+		$this->registerBaseBindings();
+		$this->registerBaseServiceProviders();
+		$this->registerCoreContainerAliases();
+	}
+
+	/**
+	 * Initializes the webapp tree and the autoloader
+	 *
+	 * @param  string|null  $basePath
+	 * @return void
+	 */
+	protected function initWebappTree(string $basePath = null)
 	{
 		$this->detectKernelPath();
 		//
@@ -168,9 +205,9 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		$this->detectAppRootUri();
 		$this->registerClientAutoloader();
 		//
-		$this->registerBaseBindings();
-		$this->registerBaseServiceProviders();
-		$this->registerCoreContainerAliases();
+		FolderTreeCreator::for($this->basicFolderTree)
+			->in($this['app.rooturi'])
+			->create();
 	}
 
 	/**
@@ -202,7 +239,6 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 				new Filesystem, $this->basePath(), $this->getCachedPackagesPath()
 			);
 		});
-		//$this->instance(ApplicationInterface::class, $this);
 	}
 
 	/**
@@ -686,6 +722,11 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	{
 		$providers = Collection::make($this->make('config')->get('app.providers'))
 						->partition(function ($provider) {
+							// Try load any webapp client class providers
+							if (strpos($provider, 'App\\') === 0) {
+								$exists = class_exists($provider, true);
+							}
+							//
 							return strpos($provider, 'Jeht\\') === 0;
 						});
 
@@ -1396,4 +1437,5 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	}
 
 }
+
 

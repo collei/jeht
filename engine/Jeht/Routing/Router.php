@@ -399,7 +399,10 @@ class Router
 			}
 		}
 		//
-		throw new \Exception('Route not found for request URI: ' . $request->getUri());
+		return [
+			'status' => 404,
+			'errors' => new \Exception('Route not found for request URI: ' . $request->getUri())
+		];
 	}
 
 

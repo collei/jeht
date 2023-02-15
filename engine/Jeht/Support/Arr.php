@@ -2,6 +2,7 @@
 namespace Jeht\Support;
 
 use Jeht\Support\Str;
+use Jeht\Collections\Collection;
 use InvalidArgumentException;
 use Closure;
 
@@ -802,7 +803,9 @@ abstract class Arr
 		$results = [];
 		//
 		foreach ($array as $values) {
-			if (!is_array($values)) {
+			if ($values instanceof Collection) {
+				$values = $values->all();
+			} elseif (! is_array($values)) {
 				continue;
 			}
 			//
@@ -813,3 +816,4 @@ abstract class Arr
 	}
 
 }
+
