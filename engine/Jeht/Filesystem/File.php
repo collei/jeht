@@ -43,9 +43,6 @@ class File implements FileInterface
 	 */
 	public static function for(string $path)
 	{
-
-die(__FILE__.', '.__LINE__.': '.print_r('ok',true));
-
 		return new static($path);
 	}
 
@@ -403,7 +400,7 @@ die(__FILE__.', '.__LINE__.': '.print_r('ok',true));
 		try {
 			$handle = @fopen($this->path, $mode);
 			//
-			$fileStream = return new FileStream($handle);
+			$fileStream = new FileStream($handle);
 			//
 		} catch (Throwable $t) {
 			$message = 'from [' . get_class($t) . ']: ' . $t->getMessage() . '.';

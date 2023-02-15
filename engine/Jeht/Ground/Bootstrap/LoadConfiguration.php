@@ -91,7 +91,7 @@ class LoadConfiguration
 		foreach (Folder::for($configPath)->files()->withName('*.php') as $name => $file) {
 			$folder = $this->getNestedFolder($file, $configPath);
 			//
-			$files[$folder.$file->getBaseName()] = $file->getPath();
+			$files[$folder.$file->getFileName()] = $file->getPath();
 		}
 		//
 		ksort($files, SORT_NATURAL);

@@ -716,7 +716,7 @@ class Request implements RequestInterface
 		array $files = [],
 		array $server = [],
 		$content = null
-	): static {
+	) {
 		return (new RequestFactory)->createFromParts(
 			$uri, $method, $parameters, $cookies, $files, $server, $content
 		);

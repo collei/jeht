@@ -3,6 +3,7 @@ namespace Jeht\Collections;
 
 use ArrayAccess;
 use ArrayIterator;
+use Jeht\Support\Arr;
 use Jeht\Interfaces\Support\CanBeEscapedWhenCastToString;
 use Jeht\Collections\Traits\EnumeratesValues;
 use Jeht\Support\Traits\Macroable;
@@ -43,7 +44,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
 	 * @param  mixed  $value
 	 * @return static
 	 */
-	public static function collect($value = null)
+	public static function for($value = null)
 	{
 		return new static($value);
 	}

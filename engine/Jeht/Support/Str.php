@@ -107,13 +107,59 @@ abstract class Str
 	}
 
 	/**
+	 *	Returns if the $str is quoted or not. Supported types: (") (')
+	 *
+	 *	@param	string	$str		the string
+	 *	@param	string	$quoteType	which types to consider (empty = all)
+	 *	@return	bool
+	 */
+	public static function isQuoted(string $str, string $quoteType = null)
+	{
+		$first = substr($str, 0, 1);
+		$last = substr($str, -1);
+		$length = strlen($str);
+		//
+		if (is_null($quoteType)) {
+			return ('"' === $first || '\'' === $first)
+				&& ($first === $last)
+				&& ($length > 1);
+		}
+		//
+		$quote = substr(($quoteType ?? ''), 0, 1);
+		//
+		return ($quote === $first) && ($first === $last) && ($length > 1);
+	}
+
+	/**
+	 *	Returns if the $str is quoted with '' or not.
+	 *
+	 *	@param	string	$str		the string
+	 *	@return	bool
+	 */
+	public static function isSingleQuoted(string $str)
+	{
+		return self::isQuoted($str, '\'');
+	}
+
+	/**
+	 *	Returns if the $str is quoted with "" or not.
+	 *
+	 *	@param	string	$str		the string
+	 *	@return	bool
+	 */
+	public static function isDoubleQuoted(string $str)
+	{
+		return self::isQuoted($str, '"');
+	}
+
+	/**
 	 *	Returns the unclosed version of the given $str if it has parenthesis,
 	 *	curly brackets etc.
 	 *	supported types: () [] {} <> «»
 	 *
 	 *	@param	string	$str		the string
 	 *	@param	string	...$with	which types to consider (empty = all)
-	 *	@return	string
+	 *	@return	bool
 	 */
 	public static function isClosed(string $str, string ...$with)
 	{
@@ -153,8 +199,18 @@ abstract class Str
 	 *	@param	string	$prefix
 	 *	@return	bool
 	 */
-	public static function startsWith(string $str, string $prefix)
+	public static function startsWith(string $str, $prefix)
 	{
+		if (is_array($prefix)) {
+			$results = false;
+			//
+			foreach ($prefix as $oneOf) {
+				$results = $results || self::startsWith($str, $oneOf);
+			}
+			//
+			return $results;
+		}
+		//
 		return \str_starts_with($str, $prefix);
 	}
 

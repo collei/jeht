@@ -33,9 +33,9 @@ class Kernel implements KernelContract
 	 * @var string[]
 	 */
 	protected $bootstrappers = [
-		\Jeht\Ground\Bootstrap\LoadEnvironmentVariables::class,
+//		\Jeht\Ground\Bootstrap\LoadEnvironmentVariables::class,
 		\Jeht\Ground\Bootstrap\LoadConfiguration::class,
-		\Jeht\Ground\Bootstrap\HandleExceptions::class,
+//		\Jeht\Ground\Bootstrap\HandleExceptions::class,
 		\Jeht\Ground\Bootstrap\RegisterFacades::class,
 		\Jeht\Ground\Bootstrap\RegisterProviders::class,
 		\Jeht\Ground\Bootstrap\BootProviders::class,
@@ -93,7 +93,7 @@ class Kernel implements KernelContract
 		$this->app = $app;
 		$this->router = $router;
 
-		//$this->syncMiddlewareToRouter();
+		$this->syncMiddlewareToRouter();
 	}
 
 	/**
@@ -106,8 +106,8 @@ class Kernel implements KernelContract
 	{
 		try {
 			//$request->enableHttpMethodParameterOverride();
-
 			$response = $this->sendRequestThroughRouter($request);
+dd(__FILE__,__LINE__,__METHOD__);
 		} catch (Throwable $e) {
 			$this->reportException($e);
 
@@ -411,6 +411,7 @@ class Kernel implements KernelContract
 	 */
 	protected function reportException(Throwable $e)
 	{
+		throw $e;
 		//$this->app[ExceptionHandler::class]->report($e);
 	}
 

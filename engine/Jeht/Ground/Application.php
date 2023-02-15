@@ -1,6 +1,7 @@
 <?php
 namespace Jeht\Ground;
 
+use Closure;
 use Jeht\Container\Container;
 use Jeht\Interfaces\Ground\Application as ApplicationInterface;
 use Jeht\Interfaces\Ground\CachesConfiguration;
@@ -9,7 +10,11 @@ use Jeht\Ground\Loaders\Autoloader;
 use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Routing\RoutingServiceProvider;
 use Jeht\Collections\Collection;
+use Jeht\Filesystem\Filesystem;
 use Jeht\Support\Arr;
+use Jeht\Support\Str;
+use Jeht\Support\Env\Env;
+use Jeht\Support\ServiceProvider;
 
 class Application extends Container implements ApplicationInterface, CachesConfiguration, CachesRoutes
 {
@@ -188,8 +193,16 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		static::setInstance($this);
 		//
 		$this->instance('app', $this);
-		$this->instance(ApplicationInterface::class, $this);
+		//
 		$this->instance(Container::class, $this);
+		$this->singleton(Mix::class);
+		//
+		$this->singleton(PackageManifest::class, function () {
+			return new PackageManifest(
+				new Filesystem, $this->basePath(), $this->getCachedPackagesPath()
+			);
+		});
+		//$this->instance(ApplicationInterface::class, $this);
 	}
 
 	/**
@@ -671,8 +684,6 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function registerConfiguredProviders()
 	{
-		echo "<div>Passei aqui</div>";
-
 		$providers = Collection::make($this->make('config')->get('app.providers'))
 						->partition(function ($provider) {
 							return strpos($provider, 'Jeht\\') === 0;
@@ -1330,6 +1341,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		foreach ([
 			'app' => [self::class, \Jeht\Interfaces\Ground\Application::class, \Jeht\Interfaces\Container\Container::class, \Psr\Container\ContainerInterface::class],
 			'config' => [\Jeht\Config\Repository::class, \Jeht\Interfaces\Config\Repository::class],
+			'files' => [\Jeht\Filesystem\Filesystem::class],
 			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
 			'router' => [\Jeht\Routing\Router::class], //, \Jeht\Interfaces\Routing\Registrar::class, \Jeht\Interfaces\Routing\BindingRegistrar::class],
 			'url' => [\Jeht\Http\UriFactory::class, \Psr\Http\Message\UriInterface::class],
