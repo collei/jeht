@@ -306,10 +306,14 @@ class Router
 	 */
 	public function group($routes)
 	{
+du(__FILE__,__LINE__,__METHOD__,$routes);
 		if ($routes instanceof Closure) {
 			$this->routeGroup->group($routes);
 		} else {
 			$this->routeGroup->group(function() use ($routes){
+
+du(__FILE__,__LINE__,__METHOD__,$routes);
+
 				(new RouteFileRegistrar($this))->register($routes);
 			});
 		}
@@ -339,7 +343,7 @@ class Router
 	public function registerRoutes()
 	{
 		foreach ($this->routeFactories as $factory) {
-			$this->router->registerRoute(
+			$this->registerRoute(
 				$factory->fetch()
 			);
 		}
