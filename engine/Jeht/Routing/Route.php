@@ -46,6 +46,11 @@ class Route implements RouteInterface
 	private $parameters = [];
 
 	/**
+	 * @var bool
+	 */
+	private $isFallback = false;
+
+	/**
 	 * Set the methods this route must respond to
 	 *
 	 * @param	string|array	...$httpMethods
@@ -77,7 +82,8 @@ class Route implements RouteInterface
 		string $path,
 		$handler,
 		string $regex = null,
-		string $name = null
+		string $name = null,
+		bool $fallback = false
 	) {
 		$this->name = $name ?? Str::randomize();
 		$this->path = $path;
@@ -88,6 +94,8 @@ class Route implements RouteInterface
 		$this->regex = "#^{$regex}\s*$#";
 		//
 		$this->setHttpMethods($httpMethods);
+		//
+		$this->isFallback = $fallback;
 	}
 
 	/**
@@ -114,15 +122,18 @@ class Route implements RouteInterface
 	 * Checks if the given $requestUri matches the route.
 	 *
 	 * @param Jeht\Interfaces\Http\Request $request
+	 * @param bool $includingMethod
 	 * @return bool
 	 */
-	public function matches(Request $request)
+	public function matches(Request $request, bool $includingMethod = true)
 	{
 		$method = $request->getMethod();
 		$uri = $request->getUri()->getPath();
 		//
-		if (! in_array($method, $this->httpMethods)) {
-			return false;
+		if ($includingMethod) {
+			if (! in_array($method, $this->httpMethods)) {
+				return false;
+			}
 		}
 		//
 		return $this->matchAndSetParameters($uri);
@@ -183,9 +194,20 @@ class Route implements RouteInterface
 		return null;
 	}
 
+	/**
+	 * Returns whether the route is a fallback.
+	 *
+	 * @return bool
+	 */
+	public function isFallback()
+	{
+		return $this->isFallback;
+	}
+
 	public function runRoute(Request $request)
 	{
 		return (new RouteDispatcher)->dispatch($request, $this->handler);
 	}
 
 }
+

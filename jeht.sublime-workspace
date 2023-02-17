@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"enviro",
+				"environmentFile"
+			],
+			[
+				"parsed",
+				"parsedEntries"
+			],
+			[
 				"starts",
 				"startsWith"
 			],
@@ -506,14 +514,6 @@
 			[
 				"gett",
 				"gettype"
-			],
-			[
-				"rePa",
-				"reParamName"
-			],
-			[
-				"paramete",
-				"parameterValues"
 			]
 		]
 	},
@@ -523,34 +523,17 @@
 			"file": "engine/Jeht/Ground/Http/Kernel.php",
 			"settings":
 			{
-				"buffer_size": 10258,
+				"buffer_size": 10256,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/D/_server/apache/sites/kazuha.local/contacta/app/Providers/RouteServiceProvider.php",
+			"file": "engine/Jeht/Support/Env/Env.php",
 			"settings":
 			{
-				"buffer_size": 1905,
+				"buffer_size": 1549,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/D/_server/apache/sites/kazuha.local/contacta/routes/web.php",
-			"settings":
-			{
-				"buffer_size": 1840,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
-			"settings":
-			{
-				"buffer_size": 544,
 				"line_ending": "Windows"
 			}
 		},
@@ -558,16 +541,59 @@
 			"file": "/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
 			"settings":
 			{
-				"buffer_size": 547,
+				"buffer_size": 587,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Routing/Router.php",
+			"file": "/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/IndexController.php",
 			"settings":
 			{
-				"buffer_size": 11039,
+				"buffer_size": 1277,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/D/_server/apache/sites/kazuha.local/contacta/.env",
+			"settings":
+			{
+				"buffer_size": 934,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/Jeht/Ground/Bootstrap/LoadEnvironmentVariables.php",
+			"settings":
+			{
+				"buffer_size": 2488,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/Jeht/Ground/Application.php",
+			"settings":
+			{
+				"buffer_size": 31165,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
+			"settings":
+			{
+				"buffer_size": 570,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/Jeht/Support/Env/Repository.php",
+			"settings":
+			{
+				"buffer_size": 1716,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -611,27 +637,37 @@
 	[
 		"/D/_server/apache/sites/kazuha.local/jeht",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing",
 		"/D/_server/apache/sites/kazuha.local/contacta",
 		"/D/_server/apache/sites/kazuha.local/contacta/app",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Http",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers",
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers",
 		"/D/_server/apache/sites/kazuha.local/contacta/config",
 		"/D/_server/apache/sites/kazuha.local/contacta/routes"
 	],
 	"file_history":
 	[
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Parser.php",
+		"/D/_server/apache/sites/kazuha.local/contacta/routes/web.php",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers/RouteServiceProvider.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Repository.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/LoadEnvironmentVariables.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Env/Repository.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Env.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Router.php",
+		"/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/LoadEnvironmentVariables.txt",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Application.php",
+		"/C/Users/ujunio/gol.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Filesystem/FileNotFoundException.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Env/Parser.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Config/ImmutableRepository.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Env/EnvParser.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Container/Container.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Container/BoundMethod.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/index.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RoutingServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/ServiceProvider.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers/RouteServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers/RouteServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/BootProviders.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/FolderTreeCreator.php",
@@ -643,7 +679,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/File.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/Folder.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/LoadConfiguration.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Env.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Str.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/EnvironmentDetector.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Ground/CachesConfiguration.php",
@@ -662,7 +697,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Matching/MethodValidator.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Matching/HostValidator.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Http/Kernel.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Router.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Exceptions/UrlGenerationException.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Exceptions/InvalidSignatureException.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Contracts/ControllerDispatcher.php",
@@ -688,7 +722,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Loaders/AliasLoader.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/AliasLoader.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/PackageManifest.txt",
-		"/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RouteGroup.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/SetRequestForConsole.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Http/RequestFactory.php",
@@ -715,7 +748,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Data.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Facades/Route.php",
 		"/D/_server/apache/sites/kazuha.local/Bravessign.cha",
-		"/D/_server/apache/sites/kazuha.local/contacta/routes/web.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Filesystem/Folder.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Filesystem/FilesystemItem.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Filesystem/File.php",
@@ -742,17 +774,7 @@
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Models/User.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Models/Communicator.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Services/RegistrarUsuarioService.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Http/Request/UploadedFileFactory.php",
-		"/C/Users/ujunio/Downloads/mods_autol/jeht.http.request/RequestFactory.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Http/Kernel.php",
-		"/C/Users/ujunio/Downloads/mods_autol/jeht.http.request/UploadedFileFactory.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Http/Kernel.txt",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Http/Request.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Web/Kernel.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/jeht.sublime-project",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/EdificioController.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/CidadeController.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/BairroController.php"
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Http/Request/UploadedFileFactory.php"
 	],
 	"find":
 	{
@@ -939,7 +961,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 3,
 			"sheets":
 			[
 				{
@@ -948,15 +970,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 10258,
+						"buffer_size": 10256,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2593,
-								2593
+								698,
+								698
 							]
 						],
 						"settings":
@@ -965,113 +987,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2755.0,
+						"translation.y": 426.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "/D/_server/apache/sites/kazuha.local/contacta/app/Providers/RouteServiceProvider.php",
+					"file": "engine/Jeht/Support/Env/Env.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1905,
+						"buffer_size": 1549,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1575,
-								1575
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 528.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/D/_server/apache/sites/kazuha.local/contacta/routes/web.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1840,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1835,
-								1835
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 660.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 544,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								391,
-								391
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 547,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								504,
-								504
+								364,
+								364
 							]
 						],
 						"settings":
@@ -1087,20 +1023,20 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "engine/Jeht/Routing/Router.php",
+					"buffer": 2,
+					"file": "/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11039,
+						"buffer_size": 587,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7399,
-								7399
+								486,
+								486
 							]
 						],
 						"settings":
@@ -1109,10 +1045,182 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 7030.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/IndexController.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1277,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								121,
+								121
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/D/_server/apache/sites/kazuha.local/contacta/.env",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 934,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								261,
+								272
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "engine/Jeht/Ground/Bootstrap/LoadEnvironmentVariables.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2488,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2048,
+								2048
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 990.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "engine/Jeht/Ground/Application.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 31165,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12123,
+								12123
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 12902.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 570,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								323,
+								323
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "engine/Jeht/Support/Env/Repository.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1716,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1505,
+								1505
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1188.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
 					"type": "text"
 				}
 			]

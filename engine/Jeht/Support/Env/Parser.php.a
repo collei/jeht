@@ -9,10 +9,10 @@ class Parser implements EnvParserInterface
 	/**
 	 * @var string
 	 *
-	 * the 'strange' subpattern group ($|...) helps to gather empty variable as as MYVAR=
+	 * the 'strange' subpattern group ($|...) helps to gather empty variableas as MYVAR=
 	 *
 	 */
-	protected const ENTRY_PATTERN = '/^\s*(\w+)\s*=($|\s*[\$!]?(\'((?:\\\\.|[^\'])*)\'|"((?:\\\\.|[^"])*)"|[^#\n]*).*)/m';
+	protected const ENTRY_PATTERN = '/^\\s*(\\w+)\\s*=($|\\s*[\$!]?(\'[^\']*\'|"[^"]*"|[^#\\n]*).*)/m';
 
 	/**
 	 * @var string
@@ -40,9 +40,9 @@ class Parser implements EnvParserInterface
 			$this->parsedEntries = [];
 			//
 			foreach ($matches as $match) {
-				list($raw, $name, $rawValue) = $match;
+				list($raw, $name, $rawValue, $value) = $match;
 				//
-				$value = $match[3] ?? $rawValue;
+				$value = $value ?? $rawValue;
 				//
 				$this->parsedEntries[$name] = $this->parseValue($value, $rawValue);
 			}
@@ -88,9 +88,7 @@ class Parser implements EnvParserInterface
 			$withExpanded = $value;
 			//
 			foreach ($matches as $match) {
-				$raw = $match[0];
-				$var = $match[2];
-				$value = $match[3] ?? $var;
+				list($raw, $raw2, $var) = $match;
 				//
 				$result = $this->parsedEntries[$var] ?? $raw;
 				//

@@ -10,7 +10,7 @@ class Repository implements EnvRepositoryInterface
 	/**
 	 * @var array
 	 */
-	protected static $entries = [];
+	protected $entries = [];
 
 	/**
 	 * Calls getenv() and returns the value, or null if the environment

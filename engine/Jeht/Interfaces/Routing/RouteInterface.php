@@ -10,9 +10,10 @@ interface RouteInterface
 	 * Checks if the given $requestUri matches the route.
 	 *
 	 * @param \Jeht\Interfaces\Http\Request $request
+	 * @param bool $includingMethod
 	 * @return bool
 	 */
-	public function matches(Request $request);
+	public function matches(Request $request, bool $includingMethod = true);
 
 	/**
 	 * Checks if the last call to matches() method has generated any parameters.
