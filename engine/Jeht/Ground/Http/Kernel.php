@@ -33,7 +33,7 @@ class Kernel implements KernelContract
 	 * @var string[]
 	 */
 	protected $bootstrappers = [
-//		\Jeht\Ground\Bootstrap\LoadEnvironmentVariables::class,
+		\Jeht\Ground\Bootstrap\LoadEnvironmentVariables::class,
 		\Jeht\Ground\Bootstrap\LoadConfiguration::class,
 //		\Jeht\Ground\Bootstrap\HandleExceptions::class,
 		\Jeht\Ground\Bootstrap\RegisterFacades::class,

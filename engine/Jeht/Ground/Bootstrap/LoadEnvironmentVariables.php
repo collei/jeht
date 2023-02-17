@@ -1,12 +1,9 @@
 <?php
-namespace Illuminate\Foundation\Bootstrap;
+namespace Jeht\Ground\Bootstrap;
 
-use Dotenv\Dotenv;
-use Dotenv\Exception\InvalidFileException;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Support\Env;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Jeht\Interfaces\Ground\Application;
+use Jeht\Support\Env\Env;
+use Jeht\Exceptions\Filesystem\FileNotFoundException;
 
 /**
  * Adapted from Laravel's Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables
@@ -19,7 +16,7 @@ class LoadEnvironmentVariables
 	/**
 	 * Bootstrap the given application.
 	 *
-	 * @param  \Illuminate\Contracts\Foundation\Application  $app
+	 * @param  \Jeht\Interfaces\Ground\Application  $app
 	 * @return void
 	 */
 	public function bootstrap(Application $app)
@@ -31,8 +28,8 @@ class LoadEnvironmentVariables
 		$this->checkForSpecificEnvironmentFile($app);
 
 		try {
-			$this->createDotenv($app)->safeLoad();
-		} catch (InvalidFileException $e) {
+			$this->createEnv($app);
+		} catch (FileNotFoundException $e) {
 			$this->writeErrorAndDie($e);
 		}
 	}
@@ -40,14 +37,16 @@ class LoadEnvironmentVariables
 	/**
 	 * Detect if a custom environment file matching the APP_ENV exists.
 	 *
-	 * @param  \Illuminate\Contracts\Foundation\Application  $app
+	 * @param  \Jeht\Interfaces\Ground\Application  $app
 	 * @return void
 	 */
 	protected function checkForSpecificEnvironmentFile($app)
 	{
-		if ($app->runningInConsole() && ($input = new ArgvInput)->hasParameterOption('--env')) {
+		$getoptResult = @getopt("", ["env"]);
+
+		if ($app->runningInConsole() && array_key_exists('env', $getoptResult)) {
 			if ($this->setEnvironmentFilePath(
-				$app, $app->environmentFile().'.'.$input->getParameterOption('--env')
+				$app, $app->environmentFile().'.'.$getoptResult['env']
 			)) {
 				return;
 			}
@@ -67,7 +66,7 @@ class LoadEnvironmentVariables
 	/**
 	 * Load a custom environment file.
 	 *
-	 * @param  \Illuminate\Contracts\Foundation\Application  $app
+	 * @param  \Jeht\Interfaces\Ground\Application  $app
 	 * @param  string  $file
 	 * @return bool
 	 */
@@ -83,34 +82,34 @@ class LoadEnvironmentVariables
 	}
 
 	/**
-	 * Create a Dotenv instance.
+	 * Initializes the Env helper class.
 	 *
-	 * @param  \Illuminate\Contracts\Foundation\Application  $app
-	 * @return \Dotenv\Dotenv
+	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @return void
 	 */
-	protected function createDotenv($app)
+	protected function createEnv($app)
 	{
-		return Dotenv::create(
-			Env::getRepository(),
-			$app->environmentPath(),
-			$app->environmentFile()
-		);
+		Env::terminate();
+		//
+		Env::initialize($app->environmentFile());
 	}
 
 	/**
 	 * Write the error information to the screen and exit.
 	 *
-	 * @param  \Dotenv\Exception\InvalidFileException  $e
+	 * @param  \Jeht\Exceptions\Filesystem\FileNotFoundException  $e
 	 * @return void
 	 */
-	protected function writeErrorAndDie(InvalidFileException $e)
+	protected function writeErrorAndDie(FileNotFoundException $e)
 	{
-		$output = (new ConsoleOutput)->getErrorOutput();
+		if ($app->runningInConsole()) {
+			echo "\r\n[ERROR] The environment file is invalid!";
+			echo "\r\n" . $e->getMessage();
 
-		$output->writeln('The environment file is invalid!');
-		$output->writeln($e->getMessage());
-
-		exit(1);
+			exit(1);
+		} else {
+			throw $e;
+		}
 	}
 }
 

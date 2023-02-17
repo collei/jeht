@@ -1,9 +1,9 @@
 <?php
 namespace Jeht\Support\Env;
 
-use Jeht\Support\Str;
+use Jeht\Interfaces\Support\Env\EnvParser;
 
-class EnvParser
+class Repository
 {
 	protected const ENTRY_PATTERN = '/^\\s*(\\w+)\\s*=\\s*(\\\'[^\']*\\\'|\\"[^"]*\\"|[^#\\n]*)/m';
 
