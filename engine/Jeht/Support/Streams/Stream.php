@@ -134,6 +134,15 @@ class Stream implements StreamInterface
 		}
 	}
 
+	public function __clone()
+	{
+		$handle = fopen('php://memory', 'w+');
+
+		stream_copy_to_stream($this->handle, dest)
+
+		$this->handle = 
+	}
+
 	/**
 	 * Closes the stream and any underlying resources.
 	 *

@@ -108,7 +108,7 @@ class Response implements ResponseInterface
 	protected $headers = [];
 
 	/**
-	 * @var string
+	 * @var \Psr\Http\Message\StreamInterface
 	 */
 	protected $body = '';
 
@@ -147,8 +147,120 @@ class Response implements ResponseInterface
 	 */
 	public static function validateStatusCode(int $statusCode)
 	{
-		return array_key_exists($statusCode, self::HTTP_STATUS_CODES)
-				|| ($statusCode >= 100 && $statusCode <= 599);
+		return ($statusCode >= 100 && $statusCode < 600);
+	}
+
+	/**
+	 * Is response invalid?
+	 *
+	 * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+	 *
+	 * @return bool
+	 */
+	public function isInvalid()
+	{
+		return !self::validateStatusCode($this->statusCode);
+	}
+
+	/**
+	 * Is response informative?
+	 *
+	 * @return bool
+	 */
+	public function isInformational()
+	{
+		return $this->statusCode >= 100 && $this->statusCode < 200;
+	}
+
+	/**
+	 * Is response successful?
+	 *
+	 * @return bool
+	 */
+	public function isSuccessful()
+	{
+		return $this->statusCode >= 200 && $this->statusCode < 300;
+	}
+
+	/**
+	 * Is the response a redirect?
+	 *
+	 * @return bool
+	 */
+	public function isRedirection()
+	{
+		return $this->statusCode >= 300 && $this->statusCode < 400;
+	}
+
+	/**
+	 * Is there a client error?
+	 *
+	 * @return bool
+	 */
+	public function isClientError()
+	{
+		return $this->statusCode >= 400 && $this->statusCode < 500;
+	}
+
+	/**
+	 * Was there a server side error?
+	 *
+	 * @return bool
+	 */
+	public function isServerError()
+	{
+		return $this->statusCode >= 500 && $this->statusCode < 600;
+	}
+
+	/**
+	 * Is the response OK?
+	 *
+	 * @return bool
+	 */
+	public function isOk()
+	{
+		return 200 === $this->statusCode;
+	}
+
+	/**
+	 * Is the response forbidden?
+	 *
+	 * @return bool
+	 */
+	public function isForbidden()
+	{
+		return 403 === $this->statusCode;
+	}
+
+	/**
+	 * Is the response a not found error?
+	 *
+	 * @return bool
+	 */
+	public function isNotFound()
+	{
+		return 404 === $this->statusCode;
+	}
+
+	/**
+	 * Is the response a redirect of some form?
+	 *
+	 * @return bool
+	 */
+	public function isRedirect(string $location = null): bool
+	{
+		return in_array($this->statusCode, [201, 301, 302, 303, 307, 308])
+			&& (null === $location ?: $location == $this->getHeader('Location'));
+	}
+
+	/**
+	 * Is the response empty?
+	 *
+	 * @final
+	 */
+	public function isEmpty(): bool
+	{
+		return in_array($this->statusCode, [204, 304]);
 	}
 
 	/**
@@ -265,35 +377,8 @@ class Response implements ResponseInterface
 	 */
 	public function withHeader($name, $value)
 	{
-		if (!is_string($name)) {
-			throw new InvalidArgumentException('Name must be a string');
-		}
-		//
-		if (!is_string($value) && !is_array($value)) {
-			throw new InvalidArgumentException('Value must be a string or array');
-		}
-		//
 		$cloned = clone $this;
-		//
-		if (empty($cloned->headers)) {
-			$cloned->headers = [
-				$name => is_array($value) ? $value : [$value]
-			];
-		} else {
-			$found = false;
-			foreach ($cloned->headers as $n => $v) {
-				if (0 == strcasecmp($n, $name)) {
-					$cloned->headers[$n] = is_array($value) ? $value : [$value];
-					$found = true;
-					break;
-				}
-			}
-			//
-			if (!$found) {
-				$cloned->headers[$name] = is_array($value) ? $value : [$value];
-			}
-		}
-		//
+		$cloned->setHeader($name, $value);
 		return $cloned;
 	}
 
@@ -319,6 +404,63 @@ class Response implements ResponseInterface
 		$cloned = clone $this;
 		$cloned->addHeader($name, $value);
 		return $cloned;
+	}
+
+	/**
+	 * Return an instance without the specified header.
+	 *
+	 * @param string $name Case-insensitive header field name to remove.
+	 * @return static
+	 * @throws \InvalidArgumentException for invalid header names.
+	 */
+	public function withoutHeader($name)
+	{
+		if (!is_string($name)) {
+			throw new InvalidArgumentException('Name must be a string');
+		}
+		//
+		$cloned = clone $this;
+		$cloned->unsetHeader($name);
+		return $cloned;
+	}
+
+	/**
+	 * Sets the header by replacing it.
+	 *
+	 * @param string $name Case-insensitive header field name.
+	 * @param string|string[] $value Header value(s).
+	 * @return void
+	 * @throws \InvalidArgumentException for invalid header names.
+	 * @throws \InvalidArgumentException for invalid header values.
+	 */
+	protected function setHeader($name, $value)
+	{
+		if (!is_string($name)) {
+			throw new InvalidArgumentException('Name must be a string');
+		}
+		//
+		if (!is_string($value) && !is_array($value)) {
+			throw new InvalidArgumentException('Value must be a string or array');
+		}
+		//
+		if (empty($this->headers)) {
+			$this->headers = [
+				$name => is_array($value) ? $value : [$value]
+			];
+		} else {
+			$found = false;
+			foreach ($this->headers as $n => $v) {
+				if (0 == strcasecmp($n, $name)) {
+					$this->headers[$n] = is_array($value) ? $value : [$value];
+					$found = true;
+					break;
+				}
+			}
+			//
+			if (!$found) {
+				$this->headers[$name] = is_array($value) ? $value : [$value];
+			}
+		}
 	}
 
 	/**
@@ -373,29 +515,26 @@ class Response implements ResponseInterface
 	}
 
 	/**
-	 * Return an instance without the specified header.
+	 * Removes the specified header.
 	 *
 	 * @param string $name Case-insensitive header field name to remove.
-	 * @return static
+	 * @return void
+	 * @throws \InvalidArgumentException for invalid header names.
 	 */
-	public function withoutHeader($name)
+	public function unsetHeader($name)
 	{
 		if (!is_string($name)) {
 			throw new InvalidArgumentException('Name must be a string');
 		}
 		//
-		$new = new static;
-		//
-		if (!empty($new->headers)) {
-			foreach ($new->headers as $n => $v) {
+		if (!empty($this->headers)) {
+			foreach ($this->headers as $n => $v) {
 				if (0 == strcasecmp($n, $name)) {
-					unset($new->headers[$n]);
+					unset($this->headers[$n]);
 					break;
 				}
 			}
 		}
-		//
-		return $new;
 	}
 
 	/**
@@ -414,12 +553,49 @@ class Response implements ResponseInterface
 	 * @param StreamInterface $body Body.
 	 * @return static
 	 * @throws \InvalidArgumentException When the body is not valid.
-	*/
+	 */
 	public function withBody(StreamInterface $body)
 	{
 		$cloned = clone $this;
-		$cloned->body = $body;
+		$cloned->setBody($body);
 		return $cloned;
+	}
+
+	/**
+	 * Return an instance with the specified message body.
+	 *
+	 * @return static
+	 */
+	public function withoutBody()
+	{
+		$cloned = clone $this;
+		$cloned->setContent(null);
+		return $cloned;
+	}
+
+	/**
+	 * Sets the body of the message.
+	 *
+	 * @param \Psr\Http\Message\StreamInterface
+	 * @return void
+	 */
+	protected function setBody(StreamInterface $body)
+	{
+		$this->body = null;
+		$this->body = $body;
+	}
+
+	/**
+	 * Sets the body of the message by using a string.
+	 *
+	 * @param string|null $content
+	 * @return void
+	 */
+	protected function setContent(string $content = null)
+	{
+		$this->setBody(
+			new StringStream($content ?? '')
+		);
 	}
 
 	/**

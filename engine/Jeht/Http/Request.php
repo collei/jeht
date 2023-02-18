@@ -126,6 +126,16 @@ class Request implements RequestInterface
 	}
 
 	/**
+	 * Tells if $method is the HTTP method of the request.
+	 *
+	 * @return bool
+	 */
+	public function isMethod(string $method)
+	{
+		return strcasecmp($method, $this->method) === 0;
+	}
+
+	/**
 	 * Return an instance with the provided HTTP method.
 	 *
 	 * While HTTP method names are typically all uppercase characters,
