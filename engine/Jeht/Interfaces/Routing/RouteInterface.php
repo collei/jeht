@@ -28,7 +28,7 @@ interface RouteInterface
 	 *
 	 * @return array|null
 	 */
-	public function getParameters();
+	public function parameters();
 
 }
 

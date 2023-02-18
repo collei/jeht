@@ -55,6 +55,17 @@ abstract class Arr
 	}
 
 	/**
+	 * Return the default value of the given value
+	 *
+	 * @param mixed $value
+	 * @return $mixed
+	 */
+	public static function value($value, ...$args)
+	{
+		return $value instanceof Closure ? $value(...$args) : $value;
+	}
+
+	/**
 	 * Get an item from an array or object using "dot" notation.
 	 *
 	 * @param  mixed  $target
@@ -79,7 +90,7 @@ abstract class Arr
 			//
 			if ($segment === '*') {
 				if (! is_array($target)) {
-					return value($default);
+					return self::value($default);
 				}
 				//
 				$result = [];
@@ -96,7 +107,7 @@ abstract class Arr
 			} elseif (is_object($target) && isset($target->{$segment})) {
 				$target = $target->{$segment};
 			} else {
-				return value($default);
+				return self::value($default);
 			}
 		}
 		//

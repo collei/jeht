@@ -1,9 +1,11 @@
 <?php
 namespace Jeht\Routing;
 
+use LogicException;
+use InvalidArgumentException;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
-use InvalidArgumentException;
+use Jeht\Container\Container;
 
 use Jeht\Interfaces\Routing\RouteInterface;
 use Jeht\Interfaces\Http\Request;
@@ -28,7 +30,7 @@ class Route implements RouteInterface
 	/**
 	 * @var string
 	 */
-	private $path;
+	private $uri;
 
 	/**
 	 * @var string
@@ -43,12 +45,27 @@ class Route implements RouteInterface
 	/**
 	 * @var array
 	 */
+	private $action;
+
+	/**
+	 * @var array
+	 */
 	private $parameters = [];
 
 	/**
 	 * @var bool
 	 */
 	private $isFallback = false;
+
+	/**
+	 * @var \Jeht\Routing\Router
+	 */
+	protected $router;
+
+	/**
+	 * @var \Jeht\Container\Container
+	 */
+	protected $container;
 
 	/**
 	 * Set the methods this route must respond to
@@ -72,31 +89,151 @@ class Route implements RouteInterface
 	 * Builds a new Route
 	 *
 	 * @param string|array $httpMethods
-	 * @param string $path
-	 * @param mixed $handler
+	 * @param string $uri
+	 * @param mixed $action
 	 * @param string|null $regex
 	 * @param string|null $name
 	 */
 	public function __construct(
-		$httpMethods,
-		string $path,
-		$handler,
-		string $regex = null,
-		string $name = null,
-		bool $fallback = false
+		$httpMethods, string $uri, $action, string $regex = null, string $name = null
 	) {
-		$this->name = $name ?? Str::randomize();
-		$this->path = $path;
-		$this->handler = $handler;
-		//
-		$regex = !empty($regex) ? $regex : str_replace('/', '\\/', $path);
-		//
-		$this->regex = "#^{$regex}\s*$#";
-		//
 		$this->setHttpMethods($httpMethods);
 		//
-		$this->isFallback = $fallback;
+		$this->name = $name ?? Str::randomize();
+		$this->uri = $uri;
+		$this->handler = $action;
+		//
+		$this->action = $this->parseAction($action);
+		//
+		$regex = !empty($regex) ? $regex : str_replace('/', '\\/', $uri);
+		//
+		$this->regex = "#^{$regex}\s*$#";
 	}
+
+	/**
+	 * Parse the route action into a standard array.
+	 *
+	 * @param  callable|array|null  $action
+	 * @return array
+	 *
+	 * @throws \UnexpectedValueException
+	 */
+	protected function parseAction($action)
+	{
+		return RouteAction::parse($this->uri, $action);
+	}
+
+	/**
+	 * Run the route action and return the response.
+	 *
+	 * @return mixed
+	 */
+	public function run()
+	{
+		$this->container = $this->container ?: new Container;
+
+		try {
+			if ($this->isControllerAction()) {
+				return $this->runController();
+			}
+
+			return $this->runCallable();
+		} catch (HttpResponseException $e) {
+			return $e->getResponse();
+		}
+	}
+
+	/**
+	 * Checks whether the route's action is a controller.
+	 *
+	 * @return bool
+	 */
+	protected function isControllerAction()
+	{
+		return is_string($this->action['uses']) && ! $this->isSerializedClosure();
+	}
+
+	/**
+	 * Run the route action and return the response.
+	 *
+	 * @return mixed
+	 */
+	protected function runCallable()
+	{
+		$callable = $this->action['uses'];
+
+		if ($this->isSerializedClosure()) {
+			$callable = unserialize($this->action['uses'])->getClosure();
+		}
+
+		return $callable(...array_values($this->resolveMethodDependencies(
+			$this->parametersWithoutNulls(), new ReflectionFunction($callable)
+		)));
+	}
+
+	/**
+	 * Determine if the route action is a serialized Closure.
+	 *
+	 * @return bool
+	 */
+	protected function isSerializedClosure()
+	{
+		return RouteAction::containsSerializedClosure($this->action);
+	}
+
+	/**
+	 * Run the route action and return the response.
+	 *
+	 * @return mixed
+	 *
+	 * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+	 */
+	protected function runController()
+	{
+		return $this->controllerDispatcher()->dispatch(
+			$this, $this->getController(), $this->getControllerMethod()
+		);
+	}
+
+	/**
+	 * Get the controller instance for the route.
+	 *
+	 * @return mixed
+	 */
+	public function getController()
+	{
+		if (! $this->controller) {
+			$class = $this->parseControllerCallback()[0];
+
+			$this->controller = $this->container->make(ltrim($class, '\\'));
+		}
+
+		return $this->controller;
+	}
+
+	/**
+	 * Get the controller method used for the route.
+	 *
+	 * @return string
+	 */
+	protected function getControllerMethod()
+	{
+		return $this->parseControllerCallback()[1];
+	}
+
+	/**
+	 * Parse the controller.
+	 *
+	 * @return array
+	 */
+	protected function parseControllerCallback()
+	{
+		return Str::parseCallback($this->action['uses']);
+	}
+
+
+
+
 
 	/**
 	 * Checks if the given $requestUri matches the route,
@@ -150,13 +287,13 @@ class Route implements RouteInterface
 	}
 
 	/**
-	 * Returns the route path
+	 * Returns the route uri
 	 *
 	 * @return string
 	 */
-	public function getPath()
+	public function getUri()
 	{
-		return $this->path;
+		return $this->uri;
 	}
 
 	/**
@@ -170,28 +307,119 @@ class Route implements RouteInterface
 	}
 
 	/**
-	 * Checks if the last call to matches() method has generated any parameters.
+	 * Checks if the route has parameters.
 	 *
 	 * @return bool
 	 */
 	public function hasParameters()
 	{
-		return !empty($this->parameters);
+		return isset($this->parameters);
 	}
 
 	/**
-	 * Returns all parameters as an associative array
-	 * since the last call to matches() method.
+	 * Checks if the route parameter $name exists.
 	 *
-	 * @return array|null
+	 * @param string $name
+	 * @return bool
 	 */
-	public function getParameters()
+	public function hasParameter(string $name)
+	{
+		if ($this->hasParameters()) {
+			return array_key_exists($name, $this->parameters());
+		}
+		//
+		return false;
+	}
+
+	/**
+	 * Returns all route parameters.
+	 *
+	 * @return $array
+	 * @throws \LogicException
+	 */
+	public function parameters()
 	{
 		if ($this->hasParameters()) {
 			return $this->parameters;
 		}
 		//
-		return null;
+		throw new LogicException('Route is not bound.');
+	}
+
+	/**
+	 * Get a given parameter from the route.
+	 *
+	 * @param string $name
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function parameter(string $name, $default = null)
+	{
+		return Arr::get($this->parameters(), $name, $default);
+	}
+
+	/**
+	 * Set a parameter to the given route.
+	 *
+	 * @param string $name
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function setParameter(string $name, $value)
+	{
+		$this->parameters();
+		//
+		$this->parameters[$name] = $value;
+	}
+
+	/**
+	 * Unset a parameter on the route.
+	 *
+	 * @param string $name
+	 * @return void
+	 */
+	public function forgetParameter(string $name)
+	{
+		$this->parameters();
+		//
+		unset($this->parameters[$name]);
+	}
+
+	/**
+	 * Get a key/value list of parameters without null values.
+	 *
+	 * @return array
+	 */
+	public function parametersWithoutNulls()
+	{
+		return array_filter($this->hasParameters(), function($val) {
+			return !is_null($val);
+		});
+	}
+
+	/**
+	 * Mark this route as a fallback route.
+	 *
+	 * @return $this
+	 */
+	public function fallback()
+	{
+		$this->isFallback = true;
+		//
+		return $this;
+	}
+
+	/**
+	 * Set the fallback value.
+	 *
+	 * @param bool $isFallback
+	 * @return $this
+	 */
+	public function setFallback(bool $isFallback)
+	{
+		$this->isFallback = $isFallback;
+		//
+		return $this;
 	}
 
 	/**
@@ -204,10 +432,58 @@ class Route implements RouteInterface
 		return $this->isFallback;
 	}
 
+	/**
+	 * Set the router.
+	 *
+	 * @param \Jeht\Routing\Route $router
+	 * @return $this
+	 */
+	public function setRouter(Router $router)
+	{
+		$this->router = $router;
+		//
+		return $this;
+	}
+
+	/**
+	 * Set the container.
+	 *
+	 * @param \Jeht\Container\Container $container
+	 * @return $this
+	 */
+	public function setContainer(Container $container)
+	{
+		$this->container = $container;
+		//
+		return $this;
+	}
+
+	/**
+	 * Get the HTTP verbs the route responds to.
+	 *
+	 * @return array
+	 */
+	public function methods()
+	{
+		return $this->httpMethods;
+	}
+
+
 	public function runRoute(Request $request)
 	{
 		return (new RouteDispatcher)->dispatch($request, $this->handler);
 	}
+
+	/**
+	 * Dynamically access route parameters
+	 *
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function __get($key)
+	{
+		return $this->parameter($key);
+	} 
 
 }
 
