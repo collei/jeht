@@ -6,16 +6,9 @@ use Jeht\Ground\Application;
 class Router
 {
 	/**
-	 * @var string[]
+	 * @var \Jeht\Routing\RouteCollection
 	 */
-	protected const HTTP_METHODS = [
-		'GET','POST','PUT','PATCH','OPTIONS','HEAD','DELETE'
-	];
-
-	/**
-	 * @var array
-	 */
-	protected $routes = [];
+	protected $routecollection;
 
 	/**
 	 * @var \Jeht\Ground\Application
@@ -58,15 +51,15 @@ class Router
 	protected $currentRequest = [];
 
 	/**
-	 * Aggregate uri and name segments, occasionally applying the handler
+	 * Aggregate uri and name segments, occasionally applying the action
 	 * if specified.
 	 *
 	 * @param	string	$withUriSuffix
 	 * @param	string	$withName
-	 * @param	mixed	$withHandler
+	 * @param	mixed	$withAction
 	 * @return	array
 	 */
-	protected function aggregateAttributes(string $withUriSuffix, $withHandler, string $withName = null)
+	protected function aggregateAttributes(string $withUriSuffix, $withAction, string $withName = null)
 	{
 		$current = $this->routeGroup->getCurrent();
 		//
@@ -82,31 +75,31 @@ class Router
 			? (rtrim($current['name'], '.') . ($withName ? ('.'.$withName) : ''))
 			: $withName;
 		//
-		$handler = $withHandler ?? $current['handler'] ?? null;
+		$action = $withAction ?? $current['action'] ?? null;
 		//
-		return array($uri, $name, $handler);
+		return array($uri, $name, $action);
 	}
 
 	/**
 	 * Register a route
 	 *
-	 * @param	array	$methods
+	 * @param	string|array	$methods
 	 * @param	string	$uri
-	 * @param	mixed	$handler
+	 * @param	mixed	$action
 	 * @return	\Jeht\Routing\Routefactory
 	 */
-	protected function addRoute(array $methods, string $uri, $handler)
+	protected function addRoute($methods, string $uri, $action)
 	{
 		// Aggregate path prefixes into a uri with the current 'suffix'
-		// and also provides convenient method of override the handler
+		// and also provides convenient method of override the action
 		// of the current group.
-		[$uri, $name, $handler] = $this->aggregateAttributes($uri, $handler);
+		[$uri, $name, $action] = $this->aggregateAttributes($uri, $action);
 		//
-		$factory = new RouteFactory(
-			$this->appBaseUri . $uri, $methods, $handler, $name
+		$this->routeFactories[] = $factory = RouteFactory::for(
+			$methods, $this->appBaseUri.$uri, $action
 		);
 		//
-		return $this->routeFactories[] = $factory;
+		return $factory;
 	}
 
 	/**
@@ -117,10 +110,11 @@ class Router
 	public function __construct(Application $app)
 	{
 		$this->app = $app;
-		$routeGroup = new RouteGroup($app);
-		$this->routeGroup = $routeGroup->setRouter($this);
+		$this->routeGroup = (new RouteGroup($app))->setRouter($this);
+		$this->routeCollection = new RouteCollection;
 		//
-		$this->app->instance(RouteGroup::class, $routeGroup);
+		$this->app->instance(RouteGroup::class, $this->routeGroup);
+		$this->app->instance(RouteCollection::class, $this->routeCollection);
 		//
 		$this->appBaseUri = $this->app['app.rooturi'];
 	}
@@ -129,96 +123,96 @@ class Router
 	 * Register a GET route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function get(string $uri, $handler = null)
+	public function get(string $uri, $action = null)
 	{
-		return $this->addRoute(['GET'], $uri, $handler);
+		return $this->addRoute(['GET'], $uri, $action);
 	}
 
 	/**
 	 * Register a HEAD route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function head(string $uri, $handler = null)
+	public function head(string $uri, $action = null)
 	{
-		return $this->addRoute(['HEAD'], $uri, $handler);
+		return $this->addRoute(['HEAD'], $uri, $action);
 	}
 
 	/**
 	 * Register a POST route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function post(string $uri, $handler = null)
+	public function post(string $uri, $action = null)
 	{
-		return $this->addRoute(['POST'], $uri, $handler);
+		return $this->addRoute(['POST'], $uri, $action);
 	}
 
 	/**
 	 * Register a PATCH route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function patch(string $uri, $handler = null)
+	public function patch(string $uri, $action = null)
 	{
-		return $this->addRoute(['PATCH'], $uri, $handler);
+		return $this->addRoute(['PATCH'], $uri, $action);
 	}
 
 	/**
 	 * Register a PUT route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function put(string $uri, $handler = null)
+	public function put(string $uri, $action = null)
 	{
-		return $this->addRoute(['PUT'], $uri, $handler);
+		return $this->addRoute(['PUT'], $uri, $action);
 	}
 
 	/**
 	 * Register an OPTIONS route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function options(string $uri, $handler = null)
+	public function options(string $uri, $action = null)
 	{
-		return $this->addRoute(['OPTIONS'], $uri, $handler);
+		return $this->addRoute(['OPTIONS'], $uri, $action);
 	}
 
 	/**
 	 * Register a DELETE route.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function delete(string $uri, $handler = null)
+	public function delete(string $uri, $action = null)
 	{
-		return $this->addRoute(['DELETE'], $uri, $handler);
+		return $this->addRoute(['DELETE'], $uri, $action);
 	}
 
 	/**
 	 * Register a route for any method.
 	 *
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 */
-	public function any(string $uri, $handler = null)
+	public function any(string $uri, $action = null)
 	{
-		return $this->addRoute(self::HTTP_METHODS, $uri, $handler);
+		return $this->addRoute(self::HTTP_METHODS, $uri, $action);
 	}
 
 	/**
@@ -226,32 +220,14 @@ class Router
 	 *
 	 * @param	string|array	$methods
 	 * @param	string	$uri
-	 * @param	string|array|\Closure	$handler
+	 * @param	string|array|\Closure	$action
 	 * @return	\Jeht\Routing\RouteFactory
 	 * @throws	\InvalidArgumentException
 	 * @throws	\Jeht\Exceptions\Http\InvalidHttpMethodException
 	 */
-	public function request($methods, string $uri, $handler)
+	public function request($methods, string $uri, $action)
 	{
-		if (!is_array($methods) && !is_string($methods)) {
-			throw new InvalidArgumentException('$methods should be an array or string !');
-		}
-		//
-		$methods = Arr::wrap($methods);
-		//
-		$upperMethods = array_map(function($item) {
-			return strtoupper($item);
-		}, $methods);
-		//
-		$valid = array_intersect($upperMethods, self::HTTP_METHODS);
-		//
-		if (count($valid) !== count($methods)) {
-			throw new InvalidHttpMethodException(
-				'One of the given HTTP methods is invalid: ' . implode(', ', $methods)
-			);
-		}
-		//
-		return $this->addRoute($upperMethods, $uri, $handler);
+		return $this->addRoute($methods, $uri, $action);
 	}
 
 	/**
@@ -277,14 +253,14 @@ class Router
 	}
 
 	/**
-	 * Adds a controller class for the coming group.
+	 * Adds an action class for the coming group.
 	 *
 	 * @param	string	$controller
 	 * @return	\Jeht\Routing\RouteGroup
 	 */
 	public function controller(string $controller)
 	{
-		return $this->routeGroup->controller($controller);
+		return $this->routeGroup->action($controller);
 	}
 
 	/**
@@ -306,14 +282,10 @@ class Router
 	 */
 	public function group($routes)
 	{
-du(__FILE__,__LINE__,__METHOD__,$routes);
 		if ($routes instanceof Closure) {
 			$this->routeGroup->group($routes);
 		} else {
 			$this->routeGroup->group(function() use ($routes){
-
-du(__FILE__,__LINE__,__METHOD__,$routes);
-
 				(new RouteFileRegistrar($this))->register($routes);
 			});
 		}
@@ -366,47 +338,54 @@ du(__FILE__,__LINE__,__METHOD__,$routes);
 
 	/**
 	 * Tests the given $requestUri against $regex.
-	 * Returns an array with two elements: the boolean result of the match
-	 * and an associative array of parameters which may be empty.
 	 *
 	 * @param string $requestUri
 	 * @param string $regex
-	 * @return [bool, array]
+	 * @return bool
 	 */
-	public static function requestMatchesRegex(
-		string $requestUri, string $regex
-	) {
-		$bool = (1 === preg_match($regex, $requestUri, $matches));
-		$parameters = [];
+	public function requestMatchesRegex(string $requestUri, string $regex)
+	{
+		return (1 === preg_match($regex, $requestUri, $teste));
+	}
+
+	/**
+	 * Returns an associative array of parameters (which may be empty).
+	 *
+	 * @param string $requestUri
+	 * @param string $regex
+	 * @return array
+	 */
+	public function fetchParameterValuesFromUri(string $requestUri, string $regex)
+	{
+		$result = [];
 		//
-		if ($bool && !empty($matches)) {
-			foreach ($matches as $key => $value) {
-				if (is_string($key)) {
-					$parameters[$key] = $value;
+		if (1 === preg_match($regex, $requestUri, $matches)) {
+			if (is_array($matches)) {
+				foreach ($matches as $key => $value) {
+					if (is_string($key)) {
+						$result[$key] = $value;
+					}
 				}
 			}
 		}
 		//
-		return [$bool, $parameters];
+		return $result;
 	}
 
 	public function registerRoute(Route $route)
 	{
-		$this->routes[] = $route;
+		$this->routeCollection->add($route);
 	}
 
 	public function dispatch($request)
 	{
-		foreach ($this->routes as $route) {
-			if ($route->matches($request)) {
-				return $route->runRoute($request);
-			}
+		if ($route = $this->routeCollection->match($request)) {
+			return $route->runRoute($request);
 		}
 		//
-		return [
-			'status' => 404,
-			'errors' => new \Exception('Route not found for request URI: ' . $request->getUri())
-		];
+		throw new NotFoundHttpException(
+			'No Route could match for the uri [' . $request->getUri() . '] and no fallback was found.'
+		);
 	}
 
 

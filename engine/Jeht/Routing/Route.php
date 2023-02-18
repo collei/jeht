@@ -50,7 +50,12 @@ class Route implements RouteInterface
 	/**
 	 * @var array
 	 */
-	private $parameters = [];
+	private $parameters;
+
+	/**
+	 * @var array
+	 */
+	private $originalParameters;
 
 	/**
 	 * @var bool
@@ -82,7 +87,7 @@ class Route implements RouteInterface
 			return;
 		}
 		//
-		$this->httpMethods = Arr::wrap($httpMethods);
+		$this->httpMethods = $httpMethods;
 	}
 
 	/**
@@ -95,9 +100,9 @@ class Route implements RouteInterface
 	 * @param string|null $name
 	 */
 	public function __construct(
-		$httpMethods, string $uri, $action, string $regex = null, string $name = null
+		$methods, string $uri, $action, string $regex = null, string $name = null
 	) {
-		$this->setHttpMethods($httpMethods);
+		$this->setHttpMethods($methods);
 		//
 		$this->name = $name ?? Str::randomize();
 		$this->uri = $uri;
@@ -107,7 +112,7 @@ class Route implements RouteInterface
 		//
 		$regex = !empty($regex) ? $regex : str_replace('/', '\\/', $uri);
 		//
-		$this->regex = "#^{$regex}\s*$#";
+		$this->regex = $regex;
 	}
 
 	/**
@@ -166,9 +171,13 @@ class Route implements RouteInterface
 			$callable = unserialize($this->action['uses'])->getClosure();
 		}
 
-		return $callable(...array_values($this->resolveMethodDependencies(
-			$this->parametersWithoutNulls(), new ReflectionFunction($callable)
-		)));
+		return $callable(
+			...array_values(
+				$this->resolveMethodDependencies(
+					$this->parametersWithoutNulls(), new ReflectionFunction($callable)
+				)
+			)
+		);
 	}
 
 	/**
@@ -179,6 +188,29 @@ class Route implements RouteInterface
 	protected function isSerializedClosure()
 	{
 		return RouteAction::containsSerializedClosure($this->action);
+	}
+
+	/**
+	 * Get the domain defined for the route.
+	 *
+	 * @return string|null
+	 */
+	public function getDomain()
+	{
+		return isset($this->action['domain'])
+				? str_replace(['http://', 'https://'], '', $this->action['domain'])
+				: null;
+	}
+
+	/**
+	 * Get the action array or one of its properties for the route.
+	 *
+	 * @param  string|null  $key
+	 * @return mixed
+	 */
+	public function getAction($key = null)
+	{
+		return Arr::get($this->action, $key);
 	}
 
 	/**
@@ -231,28 +263,35 @@ class Route implements RouteInterface
 		return Str::parseCallback($this->action['uses']);
 	}
 
-
-
-
+	/**
+	 * Get the compiled regex expression for the uri.
+	 *
+	 * @return string
+	 */
+	public function regex()
+	{
+		return $this->regex;
+	}
 
 	/**
-	 * Checks if the given $requestUri matches the route,
-	 * setting parameters if any found. 
+	 * Get the uri.
+	 *
+	 * @return string
+	 */
+	public function uri()
+	{
+		return $this->uri;
+	}
+
+	/**
+	 * Checks if the given $requestUri matches the route. 
 	 *
 	 * @param string $requestUri
 	 * @return bool
 	 */
-	protected function matchAndSetParameters(string $requestUri)
+	protected function matchesUri(string $requestUri)
 	{
-		[$bool, $parameters] = Router::requestMatchesRegex(
-			$requestUri, $this->regex
-		);
-		//
-		if ($bool) {
-			$this->parameters = !empty($parameters) ? $parameters : [];
-		}
-		//
-		return $bool;
+		return $this->router->requestMatchesRegex($requestUri, $this->regex);
 	}
 
 	/**
@@ -264,16 +303,32 @@ class Route implements RouteInterface
 	 */
 	public function matches(Request $request, bool $includingMethod = true)
 	{
-		$method = $request->getMethod();
 		$uri = $request->getUri()->getPath();
 		//
 		if ($includingMethod) {
-			if (! in_array($method, $this->httpMethods)) {
+			if (! in_array($request->getMethod(), $this->httpMethods, true)) {
 				return false;
 			}
 		}
 		//
-		return $this->matchAndSetParameters($uri);
+		return $this->matchesUri($uri);
+	}
+
+	/**
+	 * Bind the route to a given $request for execution.
+	 *
+	 * @param \Jeht\Http\Request $request
+	 * @return $this
+	 */
+	public function bind(Request $request)
+	{
+		$this->parameters = $this->router->fetchParameterValuesFromUri(
+			$request->getUri()->getPath(), $this->regex
+		);
+		//
+		$this->originalParameters = $this->parameters;
+		//
+		return $this;
 	}
 
 	/**

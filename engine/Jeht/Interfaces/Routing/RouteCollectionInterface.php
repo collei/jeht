@@ -8,7 +8,7 @@ use Jeht\Http\Request;
  * Adapted from Illuminate\Routing\RouteCollectionInterface
  *
  */
-interface RouteCollection
+interface RouteCollectionInterface
 {
 	/**
 	 * Add a Route instance to the collection.

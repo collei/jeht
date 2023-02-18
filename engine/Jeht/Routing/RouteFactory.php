@@ -2,7 +2,9 @@
 namespace Jeht\Routing;
 
 use Jeht\Interfaces\Routing\RouteFactoryInterface;
+use Jeht\Http\HttpMethods;
 use Jeht\Support\Str;
+use Jeht\Support\Arr;
 
 /**
  * Implements the RouteFactoryInterface
@@ -75,13 +77,13 @@ class RouteFactory implements RouteFactoryInterface
 	 *
 	 * @param string $uri
 	 * @param array $paramRegex
-	 * @return string|false
+	 * @return string
 	 */
 	protected static function compileRegex(string $uri, array $paramRegex = [])
 	{
+		$regex = str_replace('/', '\\/', $uri);
+		//
 		if (preg_match_all(self::REGEX_IU_PARAM, $uri, $matches, PREG_SET_ORDER)) {
-			$regex = $uri;
-			//
 			foreach ($matches as $match) {
 				$regexp = self::REGEX_ANY;
 				//
@@ -99,11 +101,9 @@ class RouteFactory implements RouteFactoryInterface
 				//
 				$regex = str_replace($match[0], $piece, $regex);
 			}
-			//
-			return $regex;
 		}
 		//
-		return false;
+		return '#^' . $regex . '\s*$#';
 	}
 
 	/**
@@ -130,16 +130,58 @@ class RouteFactory implements RouteFactoryInterface
 	 * @param string|null $name
 	 */
 	public function __construct(
-		string $uri, array $httpMethods, $action, string $name = null
+		$methods, string $uri, $action = null, string $name = null
 	) {
+		if (!is_array($methods) && !is_string($methods)) {
+			throw new InvalidArgumentException('[$methods] should be an array or string !');
+		}
+		//
+		$methods = Arr::wrap($methods);
+		//
+		if ($invalid = HttpMethods::validateAll($methods)) {
+			throw new InvalidHttpMethodException(
+				'One of the given HTTP methods is invalid: ' . implode(', ', $methods)
+			);
+		}
+		//
+		$methods = array_map(function($item) {
+			return strtoupper($item);
+		}, $methods);
+		//
 		$this->uri = $uri;
 		$this->action = $action;
-		$this->httpMethods = $httpMethods;
+		$this->httpMethods = $methods;
 		$this->name = $name;
 	}
 
 	/**
-	 * Adds a name to the route. In a group, suffixes it.
+	 * Builds a new RouteFactory instance
+	 *
+	 * @param string $uri
+	 * @param array $httpMethods
+	 * @param mixed $action
+	 * @return static
+	 */
+	public static function for($methods, string $uri, $action = null)
+	{
+		return new static($methods, $uri, $action);
+	}
+
+	/**
+	 * Rename the route.
+	 *
+	 * @param string $parameter
+	 * @return self
+	 */
+	public function rename(string $name)
+	{
+		$this->name = $name;
+		//
+		return $this;
+	}
+
+	/**
+	 * Adds a suffix to the current route name.
 	 *
 	 * @param string $parameter
 	 * @return self

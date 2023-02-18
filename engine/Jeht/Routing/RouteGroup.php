@@ -12,7 +12,7 @@ class RouteGroup
 	private const CATEGORIES = [
 		'name' => 'names',
 		'prefix' => 'prefixes',
-		'controller' => 'controllers',
+		'action' => 'actions',
 		'namespace' => 'namespaces',
 	];
 
@@ -39,7 +39,7 @@ class RouteGroup
 	/**
 	 * @var array
 	 */
-	private $controllers = [];
+	private $actions = [];
 
 	/**
 	 * @var array
@@ -52,7 +52,7 @@ class RouteGroup
 	private $current = [
 		'name' => null,
 		'prefix' => null,
-		'controller' => null,
+		'action' => null,
 		'namespace' => null,
 	];
 
@@ -136,19 +136,19 @@ class RouteGroup
 	}
 
 	/**
-	 * Sets the controller for the next group calls
+	 * Sets the action for the next group calls
 	 *
-	 * @param string $controller
+	 * @param string $action
 	 * @return self
 	 */
-	public function controller(string $controller)
+	public function action(string $action)
 	{
-		$this->current['controller'] = $controller;
+		$this->current['action'] = $action;
 		return $this;
 	}
 
 	/**
-	 * Sets the namespace replacement for the current controller
+	 * Sets the namespace replacement for the current action
 	 * for the next group calls
 	 *
 	 * @param string $namespace
@@ -222,21 +222,21 @@ class RouteGroup
 	}
 
 	/**
-	 * Returns the current controller
+	 * Returns the current action
 	 *
 	 * @return string
 	 */
-	public function getCurrentController()
+	public function getCurrentAction()
 	{
 		if ($this->currentLevel >= 0) {
-			return $this->controllers[$this->currentLevel] ?? null;
+			return $this->actions[$this->currentLevel] ?? null;
 		}
 		//
 		return null;
 	}
 
 	/**
-	 * Returns the current controller namespace
+	 * Returns the current action namespace
 	 *
 	 * @return string
 	 */
@@ -259,7 +259,7 @@ class RouteGroup
 		return array(
 			'name' => $this->getCurrentName('.'),
 			'prefix' => $this->getCurrentPrefix(),
-			'controller' => $this->getCurrentController(),
+			'action' => $this->getCurrentAction(),
 			'namespace' => $this->getCurrentNamespace()
 		);
 	}

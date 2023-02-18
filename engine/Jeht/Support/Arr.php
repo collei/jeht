@@ -546,15 +546,46 @@ abstract class Arr
 	}
 
 	/**
-	 *	Returns the first element
+	 *	Returns the first element.
+	 *	If $callback is supplied, $array is filtered first. $filter will receive
+	 *	the value as argument. Return true to include it in the returned array.
+	 *	If resulting $array is empty, $default is returned. 
 	 *
 	 *	@static
 	 *	@param	array		$array
+	 *	@param	callable	$filter
+	 *	@param	mixed		$default
 	 *	@return	mixed
 	 */
-	public static function first(array $array)
+	public static function first(array $array, callable $filter = null, $default = null)
 	{
-		return array_shift($array);
+		if (!is_null($filter)) {
+			$array = array_filter($array, $filter, 0);
+		}
+		//
+		return array_shift($array) ?? $default;
+	}
+
+	/**
+	 *	Returns the first element.
+	 *	If $callback is supplied, $array is filtered first. $filter will receive
+	 *	the value as first argument and the key as the second.
+	 *	Return true to include it in the returned array.
+	 *	If resulting $array is empty, $default is returned. 
+	 *
+	 *	@static
+	 *	@param	array		$array
+	 *	@param	callable	$filter
+	 *	@param	mixed		$default
+	 *	@return	mixed
+	 */
+	public static function firstBoth(array $array, callable $filter = null, $default = null)
+	{
+		if (!is_null($filter)) {
+			$array = array_filter($array, $filter, ARRAY_FILTER_USE_BOTH);
+		}
+		//
+		return array_shift($array) ?? $default;
 	}
 
 	/**
