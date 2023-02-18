@@ -8,6 +8,7 @@ use Jeht\Support\Str;
 use Jeht\Container\Container;
 
 use Jeht\Interfaces\Routing\RouteInterface;
+use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
 use Jeht\Interfaces\Http\Request;
 use Psr\Http\Message\UriInterface;
 
@@ -225,6 +226,20 @@ class Route implements RouteInterface
 		return $this->controllerDispatcher()->dispatch(
 			$this, $this->getController(), $this->getControllerMethod()
 		);
+	}
+
+	/**
+	 * Get the dispatcher for the route's controller.
+	 *
+	 * @return \Jeht\Interfaces\Routing\ControllerDispatcherInterface
+	 */
+	public function controllerDispatcher()
+	{
+		if ($this->container->bound(ControllerDispatcherInterface::class)) {
+			return $this->container->make(ControllerDispatcherInterface::class);
+		}
+
+		return new ControllerDispatcher($this->container);
 	}
 
 	/**
@@ -447,7 +462,7 @@ class Route implements RouteInterface
 	 */
 	public function parametersWithoutNulls()
 	{
-		return array_filter($this->hasParameters(), function($val) {
+		return array_filter($this->parameters(), function($val) {
 			return !is_null($val);
 		});
 	}
@@ -521,12 +536,6 @@ class Route implements RouteInterface
 	public function methods()
 	{
 		return $this->httpMethods;
-	}
-
-
-	public function runRoute(Request $request)
-	{
-		return (new RouteDispatcher)->dispatch($request, $this->handler);
 	}
 
 	/**

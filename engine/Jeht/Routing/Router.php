@@ -2,6 +2,8 @@
 namespace Jeht\Routing;
 
 use Jeht\Ground\Application;
+use Jeht\Http\Request;
+use Jeht\Http\ResponsePreparator;
 
 class Router
 {
@@ -377,10 +379,16 @@ class Router
 		$this->routeCollection->add($route);
 	}
 
+	/**
+	 * Dispatches the request to a matching route, if any.
+	 *
+	 * @param \Jeht\Http\Request $request
+	 * @return 
+	 */
 	public function dispatch($request)
 	{
 		if ($route = $this->routeCollection->match($request)) {
-			return $route->runRoute($request);
+			return $this->runRoute($route, $request);
 		}
 		//
 		throw new NotFoundHttpException(
@@ -388,6 +396,35 @@ class Router
 		);
 	}
 
+	/**
+	 * Run the specified $route for the given $request
+	 *
+	 * @param \Jeht\Routing\Route
+	 * @param \Jeht\Http\Request
+	 */
+	protected function runRoute(Route $route, Request $request)
+	{
+		/**
+		 * @todo 
+		$request->setRouteResolver(function() use ($route){
+			return $route;
+		});
+		 */
+
+		/**
+		 * @todo
+		$this->events->dispatch(new RouteMatched($route, $request));
+		 */
+
+		return $this->prepareResponse(
+			$request, $route->run()
+		);
+	}
+
+	protected function prepareResponse(Request $request, $response)
+	{
+		return (new ResponsePreparator)->prepare($request, $response);
+	}
 
 	/**
 	 * Get all of the defined middleware short-hand names.

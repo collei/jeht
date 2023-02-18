@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Traits\Routing;
+namespace Jeht\Routing\Traits;
 
 use Jeht\Support\Arr;
 use Jeht\Support\Reflector;

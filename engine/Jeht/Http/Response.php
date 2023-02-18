@@ -113,22 +113,30 @@ class Response implements ResponseInterface
 	protected $body = '';
 
 	/**
-	 * Creates an instance with the specified status code and, optionally, reason phrase.
+	 * Creates an instance with the specified body, status code and, optionally, headers.
 	 *
 	 * @see http://tools.ietf.org/html/rfc7231#section-6
 	 * @see http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+	 * @param string $body
 	 * @param int $code
-	 * @param string $reasonPhrase
+	 * @param array|null $headers
 	 * @throws \InvalidArgumentException For invalid status code arguments
 	 */
-	public function __construct(int $statusCode, string $reason = null)
+	public function __construct(string $body, int $statusCode = 200, array $headers = null)
 	{
-		if (!static::validateStatusCode($code)) {
-			throw new InvalidArgumentException("Invalid status code: [$code].");
+		if (!static::validateStatusCode($statusCode)) {
+			throw new InvalidArgumentException("Invalid status code: [$statusCode].");
 		}
 		//
+		$this->body = $body;
 		$this->statusCode = $statusCode;
-		$this->reason = $reasonPhrase ?? self::HTTP_STATUS_CODES[$statusCode] ?? '';
+		$this->reason = self::HTTP_STATUS_CODES[$statusCode] ?? '';
+		//
+		if ($headers) {
+			foreach ($headers as $name => $value) {
+				$this->addHeader($name, $value);
+			}
+		}
 	}
 
 	/**
@@ -162,9 +170,7 @@ class Response implements ResponseInterface
 	public function withProtocolVersion($version)
 	{
 		$cloned = clone $this;
-		//
 		$cloned->httpVersion = $version;
-		//
 		return $cloned;
 	}
 
@@ -267,28 +273,28 @@ class Response implements ResponseInterface
 			throw new InvalidArgumentException('Value must be a string or array');
 		}
 		//
-		$new = new static;
+		$cloned = clone $this;
 		//
-		if (empty($new->headers)) {
-			$new->headers = [
+		if (empty($cloned->headers)) {
+			$cloned->headers = [
 				$name => is_array($value) ? $value : [$value]
 			];
 		} else {
 			$found = false;
-			foreach ($new->headers as $n => $v) {
+			foreach ($cloned->headers as $n => $v) {
 				if (0 == strcasecmp($n, $name)) {
-					$new->headers[$n] = is_array($value) ? $value : [$value];
+					$cloned->headers[$n] = is_array($value) ? $value : [$value];
 					$found = true;
 					break;
 				}
 			}
 			//
 			if (!$found) {
-				$new->headers[$name] = is_array($value) ? $value : [$value];
+				$cloned->headers[$name] = is_array($value) ? $value : [$value];
 			}
 		}
 		//
-		return $new;
+		return $cloned;
 	}
 
 	/**
@@ -310,26 +316,49 @@ class Response implements ResponseInterface
 			throw new InvalidArgumentException('Value must be a string or array');
 		}
 		//
-		$new = new static;
+		$cloned = clone $this;
+		$cloned->addHeader($name, $value);
+		return $cloned;
+	}
+
+	/**
+	 * Add the specified header to the current instance.
+	 * Used by the constructor and also by withAddedHeader() upon the cloned.
+	 *
+	 * @param string $name Case-insensitive header field name to add.
+	 * @param string|string[] $value Header value(s).
+	 * @return void
+	 * @throws \InvalidArgumentException for invalid header names.
+	 * @throws \InvalidArgumentException for invalid header values.
+	 */
+	protected function addHeader($name, $value)
+	{
+		if (!is_string($name)) {
+			throw new InvalidArgumentException('Name must be a string');
+		}
 		//
-		if (empty($new->headers)) {
-			$new->headers = [
+		if (!is_string($value) && !is_array($value)) {
+			throw new InvalidArgumentException('Value must be a string or array');
+		}
+		//
+		if (empty($this->headers)) {
+			$this->headers = [
 				$name => is_array($value) ? $value : [$value]
 			];
 		} else {
 			$found = false;
-			foreach ($new->headers as $n => $v) {
+			foreach ($this->headers as $n => $v) {
 				if (0 == strcasecmp($n, $name)) {
 					if (!is_array($v)) {
-						$new->headers[$n] = [$v];
+						$this->headers[$n] = [$v];
 					}
 					//
 					if (is_array($value)) {
 						foreach ($value as $valueItem) {
-							$new->headers[$n][] = $valueItem;
+							$this->headers[$n][] = $valueItem;
 						}
 					} else {
-						$new->headers[$n][] = $value;
+						$this->headers[$n][] = $value;
 					}
 					//
 					$found = true;
@@ -338,11 +367,9 @@ class Response implements ResponseInterface
 			}
 			//
 			if (!$found) {
-				$new->headers[$name] = is_array($value) ? $value : [$value];
+				$this->headers[$name] = is_array($value) ? $value : [$value];
 			}
 		}
-		//
-		return $new;
 	}
 
 	/**
@@ -390,9 +417,9 @@ class Response implements ResponseInterface
 	*/
 	public function withBody(StreamInterface $body)
 	{
-		$new = new static;
-		$new->body = $body;
-		return $new;
+		$cloned = clone $this;
+		$cloned->body = $body;
+		return $cloned;
 	}
 
 	/**
