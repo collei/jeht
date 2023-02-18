@@ -36,6 +36,11 @@ class RouteFactory implements RouteFactoryInterface
 	protected const REGEX_NUMBER = '[0-9]+';
 
 	/**
+	 * @var string
+	 */
+	protected const REGEX_UUID = '[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}';
+
+	/**
 	 * @var string[]
 	 */
 	protected $httpMethods = [];
@@ -53,29 +58,29 @@ class RouteFactory implements RouteFactoryInterface
 	/**
 	 * @var string
 	 */
-	protected $path;
+	protected $uri;
 
 	/**
 	 * @var mixed
 	 */
-	protected $handler;
+	protected $action;
 
 	/**
-	 * Translates a route path into a regex that may be used to collect
+	 * Translates a route uri into a regex that may be used to collect
 	 * named parameters easily.
 	 *
 	 * Use the second parameter to override the default regex piece for
 	 * one or more parameters, so you can add custom constraints for, e.g.,
 	 * alphanumeric. The default piece matches anything but forward slashes.
 	 *
-	 * @param string $path
+	 * @param string $uri
 	 * @param array $paramRegex
 	 * @return string|false
 	 */
-	protected static function compileRegex(string $path, array $paramRegex = [])
+	protected static function compileRegex(string $uri, array $paramRegex = [])
 	{
-		if (preg_match_all(self::REGEX_IU_PARAM, $path, $matches, PREG_SET_ORDER)) {
-			$regex = $path;
+		if (preg_match_all(self::REGEX_IU_PARAM, $uri, $matches, PREG_SET_ORDER)) {
+			$regex = $uri;
 			//
 			foreach ($matches as $match) {
 				$regexp = self::REGEX_ANY;
@@ -104,7 +109,7 @@ class RouteFactory implements RouteFactoryInterface
 	/**
 	 * Apply the given $regex restrictor to the given $parameter
 	 *
-	 * @param string $path
+	 * @param string $uri
 	 * @param string $regex = null
 	 * @return self
 	 */
@@ -119,16 +124,16 @@ class RouteFactory implements RouteFactoryInterface
 	/**
 	 * Starts a new RouteFactory instance
 	 *
-	 * @param string $path
+	 * @param string $uri
 	 * @param array $httpMethods
-	 * @param mixed $handler
+	 * @param mixed $action
 	 * @param string|null $name
 	 */
 	public function __construct(
-		string $path, array $httpMethods, $handler, string $name = null
+		string $uri, array $httpMethods, $action, string $name = null
 	) {
-		$this->path = $path;
-		$this->handler = $handler;
+		$this->uri = $uri;
+		$this->action = $action;
 		$this->httpMethods = $httpMethods;
 		$this->name = $name;
 	}
@@ -205,6 +210,17 @@ class RouteFactory implements RouteFactoryInterface
 	}
 
 	/**
+	 * Adds an UUID regex constraint to the given $parameter.
+	 *
+	 * @param string $parameter
+	 * @return self
+	 */
+	public function whereUuid(string $parameter)
+	{
+		return $this->constrictParameterTo($parameter, self::REGEX_UUID);
+	}
+
+	/**
 	 * Adds a lisgting regex constraint to the given $parameter.
 	 *
 	 * @param string $parameter
@@ -227,9 +243,9 @@ class RouteFactory implements RouteFactoryInterface
 	{
 		return new Route(
 			$this->httpMethods,
-			$this->path,
-			$this->handler,
-			self::compileRegex($this->path, $this->parameters),
+			$this->uri,
+			$this->action,
+			self::compileRegex($this->uri, $this->parameters),
 			$this->name ?? Str::randomize(32)
 		);
 	}

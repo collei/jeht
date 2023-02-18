@@ -344,7 +344,7 @@ du(__FILE__,__LINE__,__METHOD__,$routes);
 	{
 		foreach ($this->routeFactories as $factory) {
 			$this->registerRoute(
-				$factory->fetch()
+				$factory->fetch()->setContainer($this->app)->setRouter($this)
 			);
 		}
 		//
