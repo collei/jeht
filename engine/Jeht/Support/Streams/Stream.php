@@ -134,13 +134,20 @@ class Stream implements StreamInterface
 		}
 	}
 
+	/**
+	 * Fix clone of streamed data.
+	 *
+	 * @return void
+	 */
 	public function __clone()
 	{
 		$handle = fopen('php://memory', 'w+');
-
-		stream_copy_to_stream($this->handle, dest)
-
-		$this->handle = 
+		//
+		if ($this->size > 0) {
+			stream_copy_to_stream($this->handle, $handle);
+		}
+		//
+		$this->handle->attach($handle);
 	}
 
 	/**
@@ -193,11 +200,15 @@ class Stream implements StreamInterface
 		//
 		$this->handle = $stream;
 		//
+		$meta = stream_get_meta_data($stream);
+		//
 		if (!is_null($size)) {
 			$this->size = $size;
+		} else {
+			$fstat = fstat($stream);
+			$this->size = $fstat['size'] ?? null;
 		}
 		//
-		$meta = stream_get_meta_data($stream);
 		$this->seekable = $meta['seekable'];
 		$this->readable = isset(self::READABLE_MODES[$meta['mode']]);
 		$this->writable = isset(self::WRITABLE_MODES[$meta['mode']]);
@@ -300,6 +311,8 @@ class Stream implements StreamInterface
 		}
 		//
 		$this->seek(0);
+		//
+		return $this;
 	}
 
 	/**

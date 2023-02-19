@@ -84,65 +84,89 @@ class ResponsePreparator
 	 */
 	protected function finalPreparations(Request $request, Response $response)
 	{
+		/*
+		 * Content fixes
+		 */
 		if ($response->isInformational() || $response->isEmpty()) {
-			$response->setContent(null);
-			$headers->remove('Content-Type');
-			$headers->remove('Content-Length');
+			$response->unsetContent()
+					->unsetHeader('Content-Type')
+					->unsetHeader('Content-Length');
 			// prevent PHP from sending the Content-Type header based on default_mimetype
 			ini_set('default_mimetype', '');
 		} else {
 			// Content-type based on the Request
-			if (!$headers->has('Content-Type')) {
+			if (!$response->hasHeader('Content-Type')) {
 				$format = $request->getRequestFormat(null);
+				//
 				if (null !== $format && $mimeType = $request->getMimeType($format)) {
-					$headers->set('Content-Type', $mimeType);
+					$response->setHeader('Content-Type', $mimeType);
 				}
 			}
-
+			//
 			// Fix Content-Type
-			$charset = $this->charset ?: 'UTF-8';
-			if (!$headers->has('Content-Type')) {
-				$headers->set('Content-Type', 'text/html; charset='.$charset);
-			} elseif (0 === stripos($headers->get('Content-Type'), 'text/') && false === stripos($headers->get('Content-Type'), 'charset')) {
+			$charset = $response->getCharset('UTF-8');
+			//
+			if (!$response->hasHeader('Content-Type')) {
+				$response->setHeader('Content-Type', 'text/html; charset='.$charset);
+			} elseif (
+				0 === stripos($response->getHeaderLine('Content-Type'), 'text/') &&
+				false === stripos($response->getHeaderLine('Content-Type'), 'charset')
+			) {
 				// add the charset
-				$headers->set('Content-Type', $headers->get('Content-Type').'; charset='.$charset);
+				$response->setHeader(
+					'Content-Type', $response->getHeader('Content-Type').'; charset='.$charset
+				);
 			}
-
+			//
 			// Fix Content-Length
-			if ($headers->has('Transfer-Encoding')) {
-				$headers->remove('Content-Length');
+			if ($response->hasHeader('Transfer-Encoding')) {
+				$response->unsetHeader('Content-Length');
 			}
-
+			//
 			if ($request->isMethod('HEAD')) {
 				// cf. RFC2616 14.13
-				$length = $headers->get('Content-Length');
-				$this->setContent(null);
+				$length = $response->getHeader('Content-Length');
+				$response->unsetContent();
+				//
 				if ($length) {
-					$headers->set('Content-Length', $length);
+					$response->setHeader('Content-Length', $length);
 				}
 			}
 		}
 
-		// Fix protocol
-		if ('HTTP/1.0' != $request->server->get('SERVER_PROTOCOL')) {
-			$this->setProtocolVersion('1.1');
+		/*
+		 * Protocol fixes
+		 */
+		if ('HTTP/1.0' != $request->getServerParam('SERVER_PROTOCOL')) {
+			$response->setProtocolVersion('1.1');
 		}
 
-		// Check if we need to send extra expire info headers
-		if ('1.0' == $this->getProtocolVersion() && false !== strpos($headers->get('Cache-Control'), 'no-cache')) {
-			$headers->set('pragma', 'no-cache');
-			$headers->set('expires', -1);
+		/*
+		 * Check if we need to send extra expire info headers
+		 */
+		if (
+			'1.0' == $response->getProtocolVersion() &&
+			false !== strpos($response->getHeader('Cache-Control'), 'no-cache')
+		) {
+			$response->setHeader('pragma', 'no-cache')
+					->setHeader('expires', -1);
 		}
 
-		$this->ensureIEOverSSLCompatibility($request);
+		/*
+		 * IE over SSL compatibility
+		 */
+		//$response->ensureIEOverSSLCompatibility($request);
 
+		/*
+		 * Secure cookies
+		 */
 		if ($request->isSecure()) {
-			foreach ($headers->getCookies() as $cookie) {
+			foreach ($response->getCookies() as $cookie) {
 				$cookie->setSecureDefault(true);
 			}
 		}
 
-		return $this;
+		return $response;
 	}
 
 }

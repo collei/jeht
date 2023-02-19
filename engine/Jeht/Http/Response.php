@@ -113,6 +113,11 @@ class Response implements ResponseInterface
 	protected $body = '';
 
 	/**
+	 * @var \Jeht\Http\HttpCookie[]
+	 */
+	protected $cookies = [];
+
+	/**
 	 * Creates an instance with the specified body, status code and, optionally, headers.
 	 *
 	 * @see http://tools.ietf.org/html/rfc7231#section-6
@@ -274,6 +279,19 @@ class Response implements ResponseInterface
 	}
 
 	/**
+	 * Sets the HTTP protocol version as a string.
+	 *
+	 * @param string $version  HTTP protocol version.
+	 * @return $this
+	 */
+	public function setProtocolVersion(string $version)
+	{
+		$this->httpVersion = $version;
+		//
+		return $this;
+	}
+
+	/**
 	 * Return an instance with the specified HTTP protocol version.
 	 *
 	 * @param string $version HTTP protocol version
@@ -429,11 +447,11 @@ class Response implements ResponseInterface
 	 *
 	 * @param string $name Case-insensitive header field name.
 	 * @param string|string[] $value Header value(s).
-	 * @return void
+	 * @return $this
 	 * @throws \InvalidArgumentException for invalid header names.
 	 * @throws \InvalidArgumentException for invalid header values.
 	 */
-	protected function setHeader($name, $value)
+	public function setHeader($name, $value)
 	{
 		if (!is_string($name)) {
 			throw new InvalidArgumentException('Name must be a string');
@@ -461,6 +479,8 @@ class Response implements ResponseInterface
 				$this->headers[$name] = is_array($value) ? $value : [$value];
 			}
 		}
+		//
+		return $this;
 	}
 
 	/**
@@ -469,11 +489,11 @@ class Response implements ResponseInterface
 	 *
 	 * @param string $name Case-insensitive header field name to add.
 	 * @param string|string[] $value Header value(s).
-	 * @return void
+	 * @return $this
 	 * @throws \InvalidArgumentException for invalid header names.
 	 * @throws \InvalidArgumentException for invalid header values.
 	 */
-	protected function addHeader($name, $value)
+	public function addHeader($name, $value)
 	{
 		if (!is_string($name)) {
 			throw new InvalidArgumentException('Name must be a string');
@@ -512,13 +532,15 @@ class Response implements ResponseInterface
 				$this->headers[$name] = is_array($value) ? $value : [$value];
 			}
 		}
+		//
+		return $this;
 	}
 
 	/**
 	 * Removes the specified header.
 	 *
 	 * @param string $name Case-insensitive header field name to remove.
-	 * @return void
+	 * @return $this
 	 * @throws \InvalidArgumentException for invalid header names.
 	 */
 	public function unsetHeader($name)
@@ -535,6 +557,8 @@ class Response implements ResponseInterface
 				}
 			}
 		}
+		//
+		return $this;
 	}
 
 	/**
@@ -589,13 +613,25 @@ class Response implements ResponseInterface
 	 * Sets the body of the message by using a string.
 	 *
 	 * @param string|null $content
-	 * @return void
+	 * @return $this
 	 */
-	protected function setContent(string $content = null)
+	public function setContent(string $content = null)
 	{
 		$this->setBody(
 			new StringStream($content ?? '')
 		);
+		//
+		return $this;
+	}
+
+	/**
+	 * Sets the body of the message by using a string.
+	 *
+	 * @return $this
+	 */
+	public function unsetContent()
+	{
+		return $this->setContent();
 	}
 
 	/**
@@ -649,6 +685,57 @@ class Response implements ResponseInterface
 	public function getReasonPhrase()
 	{
 		return $this->reason ?? '';
+	}
+
+	/**
+	 * Returns the response cookies as array of \Jeht\Http\HttpCookie
+	 *
+	 * @return array
+	 */
+	public function getCookies()
+	{
+		return $cookies = $this->cookies;
+	}
+
+	/**
+	 * Returns the response cookies as array of \Jeht\Http\HttpCookie
+	 *
+	 * @return array
+	 */
+	public function getCharset(string $default = null)
+	{
+		return $default;
+	}
+
+	/**
+	 * Send HTTP headers and content.
+	 *
+	 * @return $this
+	 */
+	public function send()
+	{
+		$this->sendHeaders();
+		$this->sendContent();
+		//
+		if (function_exists('fastcgi_')) {
+			fastcgi_finish_request();
+		} elseif (!in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
+			static::closeOutputBuffers(0, true);
+		}
+		//
+		return $this;
+	}
+
+	/**
+	 * Send HTTP content.
+	 *
+	 * @return $this
+	 */
+	protected function sendContent()
+	{
+		echo $this->getBody()->rewind()->getContents();
+		//
+		return $this;
 	}
 
 }

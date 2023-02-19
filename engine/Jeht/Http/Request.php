@@ -22,7 +22,7 @@ class Request implements RequestInterface
 	/**
 	 * @var string
 	 */
-	protected $request_target = '/';
+	protected $requestTarget = '/';
 
 	/**
 	 * @var string
@@ -32,7 +32,7 @@ class Request implements RequestInterface
 	/**
 	 * @var string
 	 */
-	protected $http_version = '';
+	protected $httpVersion = '';
 
 	/**
 	 * @var string[]
@@ -97,7 +97,7 @@ class Request implements RequestInterface
 	 */
 	public function getRequestTarget()
 	{
-		return empty($this->request_target) ? '/' : $this->request_target;
+		return empty($this->requestTarget) ? '/' : $this->requestTarget;
 	}
 
 	/**
@@ -111,7 +111,7 @@ class Request implements RequestInterface
 	public function withRequestTarget($requestTarget)
 	{
 		$new = new static;
-		$new->request_target = $requestTarget;
+		$new->requestTarget = $requestTarget;
 		return $new;
 	}
 
@@ -166,15 +166,25 @@ class Request implements RequestInterface
 	/**
 	 * Retrieves the URI instance.
 	 *
-	 * This method MUST return a UriInterface instance.
-	 *
 	 * @see http://tools.ietf.org/html/rfc3986#section-4.3
-	 * @return UriInterface Returns a UriInterface instance
-	 *	 representing the URI of the request.
+	 *
+	 * @return \Psr\Http\Message\UriInterface
 	 */
 	public function getUri()
 	{
 		return $this->uri;
+	}
+
+	/**
+	 * Checks whether the request is secure or not.
+	 *
+	 * @return bool
+	 */
+	public function isSecure()
+	{
+		$https = $this->getServerParam('HTTPS');
+		//
+		return !empty($https) && 'off' !== strtolower($https);
 	}
 
 	/**
@@ -217,7 +227,7 @@ class Request implements RequestInterface
 	 */
 	public function getProtocolVersion()
 	{
-		return $this->http_version;
+		return $this->httpVersion;
 	}
 
 	/**
@@ -229,30 +239,12 @@ class Request implements RequestInterface
 	public function withProtocolVersion($version)
 	{
 		$new = new static;
-		$new->http_version = $version;
+		$new->httpVersion = $version;
 		return $new;
 	}
 
 	/**
 	 * Retrieves all message header values.
-	 *
-	 * The keys represent the header name as it will be sent over the wire, and
-	 * each value is an array of strings associated with the header.
-	 *
-	 *	 // Represent the headers as a string
-	 *	 foreach ($message->getHeaders() as $name => $values) {
-	 *		 echo $name . ': ' . implode(', ', $values);
-	 *	 }
-	 *
-	 *	 // Emit headers iteratively:
-	 *	 foreach ($message->getHeaders() as $name => $values) {
-	 *		 foreach ($values as $value) {
-	 *			 header(sprintf('%s: %s', $name, $value), false);
-	 *		 }
-	 *	 }
-	 *
-	 * While header names are not case-sensitive, getHeaders() will preserve the
-	 * exact case in which headers were originally specified.
 	 *
 	 * @return string[][] Returns an associative array of the message's headers.
 	 *	 Each key MUST be a header name, and each value MUST be an array of
@@ -479,6 +471,18 @@ class Request implements RequestInterface
 	}
 
 	/**
+	 * Retrieve the given server parameter.
+	 *
+	 * @param string $name
+	 * @param mixed $default
+	 * @return string
+	 */
+	public function getServerParam(string $name, $default = null)
+	{
+		return $this->serverParams[$name] ?? $default;
+	}
+
+	/**
 	 * Retrieve server parameters.
 	 *
 	 * @return array
@@ -497,9 +501,7 @@ class Request implements RequestInterface
 	public function withServerParams(array $server)
 	{
 		$cloned = clone $this;
-		//
 		$cloned->serverParams = $server;
-		//
 		return $cloned;
 	}
 
