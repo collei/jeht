@@ -12,7 +12,7 @@ Things will be taken from collei/framework (an earlier project of mine, "almost"
 The kernel is in active developement and is not yet suitable to support any serious use.
 
 ### Basic features
-Note it is just a rough project schedule with no guarantee implied as human life is utterly fragile (as a plain vanity it is) and death is the only certainty (besides Jesus Christ, ofc).
+Note it is just a rough project schedule with no guarantee implied as human life is utterly fragile (as a plain vanity it is) and death is the only certainty (besides 'Jesus is the King of kings', ofc).
 
 #### Added
 * Application Container
@@ -33,3 +33,5 @@ Note it is just a rough project schedule with no guarantee implied as human life
 
 ## License
 MIT License. See LICENSE file for details.
+
+**IMPORTANT NOTE:** This project has several parts taken from, or inspired upon, other projects (e.g., Laravel, Symfony, and so on), so these parts MUST be credited to their original authors. Hence, you will see LICENSE notes on some parts among the code comment sections. 
