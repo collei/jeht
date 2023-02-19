@@ -114,7 +114,7 @@ class ResponsePreparator
 			) {
 				// add the charset
 				$response->setHeader(
-					'Content-Type', $response->getHeader('Content-Type').'; charset='.$charset
+					'Content-Type', $response->getHeaderLine('Content-Type').'; charset='.$charset
 				);
 			}
 			//

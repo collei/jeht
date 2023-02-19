@@ -1,14 +1,20 @@
 <?php
 namespace Jeht\Http;
 
+use Jeht\Interfaces\Support\Stringable;
+use Jeht\Support\Traits\InteractsWithTime;
+use DateTimeInterface;
+
 /**
  *	Encapsulates a HTTP cookie
  *
  *	@author	alarido <alarido.su@gmail.com>
  *	@since	2021-05-xx
  */
-class HttpCookie
+class HttpCookie implements Stringable
 {
+	use InteractsWithTime;
+
 	/**
 	 *	@var string
 	 *	@var string
@@ -229,6 +235,68 @@ class HttpCookie
 	public function remove()
 	{
 		setcookie($this->name, '', time() - 43200);
+	}
+
+	/**
+	 *	Creates a string version of the stored data.
+	 *
+	 *	@return	string
+	 */
+	public function asString()
+	{
+		$nibs = [$this->name => $this->value];
+		//
+		if (!empty($this->expires)) {
+			$date = $this->addRealSecondsTo($this->now(), $this->expires);
+			//
+			$nibs['expires'] = $date->format(DateTimeInterface::RFC7231);
+		}
+		//
+		if (!empty($this->domain)) {
+			$nibs['domain'] = $this->domain;
+		}
+		//
+		if (!empty($this->path)) {
+			$nibs['path'] = $this->path;
+		}
+		//
+		if ($this->secure) {
+			$nibs['secure'] = true;
+		}
+		//
+		if ($this->httpOnly) {
+			$nibs['HttpOnly'] = true;
+		}
+		//
+		if (!empty($this->sameSite)) {
+			$nibs['SameSite'] = $this->sameSite;
+		}
+		//
+		foreach ($nibs as $name => &$value) {
+			$value = is_bool($value) ? $name : ($name.'='.$value);
+		}
+		//
+		return implode('; ', $nibs);
+	}
+
+	/**
+	 * Returns it as a header string (prefixed by 'Set-Cookie: ').
+	 *
+	 * @return string
+	 */
+	public function asHeaderString(): string
+	{
+		return 'Set-Cookie: ' . $this->asString();
+	}
+
+	/**
+	 * Converts to string
+	 *
+	 * @return string
+	 */
+	public function __toString(): string
+	{
+		return $this->asString();
 	}
 
 }

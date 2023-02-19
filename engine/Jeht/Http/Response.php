@@ -717,11 +717,47 @@ class Response implements ResponseInterface
 		$this->sendHeaders();
 		$this->sendContent();
 		//
-		if (function_exists('fastcgi_')) {
+		if (function_exists('fastcgi_finish_request')) {
 			fastcgi_finish_request();
 		} elseif (!in_array(PHP_SAPI, ['cli', 'phpdbg'], true)) {
 			static::closeOutputBuffers(0, true);
 		}
+		//
+		return $this;
+	}
+
+	/**
+	 * Send the HTTP headers.
+	 *
+	 * @return $this
+	 */
+	protected function sendHeaders()
+	{
+		if (headers_sent()) {
+			return $this;
+		}
+		//
+		foreach ($this->getHeaders() as $name => $values) {
+			$replace = 0 === strcasecmp($name, 'Content-Type');
+			//
+			foreach ($values as $value) {
+				header($name.': '.$value, $replace, $this->statusCode);
+			}
+		}
+		//
+		foreach ($this->cookies as $cookie) {
+			header($cookie->asHeaderString(), false, $this->statusCode);
+		}
+		//
+		$status = 'HTTP/'.$this->httpVersion.' '.$this->statusCode;
+		//
+		if (!empty($this->reason)) {
+			$status .= ' '.$this->reason;
+		} else {
+			$status .= ' '.(self::HTTP_STATUS_CODES[$this->statusCode] ?? 'Undefined');
+		}
+		//
+		header($status, true, $this->statusCode);
 		//
 		return $this;
 	}
