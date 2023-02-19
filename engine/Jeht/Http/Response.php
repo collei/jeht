@@ -3,9 +3,52 @@ namespace Jeht\Http;
 
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\ResponseInterface;
+use Stringable as NativeStringable;
+use Jeht\Interfaces\Support\Stringable;
 
 /**
  * Representation of an outgoing, server-side response.
+ *
+ * IMPORTANT NOTE: the LICENSE note below does apply for some methods
+ * and/or part of the implementation inside such methods of this class.
+ * Most of these methods are:
+ *
+ *	isInvalid()
+ *	isInformational()
+ *	isSuccessful()
+ *	isRedirection()
+ *	isClientError()
+ *	isServerError()
+ *	isOk()
+ *	isForbidden()
+ *	isNotFound()
+ *	isRedirect()
+ *	isEmpty()
+ *	setProtocolVersion()
+ *	send()
+ *	closeOutputBuffers()
+ *
+ * -------------------------------------------------------------------
+ * Copyright (c) 2004-2021 Fabien Potencier
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is furnished
+ * to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * -------------------------------------------------------------------
  */
 class Response implements ResponseInterface
 {
@@ -122,15 +165,32 @@ class Response implements ResponseInterface
 	 *
 	 * @see http://tools.ietf.org/html/rfc7231#section-6
 	 * @see http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-	 * @param string $body
+	 * @param string|\Jeht\Support\Streams\Stream|\Psr\Http\Message\StreamInterface $body
 	 * @param int $code
 	 * @param array|null $headers
 	 * @throws \InvalidArgumentException For invalid status code arguments
 	 */
-	public function __construct(string $body, int $statusCode = 200, array $headers = null)
+	public function __construct($body, int $statusCode = 200, array $headers = null)
 	{
 		if (!static::validateStatusCode($statusCode)) {
 			throw new InvalidArgumentException("Invalid status code: [$statusCode].");
+		}
+		//
+		if (
+			$body instanceof StreamInterface || $body instanceof StringStream
+		) {
+			$this->body = clone $body;
+		} elseif (
+			is_string($body) || $body instanceof Stringable || $body instanceof NativeStringable
+		) {
+			$this->body = '' . $body . '';
+		} else {
+			$message = 'Body must be a string or instanceof \Stringable'
+				. ' or instanceof [\Jeht\Interfaces\Support\Stringable]'
+				. ' or instanceof [\Jeht\Support\Streams\Stream]'
+				. ' or instanceof [\Psr\Http\Message\StreamInterface].';
+			//
+			throw new InvalidArgumentException($message);
 		}
 		//
 		$this->body = $body;
@@ -773,6 +833,38 @@ class Response implements ResponseInterface
 		//
 		return $this;
 	}
+
+	/**
+	 * Cleans or flushes output buffers up to target level.
+	 *
+	 * Resulting level can be greater than target level if a non-removable buffer has been encountered.
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * @return void
+	 */
+	public static function closeOutputBuffers(int $targetLevel, bool $flush): void
+	{
+		$status = ob_get_status(true);
+		$level = count($status);
+		$flags = PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? PHP_OUTPUT_HANDLER_FLUSHABLE : PHP_OUTPUT_HANDLER_CLEANABLE);
+		//
+		while (
+			$level-- > $targetLevel
+			&& ($st = $status[$level])
+			&& (!isset($st['del']) ? !isset($st['flags']) || ($st['flags'] & $flags) === $flags : $st['del'])
+		) {
+			if ($flush) {
+				ob_end_flush();
+			} else {
+				ob_end_clean();
+			}
+		}
+	}
+
 
 }
 

@@ -7,7 +7,6 @@ use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 
 use Jeht\Support\Streams\StreamFactory;
-use Jeht\Support\Streams\StringStream;
 use Jeht\Support\Arr;
 
 class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInterface
@@ -241,8 +240,20 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 	 */
 	public function createFromParts(
 		string $uri, string $method = 'GET',
-		array $parameters = [], array $cookies = [], array $files = [], array $server = [], $content = null
+		array $parameters = [],
+		array $cookies = [],
+		array $files = [],
+		array $server = [],
+		$content = null
 	): Request {
+		if (!is_null($content) && !is_resource($content) && !is_string($content)) {
+			throw new InvalidArgumentException('Content must be a string or a resource');
+		}
+		//
+		if (is_resource($content) && !Stream::resourceIsReadable($content)) {
+			throw new InvalidArgumentException('Resource must be readable !');
+		}
+
 		$server = array_replace([
 			'SERVER_NAME' => 'localhost',
 			'SERVER_PORT' => 80,
@@ -342,10 +353,14 @@ class RequestFactory implements RequestFactoryInterface, ServerRequestFactoryInt
 			->withUploadedFiles($files)
 			->withServerParams($server);
 
-		if (is_array($content) || is_object($content)) {
-			$request = $request->withParsedBody($content);
-		} elseif (is_string($content)) {
-			$request = $request->withBody(new StringStream($content));
+		if (is_string($content) || is_null($content)) {
+			$request = $request->withBody(
+				$this->streamFactory->createStringStream($content ?? '')
+			);
+		} elseif (is_resource($content)) {
+			$request = $request->withBody(
+				$this->streamFactory->createStream($content)->toStringStream()
+			);
 		}
 		//
 		return $request;

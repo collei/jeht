@@ -4,8 +4,25 @@ namespace Jeht\Http;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
+use Jeht\Support\Streams\StreamFactory;
+use Jeht\Support\Streams\StringStream;
+
 class ResponseFactory implements ResponseFactoryInterface
 {
+	/**
+	 * @var \Jeht\Support\Streams\StreamFactory
+	 */
+	protected $streamFactory;
+
+	/**
+	 * Initializes factories and stuff
+	 *
+	 */
+	public function __construct()
+	{
+		$this->streamFactory = new StreamFactory;
+	}
+
 	/**
 	 * Create a new response.
 	 *
@@ -16,7 +33,7 @@ class ResponseFactory implements ResponseFactoryInterface
 	 */
 	public function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
 	{
-		return new Response('', $code, []);
+		return $this->create('', $code, []);
 	}
 
 	/**
@@ -29,7 +46,9 @@ class ResponseFactory implements ResponseFactoryInterface
 	 */
 	public function create(string $body, int $statusCode = 200, array $headers = null)
 	{
-		return new Response($body, $statusCode, $headers);
+		return new Response(
+			new StringStream($body), $statusCode, $headers
+		);
 	}
 
 }

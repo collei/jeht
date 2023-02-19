@@ -3,6 +3,7 @@ namespace Jeht\Support\Streams;
 
 use Throwable;
 use RuntimeException;
+use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -116,7 +117,16 @@ class Stream implements StreamInterface
 	{
 		try {
 			if ($this->isSeekable()) {
+				// save current position
+				$current = $this->tell();
+				// go to start
 				$this->seek(0);
+				// gathers
+				$contents = $this->getContents();
+				// restore current position
+				$this->seek($current);
+				// that's it
+				return $contents;
 			}
 			//
 			return $this->getContents();
@@ -147,7 +157,7 @@ class Stream implements StreamInterface
 			stream_copy_to_stream($this->handle, $handle);
 		}
 		//
-		$this->handle->attach($handle);
+		$this->attach($handle);
 	}
 
 	/**
@@ -448,6 +458,18 @@ class Stream implements StreamInterface
 	}
 
 	/**
+	 * Returns a StringStream instance with the same data and metadata.
+	 *
+	 * @return \Jeht\Support\Streams\StringStream
+	 */
+	public function toStringStream()
+	{
+		return new StringStream(
+			$this->__toString(), $this->getMetadata()
+		);
+	}
+
+	/**
 	 * Validates $mode parameter for use with fopen().
 	 *
 	 * @param string $mode
@@ -479,6 +501,44 @@ class Stream implements StreamInterface
 	public static function isWritableMode(string $mode)
 	{
 		return array_key_exists($mode, self::WRITABLE_MODES);
+	}
+
+	/**
+	 * Checks if the given $resource is readable.
+	 *
+	 * @param resource $handle
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
+	public static function resourceIsReadable($handle)
+	{
+		if (!is_resource($handle)) {
+			throw new InvalidArgumentException('The passed argument is not a resource.');
+		}
+		//
+		$metadata = stream_get_meta_data($handle);
+		$mode = $metadata['mode'] ?? '';
+		//
+		return self::isReadableMode($mode);
+	}
+
+	/**
+	 * Checks if the given $resource is writable.
+	 *
+	 * @param resource $handle
+	 * @return bool
+	 * @throws \InvalidArgumentException
+	 */
+	public static function resourceIsWritable($handle)
+	{
+		if (!is_resource($handle)) {
+			throw new InvalidArgumentException('The passed argument is not a resource.');
+		}
+		//
+		$metadata = stream_get_meta_data($handle);
+		$mode = $metadata['mode'] ?? '';
+		//
+		return self::isWritableMode($mode);
 	}
 
 }

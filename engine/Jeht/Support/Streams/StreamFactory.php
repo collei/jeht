@@ -9,9 +9,8 @@ class StreamFactory implements StreamFactoryInterface
 	/**
 	 * Create a new stream from a string.
 	 *
-	 * The stream SHOULD be created with a temporary resource.
-	 *
 	 * @param string $content String content with which to populate the stream.
+	 * @return \Psr\Http\Message\StreamInterface
 	 */
 	public function createStream(string $content = ''): StreamInterface
 	{
@@ -32,7 +31,7 @@ class StreamFactory implements StreamFactoryInterface
 	 *
 	 * @param string $filename The filename or stream URI to use as basis of stream.
 	 * @param string $mode The mode with which to open the underlying filename/stream.
-	 *
+	 * @return \Psr\Http\Message\StreamInterface
 	 * @throws \RuntimeException If the file cannot be opened.
 	 * @throws \InvalidArgumentException If the mode is invalid.
 	 */
@@ -61,9 +60,21 @@ class StreamFactory implements StreamFactoryInterface
 	 * The stream MUST be readable and may be writable.
 	 *
 	 * @param resource $resource The PHP resource to use as the basis for the stream.
+	 * @return \Psr\Http\Message\StreamInterface
 	 */
 	public function createStreamFromResource($resource): StreamInterface
 	{
 		return new Stream($resource);
+	}
+
+	/**
+	 * Create a new stream from a string.
+	 *
+	 * @param string $content String content with which to populate the stream.
+	 * @return \Jeht\Support\Streams\StringStream
+	 */
+	public function createStringStream(string $content = ''): StringStream
+	{
+		return new StringStream($content);
 	}
 }

@@ -38,15 +38,13 @@ class StreamUtils
 			$contents = stream_get_contents($stream);
 			//
 			if (false === $contents) {
-				$exception = new RuntimeException('Unable to read stream contents.')
+				$exception = new RuntimeException('Unable to read stream contents.');
 			}
 		}
 		catch (Throwable $t) {
 			$message = $t->getMessage();
 			//
-			$exception = new RuntimeException(
-				"Unable to read stream contents: {$message}."
-			);
+			$exception = new RuntimeException("Unable to read stream contents: {$message}.");
 		}
 		//
 		restore_error_handler();
