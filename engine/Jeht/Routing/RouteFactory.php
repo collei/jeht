@@ -160,11 +160,13 @@ class RouteFactory implements RouteFactoryInterface
 	 * @param string $uri
 	 * @param array $httpMethods
 	 * @param mixed $action
+	 * @param string|null $name
 	 * @return static
 	 */
-	public static function for($methods, string $uri, $action = null)
-	{
-		return new static($methods, $uri, $action);
+	public static function for(
+		$methods, string $uri, $action = null, string $name = null
+	) {
+		return new static($methods, $uri, $action, $name);
 	}
 
 	/**
@@ -191,7 +193,7 @@ class RouteFactory implements RouteFactoryInterface
 		$name = trim($name, ' 	.');
 		//
 		$this->name = !empty($this->name)
-			? (rtrim($this->name, '.').'.'.$name)
+			? (trim($this->name, '.').'.'.$name)
 			: $name;
 		//
 		return $this;

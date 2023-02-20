@@ -11,7 +11,7 @@ class Router
 	/**
 	 * @var \Jeht\Routing\RouteCollection
 	 */
-	protected $routecollection;
+	protected $routeCollection;
 
 	/**
 	 * @var \Jeht\Ground\Application
@@ -75,8 +75,8 @@ class Router
 		$withName = $withName ? trim($withName, ' 	.') : null;
 		//
 		$name = !empty($current['name'])
-			? (rtrim($current['name'], '.') . ($withName ? ('.'.$withName) : ''))
-			: $withName;
+			? ($current['name'] . ($withName ? ('.'.$withName) : ''))
+			: ($withName ?? '');
 		//
 		$action = $withAction ?? $current['action'] ?? null;
 		//
@@ -99,7 +99,7 @@ class Router
 		[$uri, $name, $action] = $this->aggregateAttributes($uri, $action);
 		//
 		$this->routeFactories[] = $factory = RouteFactory::for(
-			$methods, $this->appBaseUri.$uri, $action
+			$methods, $this->appBaseUri.$uri, $action, $name
 		);
 		//
 		return $factory;

@@ -14,6 +14,7 @@ class RouteGroup
 		'prefix' => 'prefixes',
 		'action' => 'actions',
 		'namespace' => 'namespaces',
+		'middleware' => 'middlewares',
 	];
 
 	/**
@@ -25,6 +26,11 @@ class RouteGroup
 	 * @var \Jeht\Routing\Router
 	 */
 	private $router;
+
+	/**
+	 * @var array
+	 */
+	private $campi = [];
 
 	/**
 	 * @var array
@@ -49,11 +55,17 @@ class RouteGroup
 	/**
 	 * @var array
 	 */
+	private $middlewares = [];
+
+	/**
+	 * @var array
+	 */
 	private $current = [
 		'name' => null,
 		'prefix' => null,
 		'action' => null,
 		'namespace' => null,
+		'middleware' => null,
 	];
 
 	/**
@@ -71,7 +83,7 @@ class RouteGroup
 		++$this->currentLevel;
 		//
 		foreach (self::CATEGORIES as $singular => $plural) {
-			$this->$plural[] = $this->current[$singular];
+			$this->{$plural}[] = $this->current[$singular];
 		}
 	}
 
@@ -161,6 +173,18 @@ class RouteGroup
 	}
 
 	/**
+	 * Sets the middleware for the next group calls
+	 *
+	 * @param string $middleware
+	 * @return self
+	 */
+	public function middleware(string $middleware)
+	{
+		$this->current['middleware'] = $middleware;
+		return $this;
+	}
+
+	/**
 	 * Calls the given $callback into the current group context
 	 *
 	 * @param \Closure $callaback
@@ -198,17 +222,19 @@ class RouteGroup
 	 */
 	public function getCurrentName(string $separator = null)
 	{
+		$separator = substr(trim($separator ?? ''), 0, 1);
+		//
 		$qualified = implode(($separator ?? ''), $this->names);
 		//
 		if ($separator) {
 			$qualified = str_replace(
 				[$separator.$separator.$separator, $separator.$separator],
-				[$separator, $separator],
+				$separator,
 				$qualified
 			);
 		}
 		//
-		return $qualified;
+		return trim($qualified, $separator);
 	}
 
 	/**
