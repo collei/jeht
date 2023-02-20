@@ -452,7 +452,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
 	 * @param  int  $depth
 	 * @return static
 	 */
-	public function flatten($depth = INF);
+	public function flatten(int $depth = PHP_INT_MAX);
 
 	/**
 	 * Flip the values with their keys.

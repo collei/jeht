@@ -2,6 +2,7 @@
 namespace Jeht\Routing;
 
 use Jeht\Ground\Application;
+use Jeht\Collections\Collection;
 use Jeht\Http\Request;
 use Jeht\Http\ResponsePreparator;
 
@@ -15,7 +16,7 @@ class Router
 	/**
 	 * @var \Jeht\Ground\Application
 	 */
-	protected $app;
+	protected $container;
 
 	/**
 	 * @var \Jeht\Ground\Routing\RouteGroup
@@ -107,18 +108,18 @@ class Router
 	/**
 	 * Initializes the route registrar
 	 *
-	 * @param	\Jeht\Ground\Application	$app
+	 * @param	\Jeht\Ground\Application	$container
 	 */
-	public function __construct(Application $app)
+	public function __construct(Application $container)
 	{
-		$this->app = $app;
-		$this->routeGroup = (new RouteGroup($app))->setRouter($this);
+		$this->container = $container;
+		$this->routeGroup = (new RouteGroup($container))->setRouter($this);
 		$this->routeCollection = new RouteCollection;
 		//
-		$this->app->instance(RouteGroup::class, $this->routeGroup);
-		$this->app->instance(RouteCollection::class, $this->routeCollection);
+		$this->container->instance(RouteGroup::class, $this->routeGroup);
+		$this->container->instance(RouteCollection::class, $this->routeCollection);
 		//
-		$this->appBaseUri = $this->app['app.rooturi'];
+		$this->appBaseUri = $this->container['app.rooturi'];
 	}
 
 	/**
@@ -318,7 +319,7 @@ class Router
 	{
 		foreach ($this->routeFactories as $factory) {
 			$this->registerRoute(
-				$factory->fetch()->setContainer($this->app)->setRouter($this)
+				$factory->fetch()->setContainer($this->container)->setRouter($this)
 			);
 		}
 		//
@@ -417,8 +418,129 @@ class Router
 		 */
 
 		return $this->prepareResponse(
-			$request, $route->run()
+			$request,
+			$this->runRouteWithinStack($route, $request)
+//			 $route->run()
 		);
+	}
+
+	/**
+	 * Run the given route within a Stack "onion" instance.
+	 *
+	 * @param  \Illuminate\Routing\Route  $route
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return mixed
+	 */
+	protected function runRouteWithinStack(Route $route, Request $request)
+	{
+		$shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
+								$this->container->make('middleware.disable') === true;
+
+		$middleware = $shouldSkipMiddleware ? [] : $this->gatherRouteMiddleware($route);
+
+		return (new Pipeline($this->container))
+						->send($request)
+						->through($middleware)
+						->then(function ($request) use ($route) {
+							return $this->prepareResponse(
+								$request, $route->run()
+							);
+						});
+	}
+
+
+
+	/**
+	 * Gather the middleware for the given route with resolved class names.
+	 *
+	 * @param  \Jeht\Routing\Route  $route
+	 * @return array
+	 */
+	public function gatherRouteMiddleware(Route $route)
+	{
+		return $this->resolveMiddleware($route->gatherMiddleware(), $route->excludedMiddleware());
+	}
+
+	/**
+	 * Resolve a flat array of middleware classes from the provided array.
+	 *
+	 * @param  array  $middleware
+	 * @param  array  $excluded
+	 * @return array
+	 */
+	public function resolveMiddleware(array $middleware, array $excluded = [])
+	{
+		$excluded = Collection::for($excluded)->map(function ($name) {
+			return (array) MiddlewareNameResolver::resolve(
+				$name, $this->middleware, $this->middlewareGroups
+			);
+		})->flatten()->values()->all();
+
+		$middleware = Collection::for($middleware)->map(function ($name) {
+			return (array) MiddlewareNameResolver::resolve(
+				$name, $this->middleware, $this->middlewareGroups
+			);
+		})->flatten()->reject(function ($name) use ($excluded) {
+			if (empty($excluded)) {
+				return false;
+			}
+
+			if ($name instanceof Closure) {
+				return false;
+			}
+
+			if (in_array($name, $excluded, true)) {
+				return true;
+			}
+
+			if (! class_exists($name)) {
+				return false;
+			}
+
+			$reflection = new ReflectionClass($name);
+
+			return Collection::for($excluded)->contains(
+				function($exclude) {
+					return class_exists($exclude) && $reflection->isSubclassOf($exclude);
+				}
+			);
+		})->values();
+
+		return $this->sortMiddleware($middleware);
+	}
+
+	/**
+	 * Sort the given middleware by priority.
+	 *
+	 * @param  \Jeht\Collections\Collection  $middlewares
+	 * @return array
+	 */
+	protected function sortMiddleware(Collection $middlewares)
+	{
+		return (new SortedMiddleware($this->middlewarePriority, $middlewares))->all();
+	}
+
+	/**
+	 * Remove any duplicate middleware from the given array.
+	 *
+	 * @param  array  $middleware
+	 * @return array
+	 */
+	public static function uniqueMiddleware(array $middleware)
+	{
+		$seen = [];
+		$result = [];
+
+		foreach ($middleware as $value) {
+			$key = is_object($value) ? spl_object_id($value) : $value;
+
+			if (! isset($seen[$key])) {
+				$seen[$key] = true;
+				$result[] = $value;
+			}
+		}
+
+		return $result;
 	}
 
 	protected function prepareResponse(Request $request, $response)

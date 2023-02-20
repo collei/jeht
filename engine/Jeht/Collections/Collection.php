@@ -397,7 +397,7 @@ class Collection implements ArrayAccess, CanBeEscapedWhenCastToString, Enumerabl
 	 * @param  int  $depth
 	 * @return static
 	 */
-	public function flatten($depth = INF)
+	public function flatten(int $depth = PHP_INT_MAX)
 	{
 		return new static(Arr::flatten($this->items, $depth));
 	}

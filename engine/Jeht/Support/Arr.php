@@ -857,5 +857,73 @@ abstract class Arr
 		return array_merge([], ...$results);
 	}
 
+	/**
+	 * Pluck an array of values from an array.
+	 *
+	 * @param  iterable  $array
+	 * @param  string|array|int|null  $value
+	 * @param  string|array|null  $key
+	 *
+	 * @return array
+	 */
+	public static function pluck(iterable $array, $value, $key = null): array
+	{
+		$results = [];
+
+		$value = is_string($value) ? explode('.', $value) : $value;
+
+		$key = is_null($key) || is_array($key) ? $key : explode('.', $key);
+
+		foreach ($array as $item) {
+			$itemValue = data_get($item, $value);
+
+			// If the key is "null", we will just append the value to the array and keep
+			// looping. Otherwise we will key the array using the value of the key we
+			// received from the developer. Then we'll return the final array form.
+			if (is_null($key)) {
+				$results[] = $itemValue;
+			} else {
+				$itemKey = data_get($item, $key);
+
+				if (is_object($itemKey) && method_exists($itemKey, '__toString')) {
+					$itemKey = (string) $itemKey;
+				}
+
+				$results[$itemKey] = $itemValue;
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Flatten a multi-dimensional array into a single level.
+	 *
+	 * @param  iterable  $array
+	 * @param  int  $depth
+	 *
+	 * @return array
+	 */
+	public static function flatten(iterable $array, int $depth): array
+	{
+		$result = [];
+
+		foreach ($array as $item) {
+			if (!is_array($item)) {
+				$result[] = $item;
+			} else {
+				$values = $depth === 1
+					? array_values($item)
+					: array_flatten($item, $depth - 1);
+
+				foreach ($values as $value) {
+					$result[] = $value;
+				}
+			}
+		}
+
+		return $result;
+	}
+
 }
 
