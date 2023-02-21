@@ -6,6 +6,7 @@ use Jeht\Support\Reflector;
 use Jeht\Support\Str;
 use LogicException;
 use UnexpectedValueException;
+use Laravel\SerializableClosure\SerializableClosure;
 
 /**
  * Adapted from Laravel's Illuminate\Routing\RouteAction
@@ -107,7 +108,7 @@ class RouteAction
 	public static function containsSerializedClosure(array $action)
 	{
 		return is_string($action['uses']) &&
-			   Str::startsWith($action['uses'], 'C:32:"Opis\\Closure\\SerializableClosure') !== false;
+			   Str::startsWith($action['uses'], 'O:47:"Laravel\\SerializableClosure\\SerializableClosure') !== false;
 	}
 }
 

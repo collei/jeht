@@ -1,8 +1,8 @@
 <?php
 namespace Jeht\Encryption;
 
-use Jeht\Interfaces\Encryption\EncrypterInterface;
-use Jeht\Interfaces\Encryption\StringEncrypterInterface;
+use Jeht\Encryption\Interfaces\EncrypterInterface;
+use Jeht\Encryption\Interfaces\StringEncrypterInterface;
 use RuntimeException;
 
 /**

@@ -1,16 +1,36 @@
 <?php
 namespace Jeht\Filesystem;
 
-use Exception;
+use Throwable;
 
 /**
- * From Laravel's Illuminate\Contracts\Filesystem\FileNotFoundException
- * @link https://laravel.com/api/8.x/Illuminate/Contracts/Filesystem/FileNotFoundException.html
- * @link https://github.com/laravel/framework/blob/8.x/src/Illuminate/Contracts/Filesystem/FileNotFoundException.php
+ * File not found
  *
  */
-class FileNotFoundException extends Exception
+class FileNotFoundException extends FilesystemException
 {
-	//
+	/**
+	 * @var string
+	 */
+	protected $path = null;
+
+	/**
+	 * Instantiates it.
+	 *
+	 * @param string $message = null
+	 * @param int $code = 0
+	 * @param Throwable $previous = null
+	 * @param string $path = null
+	 */
+	public function __construct(string $message = null, int $code = 0, Throwable $previous = null, string $path = null)
+	{
+		$message = !is_null($message)
+			? $message
+			: (!is_null($path) ? "File not found: [$path]." : "File not found.");
+		//
+		$this->path = $path;
+		//
+		parent::__construct($message, $code, $previous, $path);
+	}
 }
 

@@ -448,8 +448,6 @@ class Router
 						});
 	}
 
-
-
 	/**
 	 * Gather the middleware for the given route with resolved class names.
 	 *
@@ -543,6 +541,13 @@ class Router
 		return $result;
 	}
 
+	/**
+	 * Runs the response preparator with the given response.
+	 *
+	 * @param \Jeht\Http\Request
+	 * @param mixed $response
+	 * @return \Jeht\Http\Response
+	 */
 	protected function prepareResponse(Request $request, $response)
 	{
 		return (new ResponsePreparator)->prepare($request, $response);

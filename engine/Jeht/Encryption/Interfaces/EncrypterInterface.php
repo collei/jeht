@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Interfaces\Encryption;
+namespace Jeht\Encryption\Interfaces;
 
 /**
  * Adapted from the works at illuminate/contracts package

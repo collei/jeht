@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Exceptions\Filesystem;
+namespace Jeht\Filesystem;
 
 use RuntimeException;
 use Throwable;

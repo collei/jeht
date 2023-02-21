@@ -10,7 +10,8 @@
 	"type": "framework",
 	"license": "MIT",
 	"require": {
-		"php": ">=7.1.0 || ^8.0"
+		"php": "^7.3 || ^8.0",
+		"laravel/serializable-closure": "*"
 	},
 	"autoload": {
 		"psr-4": {

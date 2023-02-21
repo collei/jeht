@@ -1,5 +1,5 @@
 <?php
-namespace Jeht\Exceptions\Http;
+namespace Jeht\Http\Exceptions;
 
 use RuntimeException;
 

@@ -7,11 +7,11 @@ use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Collections\Collection;
 use Jeht\Container\Container;
-
 use Jeht\Interfaces\Routing\RouteInterface;
 use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
 use Jeht\Interfaces\Http\Request;
 use Psr\Http\Message\UriInterface;
+use Laravel\SerializableClosure\SerializableClosure;
 
 /**
  * Represents a Route in the system.
