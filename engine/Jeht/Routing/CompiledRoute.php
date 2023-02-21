@@ -3,6 +3,7 @@ namespace Jeht\Routing;
 
 use LogicException;
 use InvalidArgumentException;
+use Serializable;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Collections\Collection;
@@ -14,10 +15,10 @@ use Psr\Http\Message\UriInterface;
 use Laravel\SerializableClosure\SerializableClosure;
 
 /**
- * Represents a Route in the system.
+ * Represents a compiled version of the Route in the system.
  *
  */
-class Route implements RouteInterface
+class CompiledRoute implements Serializable, RouteInterface
 {
 	/**
 	 * @var string
@@ -38,11 +39,6 @@ class Route implements RouteInterface
 	 * @var string
 	 */
 	private $regex = null;
-
-	/**
-	 * @var mixed
-	 */
-	private $handler;
 
 	/**
 	 * @var array
@@ -80,83 +76,35 @@ class Route implements RouteInterface
 	protected $computedMiddleware;
 
 	/**
-	 * @var array
-	 */
-	protected $compiled;
-
-	/**
-	 * Set the methods this route must respond to
+	 * Builds a new compiled oute
 	 *
-	 * @param	string|array	...$httpMethods
-	 * @return	void
-	 */
-	protected function setHttpMethods($httpMethods)
-	{
-		$httpMethods = is_array($httpMethods) ? $httpMethods : func_get_args();
-		//
-		if (empty($httpMethods)) {
-			$this->httpMethods = array('GET','HEAD');
-			return;
-		}
-		//
-		$this->httpMethods = $httpMethods;
-	}
-
-	/**
-	 * Builds a new Route
-	 *
-	 * @param string|array $httpMethods
+	 * @param string $name
+	 * @param array $methods
 	 * @param string $uri
-	 * @param mixed $action
-	 * @param string|null $regex
-	 * @param string|null $name
+	 * @param string $uriRegex
+	 * @param array $action
+	 * @param array $parameters
+	 * @param bool $fallback
+	 * @param array $middleware
 	 */
 	public function __construct(
-		$methods, string $uri, $action, string $regex = null, string $name = null
+		string $name,
+		array $methods,
+		string $uri,
+		string $uriRegex,
+		array $action,
+		array $parameters,
+		bool $fallback,
+		array $middleware
 	) {
-		$this->setHttpMethods($methods);
-		//
-		$this->name = $name ?? Str::randomize();
+		$this->name = $name;
+		$this->httpMethods = $methods;
 		$this->uri = $uri;
-		$this->handler = $action;
-		//
-		$this->action = $this->parseAction($action);
-		//
-		$regex = !empty($regex) ? $regex : str_replace('/', '\\/', $uri);
-		//
-		$this->regex = $regex;
-	}
-
-	/**
-	 * Compiles the route and returns it.
-	 *
-	 * @return \Jeht\Http\CompiledRoute
-	 */
-	public function compile()
-	{
-		return ($this->compiled = new CompiledRoute(
-			$this->name,
-			$this->httpMethods,
-			$this->uri,
-			$this->regex,
-			$this->action,
-			$this->originalParameters ?: $this->parameters,
-			$this->fallback,
-			$this->computedMiddleware
-		));
-	}
-
-	/**
-	 * Parse the route action into a standard array.
-	 *
-	 * @param  callable|array|null  $action
-	 * @return array
-	 *
-	 * @throws \UnexpectedValueException
-	 */
-	protected function parseAction($action)
-	{
-		return RouteAction::parse($this->uri, $action);
+		$this->regex = $uriRegex;
+		$this->action = $action;
+		$this->parameters = $parameters;
+		$this->fallback = $fallback;
+		$this->computedMiddleware = $middleware;
 	}
 
 	/**
@@ -198,9 +146,9 @@ class Route implements RouteInterface
 	{
 		$callable = $this->action['uses'];
 
-		if ($this->isSerializedClosure()) {
-			$callable = unserialize($this->action['uses'])->getClosure();
-		}
+//		if ($this->isSerializedClosure()) {
+//			$callable = unserialize($this->action['uses'])->getClosure();
+//		}
 
 		return $callable(
 			...array_values(
@@ -249,7 +197,7 @@ class Route implements RouteInterface
 	 *
 	 * @return mixed
 	 *
-	 * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+	 * @throws \Jeht\Http\Exceptions\NotFoundHttpException
 	 */
 	protected function runController()
 	{

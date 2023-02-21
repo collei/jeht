@@ -4,8 +4,8 @@ namespace Jeht\Routing;
 use Countable;
 use IteratorAggregate;
 use ArrayIterator;
-use Jeht\Interfaces\Routing\RouteCollectionInterface;
 use Jeht\Interfaces\Routing\RouteInterface;
+use Jeht\Interfaces\Routing\RouteCollectionInterface;
 use Jeht\Http\Request;
 use Jeht\Http\HttpMethods;
 use Jeht\Container\Container;
@@ -20,42 +20,56 @@ use Jeht\Http\Exceptions\MethodNotAllowedHttpException;
  * with methods from Laravel's Illuminate\Routing\AbstractRouteCollection
  *
  */
-class RouteCollection implements Countable, IteratorAggregate, RouteCollectionInterface
+class CompiledRouteCollection implements Countable, IteratorAggregate, RouteCollectionInterface
 {
 	/**
-	 * An array of the routes keyed by method.
+	 * The compield routes
 	 *
 	 * @var array
 	 */
-	protected $verbs = [];
+	protected $compiled;
+
+	/**
+	 * The compield route attributes
+	 *
+	 * @var array
+	 */
+	protected $attributes;
 
 	/**
 	 * An array of the routes keyed by method.
 	 *
 	 * @var array
 	 */
-	protected $routes = [];
-
-	/**
-	 * A flattened array of all of the routes.
-	 *
-	 * @var \Jeht\Routing\Route[]
-	 */
-	protected $allRoutes = [];
+	protected $routes;
 
 	/**
 	 * A look-up table of routes by their names.
 	 *
-	 * @var \Jeht\Routing\Route[]
+	 * @var \Jeht\Routing\Router
 	 */
-	protected $nameList = [];
+	protected $router;
 
 	/**
 	 * A look-up table of routes by controller action.
 	 *
-	 * @var \Jeht\Routing\Route[]
+	 * @var \Jeht\Container\Container
 	 */
-	protected $actionList = [];
+	protected $container;
+
+	/**
+	 * Create a new CompiledRouteCollection instance
+	 *
+	 * @param array $compiled
+	 * @param array $attributes
+	 * @return void
+	 */
+	public function __construct(array $compiled, array $attributes)
+	{
+		$this->compiled = $compiled;
+		$this->attributes = $attributes;
+		$this->routes = new RouteCollection;
+	}
 
 	/**
 	 * Add a Route instance to the collection.
@@ -65,64 +79,7 @@ class RouteCollection implements Countable, IteratorAggregate, RouteCollectionIn
 	 */
 	public function add(RouteInterface $route)
 	{
-		$this->addToCollections($route);
-		$this->addLookups($route);
-		//
-		return $route;
-	}
-
-	/**
-	 * Add the given route to the arrays of routes.
-	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
-	 * @return void
-	 */
-	protected function addToCollections($route)
-	{
-		$domainAndUri = $route->getDomain().$route->uri();
-
-		foreach ($route->methods() as $method) {
-			$this->routes[$method][$domainAndUri] = $route;
-		}
-
-		$this->allRoutes[$method.$domainAndUri] = $route;
-	}
-
-	/**
-	 * Add the route to any look-up tables if necessary.
-	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
-	 * @return void
-	 */
-	protected function addLookups($route)
-	{
-		// If the route has a name, we will add it to the name look-up table so that we
-		// will quickly be able to find any route associate with a name and not have
-		// to iterate through every route every time we need to perform a look-up.
-		if ($name = $route->getName()) {
-			$this->nameList[$name] = $route;
-		}
-
-		// When the route is routing to a controller we will also store the action that
-		// is used by the route. This will let us reverse route to controllers while
-		// processing a request and easily generate URLs to the given controllers.
-		$action = $route->getAction();
-
-		if (isset($action['controller'])) {
-			$this->addToActionList($action, $route);
-		}
-	}
-
-	/**
-	 * Add a route to the controller action dictionary.
-	 *
-	 * @param  array  $action
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
-	 * @return void
-	 */
-	protected function addToActionList($action, $route)
-	{
-		$this->actionList[trim($action['controller'], '\\')] = $route;
+		return $this->routes->add($route);
 	}
 
 	/**
@@ -284,45 +241,6 @@ class RouteCollection implements Countable, IteratorAggregate, RouteCollectionIn
 			. ' Supported methods: ['.implode(', ', $others).'].';
 		//
 		throw new MethodNotAllowedHttpException($others, $message);
-	}
-
-	/**
-	 * Compile the routes and returns them as array.
-	 *
-	 * @return array
-	 */
-	protected function getCompiledRoutesAsArray()
-	{
-		$compiled = [];
-		//
-		foreach ($this->getRoutes() as $route) {
-			$compiled[] = $route->compile();
-		}
-		//
-		return $compiled;
-	}
-
-	/**
-	 * Compile the routes for caching.
-	 *
-	 * @return array
-	 */
-	public function compile()
-	{
-		$compiled = $this->getCompiledRoutesAsArrays();
-
-		$attributes = [];
-
-		foreach ($this->getRoutes() as $route) {
-			$attributes[$route->getName()] = [
-				'methods' => $route->methods(),
-				'uri' => $route->uri(),
-				'action' => $route->getAction(),
-				'fallback' => $route->isFallback,
-			];
-		}
-
-		return compact('compiled', 'attributes');
 	}
 
 	/**

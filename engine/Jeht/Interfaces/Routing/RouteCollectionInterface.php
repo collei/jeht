@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Interfaces\Routing;
 
-use Jeht\Routing\Route;
+use Jeht\Interfaces\Routing\RouteInterface;
 use Jeht\Http\Request;
 
 /**
@@ -11,12 +11,12 @@ use Jeht\Http\Request;
 interface RouteCollectionInterface
 {
 	/**
-	 * Add a Route instance to the collection.
+	 * Add a RouteInterface instance to the collection.
 	 *
-	 * @param  \Jeht\Routing\Route  $route
-	 * @return \Jeht\Routing\Route
+	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
+	 * @return \Jeht\Interfaces\Routing\RouteInterface
 	 */
-	public function add(Route $route);
+	public function add(RouteInterface $route);
 
 	/**
 	 * Refresh the name look-up table.
@@ -40,7 +40,7 @@ interface RouteCollectionInterface
 	 * Find the first route matching a given request.
 	 *
 	 * @param  \Jeht\Http\Request  $request
-	 * @return \Jeht\Routing\Route
+	 * @return \Jeht\Interfaces\Routing\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\MethodNotAllowedHttpException
 	 * @throws \Jeht\Exceptions\Http\NotFoundHttpException
@@ -67,7 +67,7 @@ interface RouteCollectionInterface
 	 * Get a route instance by its name.
 	 *
 	 * @param  string  $name
-	 * @return \Jeht\Routing\Route|null
+	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
 	 */
 	public function getByName($name);
 
@@ -75,14 +75,14 @@ interface RouteCollectionInterface
 	 * Get a route instance by its controller action.
 	 *
 	 * @param  string  $action
-	 * @return \Jeht\Routing\Route|null
+	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
 	 */
 	public function getByAction($action);
 
 	/**
 	 * Get all of the routes in the collection.
 	 *
-	 * @return \Jeht\Routing\Route[]
+	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
 	 */
 	public function getRoutes();
 
@@ -96,7 +96,7 @@ interface RouteCollectionInterface
 	/**
 	 * Get all of the routes keyed by their name.
 	 *
-	 * @return \Jeht\Routing\Route[]
+	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
 	 */
 	public function getRoutesByName();
 }
