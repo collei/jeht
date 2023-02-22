@@ -5,13 +5,15 @@ use Jeht\Ground\Application;
 use Jeht\Collections\Collection;
 use Jeht\Http\Request;
 use Jeht\Http\ResponsePreparator;
+use Closure;
+use ReflectionClass;
 
 class Router
 {
 	/**
 	 * @var \Jeht\Routing\RouteCollection
 	 */
-	protected $routeCollection;
+	protected $routes;
 
 	/**
 	 * @var \Jeht\Ground\Application
@@ -114,12 +116,22 @@ class Router
 	{
 		$this->container = $container;
 		$this->routeGroup = (new RouteGroup($container))->setRouter($this);
-		$this->routeCollection = new RouteCollection;
+		$this->routes = new RouteCollection;
 		//
 		$this->container->instance(RouteGroup::class, $this->routeGroup);
-		$this->container->instance(RouteCollection::class, $this->routeCollection);
+		$this->container->instance(RouteCollection::class, $this->routes);
 		//
 		$this->appBaseUri = $this->container['app.rooturi'];
+	}
+
+	/**
+	 * Return the underlying Route collection
+	 *
+	 * @return \Jeht\Http\RouteCollection
+	 */	
+	public function getRoutes()
+	{
+		return $this->routes;
 	}
 
 	/**
@@ -278,6 +290,28 @@ class Router
 	}
 
 	/**
+	 * Defines the middleware to be included for the group.
+	 *
+	 * @param	string|array	$middleware
+	 * @return	\Jeht\Routing\RouteGroup
+	 */
+	public function middleware(string $namespace)
+	{
+		return $this->routeGroup->middleware($namespace);
+	}
+
+	/**
+	 * Defines the middleware to be excluded from the group.
+	 *
+	 * @param	string|array	$middleware
+	 * @return	\Jeht\Routing\RouteGroup
+	 */
+	public function withoutMiddleware(string $namespace)
+	{
+		return $this->routeGroup->withoutMiddleware($namespace);
+	}
+
+	/**
 	 * Groups all routes declared inside.
 	 *
 	 * @param	\Closure|string	$routes
@@ -288,9 +322,7 @@ class Router
 		if ($routes instanceof Closure) {
 			$this->routeGroup->group($routes);
 		} else {
-			$this->routeGroup->group(function() use ($routes){
-				(new RouteFileRegistrar($this))->register($routes);
-			});
+			(new RouteFileRegistrar($this))->register($routes);
 		}
 	}
 
@@ -377,7 +409,7 @@ class Router
 
 	public function registerRoute(Route $route)
 	{
-		$this->routeCollection->add($route);
+		$this->routes->add($route);
 	}
 
 	/**
@@ -388,7 +420,7 @@ class Router
 	 */
 	public function dispatch($request)
 	{
-		if ($route = $this->routeCollection->match($request)) {
+		if ($route = $this->routes->match($request)) {
 			return $this->runRoute($route, $request);
 		}
 		//
@@ -420,7 +452,6 @@ class Router
 		return $this->prepareResponse(
 			$request,
 			$this->runRouteWithinStack($route, $request)
-//			 $route->run()
 		);
 	}
 

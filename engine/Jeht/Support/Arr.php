@@ -875,7 +875,8 @@ abstract class Arr
 		$key = is_null($key) || is_array($key) ? $key : explode('.', $key);
 
 		foreach ($array as $item) {
-			$itemValue = data_get($item, $value);
+			//** @todo remove it */ $itemValue = data_get($item, $value);
+			$itemValue = Arr::get($item, $value);
 
 			// If the key is "null", we will just append the value to the array and keep
 			// looping. Otherwise we will key the array using the value of the key we
@@ -883,7 +884,7 @@ abstract class Arr
 			if (is_null($key)) {
 				$results[] = $itemValue;
 			} else {
-				$itemKey = data_get($item, $key);
+				$itemKey =  Arr::get($item, $key);
 
 				if (is_object($itemKey) && method_exists($itemKey, '__toString')) {
 					$itemKey = (string) $itemKey;
@@ -904,7 +905,7 @@ abstract class Arr
 	 *
 	 * @return array
 	 */
-	public static function flatten(iterable $array, int $depth): array
+	public static function flatten(iterable $array, int $depth = PHP_INT_MAX): array
 	{
 		$result = [];
 
@@ -914,7 +915,7 @@ abstract class Arr
 			} else {
 				$values = $depth === 1
 					? array_values($item)
-					: array_flatten($item, $depth - 1);
+					: self::flatten($item, $depth - 1);
 
 				foreach ($values as $value) {
 					$result[] = $value;
@@ -923,6 +924,31 @@ abstract class Arr
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Returns an array with unique values only.
+	 *
+	 * @param  array  $array
+	 *
+	 * @return array
+	 */
+	public static function unique(array $array)
+	{
+		return array_unique($array);
+	}
+
+	/**
+	 * Returns the values of the first array not present in the others.
+	 *
+	 * @param  array  $array
+	 * @param  array  ...$arrays
+	 *
+	 * @return array
+	 */
+	public static function diff(array $array, array ...$arrays)
+	{
+		return array_diff($array, ...$arrays);
 	}
 
 }

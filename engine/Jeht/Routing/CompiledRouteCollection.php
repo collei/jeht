@@ -91,13 +91,7 @@ class CompiledRouteCollection implements Countable, IteratorAggregate, RouteColl
 	 */
 	public function refreshNameLookups()
 	{
-		$this->nameList = [];
-
-		foreach ($this->allRoutes as $route) {
-			if ($route->getName()) {
-				$this->nameList[$route->getName()] = $route;
-			}
-		}
+		return $this->routes->refreshNameLookups();
 	}
 
 	/**
@@ -109,13 +103,7 @@ class CompiledRouteCollection implements Countable, IteratorAggregate, RouteColl
 	 */
 	public function refreshActionLookups()
 	{
-		$this->actionList = [];
-
-		foreach ($this->allRoutes as $route) {
-			if (isset($route->getAction()['controller'])) {
-				$this->addToActionList($route->getAction(), $route);
-			}
-		}
+		return $this->routes->refreshActionLookups();
 	}
 
 	/**

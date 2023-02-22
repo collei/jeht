@@ -26,7 +26,7 @@ class RouteServiceProvider extends ServiceProvider
 	protected $namespace;
 
 	/**
-	 * The callback that should be used to load the application's routes.
+	 * The 5callback that should be used to load the application's routes.
 	 *
 	 * @var \Closure|null
 	 */

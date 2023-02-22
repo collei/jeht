@@ -1,7 +1,9 @@
 <?php
 namespace Jeht\Routing;
 
+use Closure;
 use Jeht\Support\Str;
+use Jeht\Support\Arr;
 use Jeht\Ground\Application;
 
 class RouteGroup
@@ -14,7 +16,8 @@ class RouteGroup
 		'prefix' => 'prefixes',
 		'action' => 'actions',
 		'namespace' => 'namespaces',
-		'middleware' => 'middlewares',
+		'middleware' => 'middleware',
+		'withoutMiddleware' => 'withoutMiddleware',
 	];
 
 	/**
@@ -55,7 +58,12 @@ class RouteGroup
 	/**
 	 * @var array
 	 */
-	private $middlewares = [];
+	private $middleware = [];
+
+	/**
+	 * @var array
+	 */
+	private $withoutMiddleware = [];
 
 	/**
 	 * @var array
@@ -66,6 +74,7 @@ class RouteGroup
 		'action' => null,
 		'namespace' => null,
 		'middleware' => null,
+		'withoutMiddleware' => null,
 	];
 
 	/**
@@ -175,12 +184,24 @@ class RouteGroup
 	/**
 	 * Sets the middleware for the next group calls
 	 *
-	 * @param string $middleware
+	 * @param string|array $middleware
 	 * @return self
 	 */
-	public function middleware(string $middleware)
+	public function middleware($middleware)
 	{
-		$this->current['middleware'] = $middleware;
+		$this->current['middleware'] = Arr::wrap($middleware);
+		return $this;
+	}
+
+	/**
+	 * Sets the middleware exclusions for the next group calls
+	 *
+	 * @param string|array $middleware
+	 * @return self
+	 */
+	public function withoutMiddleware($middleware)
+	{
+		$this->current['withoutMiddleware'] = Arr::wrap($middleware);
 		return $this;
 	}
 
@@ -191,6 +212,21 @@ class RouteGroup
 	 * @return void
 	 */
 	public function group($callback)
+	{
+		if ($callback instanceof Closure) {
+			$this->groupWithClosure($callback);
+		} else {
+			$this->router->group($callback);
+		}
+	}
+
+	/**
+	 * Calls the given $callback into the current group context
+	 *
+	 * @param \Closure $callaback
+	 * @return void
+	 */
+	protected function groupWithClosure(Closure $callback)
 	{
 		$this->beginGroup();
 		//
@@ -262,6 +298,59 @@ class RouteGroup
 	}
 
 	/**
+	 * Returns the current middleware list
+	 *
+	 * @return string
+	 */
+	public function getCurrentMiddleware()
+	{
+		if ($this->currentLevel >= 0) {
+			return Arr::unique(
+				Arr::flatten(
+					$accumulated = $this->middleware
+				)
+			);
+		}
+		//
+		return null;
+	}
+
+	/**
+	 * Returns the current middleware exclusion list
+	 *
+	 * @return string
+	 */
+	public function getCurrentExcludedMiddleware()
+	{
+		if ($this->currentLevel >= 0) {
+			return Arr::unique(
+				Arr::flatten(
+					$accumulated = $this->withoutMiddleware
+				)
+			);
+		}
+		//
+		return null;
+	}
+
+	/**
+	 * Returns only the added and not excluded middleware
+	 *
+	 * @return string
+	 */
+	public function getCurrentMiddlewareWithoutExcluded()
+	{
+		if ($this->currentLevel >= 0) {
+			return Arr::diff(
+				$this->getCurrentMiddleware(),
+				$this->getCurrentExcludedMiddleware()
+			);
+		}
+		//
+		return null;
+	}
+
+	/**
 	 * Returns the current action namespace
 	 *
 	 * @return string
@@ -286,7 +375,8 @@ class RouteGroup
 			'name' => $this->getCurrentName('.'),
 			'prefix' => $this->getCurrentPrefix(),
 			'action' => $this->getCurrentAction(),
-			'namespace' => $this->getCurrentNamespace()
+			'namespace' => $this->getCurrentNamespace(),
+			'middleware' => $this->getCurrentMiddlewareWithoutExcluded()
 		);
 	}
 

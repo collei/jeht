@@ -1,6 +1,7 @@
 <?php
 namespace Jeht\Container;
 
+use Closure;
 use Jeht\Support\Arr;
 use Jeht\Interfaces\Container\Container;
 use Jeht\Interfaces\Container\ContextualBindingBuilder as ContextualBindingBuilderContract;

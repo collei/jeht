@@ -31,7 +31,9 @@ class BoundMethod
 		}
 
 		return static::callBoundMethod($container, $callback, function () use ($container, $callback, $parameters) {
-			return $callback(...array_values(static::getMethodDependencies($container, $callback, $parameters)));
+			return call_user_func_array(
+				$callback, static::getMethodDependencies($container, $callback, $parameters)
+			);
 		});
 	}
 
@@ -53,8 +55,7 @@ class BoundMethod
 		// We will assume an @ sign is used to delimit the class name from the method
 		// name. We will split on this @ sign and then build a callable array that
 		// we can pass right back into the "call" method for dependency binding.
-		$method = count($segments) === 2
-						? $segments[1] : $defaultMethod;
+		$method = count($segments) === 2 ? $segments[1] : $defaultMethod;
 
 		if (is_null($method)) {
 			throw new InvalidArgumentException('Method not provided.');

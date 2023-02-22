@@ -10,6 +10,7 @@ use Jeht\Routing\Router;
 use Jeht\Support\Facades\Facade;
 use InvalidArgumentException;
 use Throwable;
+use Closure;
 
 class Kernel implements KernelContract
 {

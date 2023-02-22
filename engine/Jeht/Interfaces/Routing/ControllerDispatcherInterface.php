@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Interfaces\Routing;
 
-use Jeht\Routing\Route;
+use Jeht\Interfaces\Routing\RouteInterface;
 
 /**
  * From Laravel's Illuminate\Routing\Contracts\ControllerDispatcher
@@ -12,12 +12,12 @@ interface ControllerDispatcherInterface
 	/**
 	 * Dispatch a request to a given controller and method.
 	 *
-	 * @param  \Jeht\Routing\Route  $route
+	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
 	 * @param  mixed  $controller
 	 * @param  string  $method
 	 * @return mixed
 	 */
-	public function dispatch(Route $route, $controller, $method);
+	public function dispatch(RouteInterface $route, $controller, $method);
 
 	/**
 	 * Get the middleware for the controller instance.

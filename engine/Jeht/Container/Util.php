@@ -1,6 +1,9 @@
 <?php
 namespace Jeht\Container;
 
+use Closure;
+use ReflectionNamedType;
+
 /**
  * Utilities for the container.
  *

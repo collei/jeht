@@ -739,9 +739,9 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	/**
 	 * Register a service provider with the application.
 	 *
-	 * @param  \Illuminate\Support\ServiceProvider|string  $provider
+	 * @param  \Jeht\Support\ServiceProvider|string  $provider
 	 * @param  bool  $force
-	 * @return \Illuminate\Support\ServiceProvider
+	 * @return \Jeht\Support\ServiceProvider
 	 */
 	public function register($provider, $force = false)
 	{
@@ -788,8 +788,8 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	/**
 	 * Get the registered service provider instance if it exists.
 	 *
-	 * @param  \Illuminate\Support\ServiceProvider|string  $provider
-	 * @return \Illuminate\Support\ServiceProvider|null
+	 * @param  \Jeht\Support\ServiceProvider|string  $provider
+	 * @return \Jeht\Support\ServiceProvider|null
 	 */
 	public function getProvider($provider)
 	{
@@ -799,7 +799,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	/**
 	 * Get the registered service provider instances if any exist.
 	 *
-	 * @param  \Illuminate\Support\ServiceProvider|string  $provider
+	 * @param  \Jeht\Support\ServiceProvider|string  $provider
 	 * @return array
 	 */
 	public function getProviders($provider)
@@ -815,7 +815,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 * Resolve a service provider instance from the class name.
 	 *
 	 * @param  string  $provider
-	 * @return \Illuminate\Support\ServiceProvider
+	 * @return \Jeht\Support\ServiceProvider
 	 */
 	public function resolveProvider($provider)
 	{
@@ -825,7 +825,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	/**
 	 * Mark the given provider as registered.
 	 *
-	 * @param  \Illuminate\Support\ServiceProvider  $provider
+	 * @param  \Jeht\Support\ServiceProvider  $provider
 	 * @return void
 	 */
 	protected function markAsRegistered($provider)
@@ -990,7 +990,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	/**
 	 * Boot the given service provider.
 	 *
-	 * @param  \Illuminate\Support\ServiceProvider  $provider
+	 * @param  \Jeht\Support\ServiceProvider  $provider
 	 * @return void
 	 */
 	protected function bootProvider(ServiceProvider $provider)
@@ -1105,7 +1105,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function routesAreCached()
 	{
-		return $this['files']->exists($this->getCachedRoutesPath());
+		return false; //$this['files']->exists($this->getCachedRoutesPath());
 	}
 
 	/**
@@ -1125,7 +1125,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function eventsAreCached()
 	{
-		return false; //$this['files']->exists($this->getCachedEventsPath());
+		return $this['files']->exists($this->getCachedEventsPath());
 	}
 
 	/**
