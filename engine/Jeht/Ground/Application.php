@@ -168,9 +168,16 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		'resources/media',
 		'resources/views',
 		'routes',
-		'storage/logging',
-		'storage/cache',
-		'test',
+		'storage/app',
+		'storage/app/public',
+		'storage/framework',
+		'storage/framework/cache',
+		'storage/framework/cache/data',
+		'storage/framework/sessions',
+		'storage/framework/testing',
+		'storage/framework/views',
+		'storage/logs',
+		'tests',
 	]; 
 
 	/**
@@ -233,6 +240,10 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		//
 		$this->instance(Container::class, $this);
 		$this->singleton(Mix::class);
+		//
+		$this->singleton('files', function() {
+			return new Filesystem;
+		});
 		//
 		$this->singleton(PackageManifest::class, function () {
 			return new PackageManifest(
@@ -1105,7 +1116,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function routesAreCached()
 	{
-		return false; //$this['files']->exists($this->getCachedRoutesPath());
+		return $this['files']->exists($this->getCachedRoutesPath());
 	}
 
 	/**
