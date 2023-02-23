@@ -709,7 +709,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	protected function compileIfClosure($piece)
 	{
 		if ($piece instanceof Closure) {
-			return new SerializableClosure($piece);
+			return serialize(new SerializableClosure($piece));
 		}
 		//
 		return $piece;
