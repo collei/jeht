@@ -3,12 +3,14 @@ namespace Jeht\Routing;
 
 use Jeht\Ground\Application;
 use Jeht\Collections\Collection;
+use Jeht\Interfaces\Routing\RouteInterface;
+use Jeht\Interfaces\Routing\RouterInterface;
 use Jeht\Http\Request;
 use Jeht\Http\ResponsePreparator;
 use Closure;
 use ReflectionClass;
 
-class Router
+class Router implements RouterInterface
 {
 	/**
 	 * @var \Jeht\Routing\RouteCollection
@@ -46,7 +48,7 @@ class Router
 	protected $middlewareGroups = [];
 
 	/**
-	 * @var \Jeht\Routing\Route
+	 * @var \Jeht\Interfaces\Routing\RouteInterface
 	 */
 	protected $currentRoute = [];
 
@@ -407,7 +409,12 @@ class Router
 		return $result;
 	}
 
-	public function registerRoute(Route $route)
+	/**
+	 * Register the route witht the router.
+	 *
+	 * @param \Jeht\Interfaces\Routing\RouteInterface
+	 */
+	public function registerRoute(RouteInterface $route)
 	{
 		$this->routes->add($route);
 	}
@@ -432,10 +439,10 @@ class Router
 	/**
 	 * Run the specified $route for the given $request
 	 *
-	 * @param \Jeht\Routing\Route
+	 * @param \Jeht\Interfaces\Routing\RouteInterface
 	 * @param \Jeht\Http\Request
 	 */
-	protected function runRoute(Route $route, Request $request)
+	protected function runRoute(RouteInterface $route, Request $request)
 	{
 		/**
 		 * @todo 
@@ -462,7 +469,7 @@ class Router
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return mixed
 	 */
-	protected function runRouteWithinStack(Route $route, Request $request)
+	protected function runRouteWithinStack(RouteInterface $route, Request $request)
 	{
 		$shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
 								$this->container->make('middleware.disable') === true;
@@ -482,10 +489,10 @@ class Router
 	/**
 	 * Gather the middleware for the given route with resolved class names.
 	 *
-	 * @param  \Jeht\Routing\Route  $route
+	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
 	 * @return array
 	 */
-	public function gatherRouteMiddleware(Route $route)
+	public function gatherRouteMiddleware(RouteInterface $route)
 	{
 		return $this->resolveMiddleware($route->gatherMiddleware(), $route->excludedMiddleware());
 	}
@@ -694,9 +701,6 @@ class Router
 
 		return $this;
 	}
-
-
-
 
 }
 

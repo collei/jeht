@@ -2,6 +2,8 @@
 namespace Jeht\Routing;
 
 use Countable;
+use Serializable;
+use Closure;
 use IteratorAggregate;
 use ArrayIterator;
 use Jeht\Interfaces\Routing\RouteInterface;
@@ -20,7 +22,7 @@ use Jeht\Http\Exceptions\MethodNotAllowedHttpException;
  * with methods from Laravel's Illuminate\Routing\AbstractRouteCollection
  *
  */
-class CompiledRouteCollection implements Countable, IteratorAggregate, RouteCollectionInterface
+class CompiledRouteCollection extends AbstractRouteCollection implements Countable, Serializable, IteratorAggregate, RouteCollectionInterface
 {
 	/**
 	 * The compield routes
@@ -39,7 +41,7 @@ class CompiledRouteCollection implements Countable, IteratorAggregate, RouteColl
 	/**
 	 * An array of the routes keyed by method.
 	 *
-	 * @var array
+	 * @var \Jeht\Routing\RouteCollection
 	 */
 	protected $routes;
 
@@ -69,6 +71,32 @@ class CompiledRouteCollection implements Countable, IteratorAggregate, RouteColl
 		$this->compiled = $compiled;
 		$this->attributes = $attributes;
 		$this->routes = new RouteCollection;
+	}
+
+	/**
+	 * Set the router.
+	 *
+	 * @param \Jeht\Routing\Route $router
+	 * @return $this
+	 */
+	public function setRouter(Router $router)
+	{
+		$this->router = $router;
+		//
+		return $this;
+	}
+
+	/**
+	 * Set the container.
+	 *
+	 * @param \Jeht\Container\Container $container
+	 * @return $this
+	 */
+	public function setContainer(Container $container)
+	{
+		$this->container = $container;
+		//
+		return $this;
 	}
 
 	/**
@@ -232,16 +260,6 @@ class CompiledRouteCollection implements Countable, IteratorAggregate, RouteColl
 	}
 
 	/**
-	 * Get a randomly generated route name.
-	 *
-	 * @return string
-	 */
-	protected function generateRouteName()
-	{
-		return 'generated::'.Str::random(32);
-	}
-
-	/**
 	 * Get an iterator for the items.
 	 *
 	 * @return \ArrayIterator
@@ -335,19 +353,33 @@ class CompiledRouteCollection implements Countable, IteratorAggregate, RouteColl
 		return $this->nameList;
 	}
 
-	/**
-	 * Convert the collection to a CompiledRouteCollection instance.
-	 *
-	 * @param  \Jeht\Routing\Router  $router
-	 * @param  \Jeht\Container\Container  $container
-	 * @return \Jeht\Routing\CompiledRouteCollection
-	 */
-	public function toCompiledRouteCollection(Router $router, Container $container)
-	{
-		['compiled' => $compiled, 'attributes' => $attributes] = $this->compile();
 
-		return (new CompiledRouteCollection($compiled, $attributes))
-			->setRouter($router)
-			->setContainer($container);
+	/**
+	 * Compiles into a PHP serialized format
+	 *
+	 * @return string
+	 */
+	public function serialize()
+	{
+		$compiled = $this->compiled;
+		$attributes = $this->attributes;
+		//
+		return serialize(compact('compiled','attributes'));
 	}
+
+	/**
+	 * Restores data from a PHP serialized format.
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function unserialize(string $data)
+	{
+		$restored = unserialize($data);
+		//
+		$this->compiled = $restored['compiled'];
+		$this->attributes = $restored['attributes'];
+		$this->routes = new RouteCollection;
+	}
+
 }

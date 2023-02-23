@@ -1396,7 +1396,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\StringEncrypter::class],
 			'files' => [\Jeht\Filesystem\Filesystem::class],
 			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
-			'router' => [\Jeht\Routing\Router::class], //, \Jeht\Interfaces\Routing\Registrar::class, \Jeht\Interfaces\Routing\BindingRegistrar::class],
+			'router' => [\Jeht\Routing\Router::class, \Jeht\Interfaces\Routing\RouterInterface::class],
 			'url' => [\Jeht\Http\UriFactory::class, \Psr\Http\Message\UriInterface::class],
 //			'session' => [\Jeht\Session\SessionManager::class],
 //			'session.store' => [\Jeht\Session\Store::class, \Jeht\Interfaces\Session\Session::class],

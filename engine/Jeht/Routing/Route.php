@@ -12,6 +12,7 @@ use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
 use Jeht\Interfaces\Http\Request;
 use Psr\Http\Message\UriInterface;
 use Laravel\SerializableClosure\SerializableClosure;
+use Jeht\Support\Traits\CallerAware;
 
 /**
  * Represents a Route in the system.
@@ -19,6 +20,8 @@ use Laravel\SerializableClosure\SerializableClosure;
  */
 class Route implements RouteInterface
 {
+	use CallerAware;
+
 	/**
 	 * @var string
 	 */
@@ -140,9 +143,9 @@ class Route implements RouteInterface
 			$this->uri,
 			$this->regex,
 			$this->action,
-			$this->originalParameters ?: $this->parameters,
-			$this->fallback,
-			$this->computedMiddleware
+			$this->originalParameters ?: $this->parameters ?: [],
+			$this->isFallback,
+			$this->computedMiddleware ?: []
 		));
 	}
 
@@ -586,9 +589,17 @@ class Route implements RouteInterface
 	 */
 	public function __get($key)
 	{
+		if (property_exists($this, $key)) {
+			$caller = $this->getCallerClassName();
+			$allowed = [static::class, \Jeht\Routing\RouteCollection::class];
+
+			if (in_array($caller, $allowed)) {
+				return $this->$key;
+			}
+		}
+
 		return $this->parameter($key);
 	} 
-
 
 	/**
 	 * Get the value of the action that should be taken on a missing model exception.

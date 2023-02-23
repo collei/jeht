@@ -520,28 +520,31 @@
 	"buffers":
 	[
 		{
-			"file": "engine/Jeht/Ground/Application.php",
+			"file": "engine/Jeht/Routing/CompiledRouteCollection.php",
 			"settings":
 			{
-				"buffer_size": 31537,
+				"buffer_size": 8084,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Container/BoundMethod.php",
+			"contents": "<?php\nnamespace Jeht\\Routing;\n\nuse LogicException;\nuse InvalidArgumentException;\nuse Serializable;\nuse Jeht\\Support\\Arr;\nuse Jeht\\Support\\Str;\nuse Jeht\\Collections\\Collection;\nuse Jeht\\Container\\Container;\nuse Jeht\\Interfaces\\Routing\\RouteInterface;\nuse Jeht\\Interfaces\\Routing\\ControllerDispatcherInterface;\nuse Jeht\\Interfaces\\Http\\Request;\nuse Psr\\Http\\Message\\UriInterface;\nuse Laravel\\SerializableClosure\\SerializableClosure;\n\n/**\n * Represents a compiled version of the Route in the system.\n *\n */\nclass CompiledRoute implements Serializable, RouteInterface\n{\n\t/**\n\t * @var string\n\t */\n\tprivate $name;\n\n\t/**\n\t * @var string[]\n\t */\n\tprivate $httpMethods;\n\n\t/**\n\t * @var string\n\t */\n\tprivate $uri;\n\n\t/**\n\t * @var string\n\t */\n\tprivate $regex = null;\n\n\t/**\n\t * @var array\n\t */\n\tprivate $action;\n\n\t/**\n\t * @var array\n\t */\n\tprivate $parameters;\n\n\t/**\n\t * @var array\n\t */\n\tprivate $originalParameters;\n\n\t/**\n\t * @var bool\n\t */\n\tprivate $isFallback = false;\n\n\t/**\n\t * @var \\Jeht\\Routing\\Router\n\t */\n\tprotected $router;\n\n\t/**\n\t * @var \\Jeht\\Container\\Container\n\t */\n\tprotected $container;\n\n\t/**\n\t * @var array\n\t */\n\tprotected $computedMiddleware;\n\n\t/**\n\t * Builds a new compiled oute\n\t *\n\t * @param string $name\n\t * @param array $methods\n\t * @param string $uri\n\t * @param string $uriRegex\n\t * @param array $action\n\t * @param array $parameters\n\t * @param bool $fallback\n\t * @param array $middleware\n\t */\n\tpublic function __construct(\n\t\tstring $name,\n\t\tarray $methods,\n\t\tstring $uri,\n\t\tstring $uriRegex,\n\t\tarray $action,\n\t\tarray $parameters,\n\t\tbool $fallback,\n\t\tarray $middleware\n\t) {\n\t\t$this->name = $name;\n\t\t$this->httpMethods = $methods;\n\t\t$this->uri = $uri;\n\t\t$this->regex = $uriRegex;\n\t\t$this->action = $action;\n\t\t$this->parameters = $parameters;\n\t\t$this->fallback = $fallback;\n\t\t$this->computedMiddleware = $middleware;\n\t}\n\n\t/**\n\t * Run the route action and return the response.\n\t *\n\t * @return mixed\n\t */\n\tpublic function run()\n\t{\n\t\t$this->container = $this->container ?: new Container;\n\n\t\ttry {\n\t\t\tif ($this->isControllerAction()) {\n\t\t\t\treturn $this->runController();\n\t\t\t}\n\n\t\t\treturn $this->runCallable();\n\t\t} catch (HttpResponseException $e) {\n\t\t\treturn $e->getResponse();\n\t\t}\n\t}\n\n\t/**\n\t * Checks whether the route's action is a controller.\n\t *\n\t * @return bool\n\t */\n\tprotected function isControllerAction()\n\t{\n\t\treturn is_string($this->action['uses']) && ! $this->isSerializedClosure();\n\t}\n\n\t/**\n\t * Run the route action and return the response.\n\t *\n\t * @return mixed\n\t */\n\tprotected function runCallable()\n\t{\n\t\t$callable = $this->action['uses'];\n\n//\t\tif ($this->isSerializedClosure()) {\n//\t\t\t$callable = unserialize($this->action['uses'])->getClosure();\n//\t\t}\n\n\t\treturn $callable(\n\t\t\t...array_values(\n\t\t\t\t$this->resolveMethodDependencies(\n\t\t\t\t\t$this->parametersWithoutNulls(), new ReflectionFunction($callable)\n\t\t\t\t)\n\t\t\t)\n\t\t);\n\t}\n\n\t/**\n\t * Determine if the route action is a serialized Closure.\n\t *\n\t * @return bool\n\t */\n\tprotected function isSerializedClosure()\n\t{\n\t\treturn RouteAction::containsSerializedClosure($this->action);\n\t}\n\n\t/**\n\t * Get the domain defined for the route.\n\t *\n\t * @return string|null\n\t */\n\tpublic function getDomain()\n\t{\n\t\treturn isset($this->action['domain'])\n\t\t\t\t? str_replace(['http://', 'https://'], '', $this->action['domain'])\n\t\t\t\t: null;\n\t}\n\n\t/**\n\t * Get the action array or one of its properties for the route.\n\t *\n\t * @param  string|null  $key\n\t * @return mixed\n\t */\n\tpublic function getAction($key = null)\n\t{\n\t\treturn Arr::get($this->action, $key);\n\t}\n\n\t/**\n\t * Run the route action and return the response.\n\t *\n\t * @return mixed\n\t *\n\t * @throws \\Jeht\\Http\\Exceptions\\NotFoundHttpException\n\t */\n\tprotected function runController()\n\t{\n\t\treturn $this->controllerDispatcher()->dispatch(\n\t\t\t$this, $this->getController(), $this->getControllerMethod()\n\t\t);\n\t}\n\n\t/**\n\t * Get the dispatcher for the route's controller.\n\t *\n\t * @return \\Jeht\\Interfaces\\Routing\\ControllerDispatcherInterface\n\t */\n\tpublic function controllerDispatcher()\n\t{\n\t\tif ($this->container->bound(ControllerDispatcherInterface::class)) {\n\t\t\treturn $this->container->make(ControllerDispatcherInterface::class);\n\t\t}\n\n\t\treturn new ControllerDispatcher($this->container);\n\t}\n\n\t/**\n\t * Get the controller instance for the route.\n\t *\n\t * @return mixed\n\t */\n\tpublic function getController()\n\t{\n\t\tif (! $this->controller) {\n\t\t\t$class = $this->parseControllerCallback()[0];\n\n\t\t\t$this->controller = $this->container->make(ltrim($class, '\\\\'));\n\t\t}\n\n\t\treturn $this->controller;\n\t}\n\n\t/**\n\t * Get the controller method used for the route.\n\t *\n\t * @return string\n\t */\n\tpublic function getControllerClass()\n\t{\n\t\treturn $this->parseControllerCallback()[0];\n\t}\n\n\t/**\n\t * Get the controller method used for the route.\n\t *\n\t * @return string\n\t */\n\tprotected function getControllerMethod()\n\t{\n\t\treturn $this->parseControllerCallback()[1];\n\t}\n\n\t/**\n\t * Parse the controller.\n\t *\n\t * @return array\n\t */\n\tprotected function parseControllerCallback()\n\t{\n\t\treturn Str::parseCallback($this->action['uses']);\n\t}\n\n\t/**\n\t * Get the compiled regex expression for the uri.\n\t *\n\t * @return string\n\t */\n\tpublic function regex()\n\t{\n\t\treturn $this->regex;\n\t}\n\n\t/**\n\t * Get the uri.\n\t *\n\t * @return string\n\t */\n\tpublic function uri()\n\t{\n\t\treturn $this->uri;\n\t}\n\n\t/**\n\t * Checks if the given $requestUri matches the route. \n\t *\n\t * @param string $requestUri\n\t * @return bool\n\t */\n\tprotected function matchesUri(string $requestUri)\n\t{\n\t\treturn $this->router->requestMatchesRegex($requestUri, $this->regex);\n\t}\n\n\t/**\n\t * Checks if the given $requestUri matches the route.\n\t *\n\t * @param Jeht\\Interfaces\\Http\\Request $request\n\t * @param bool $includingMethod\n\t * @return bool\n\t */\n\tpublic function matches(Request $request, bool $includingMethod = true)\n\t{\n\t\t$uri = $request->getUri()->getPath();\n\t\t//\n\t\tif ($includingMethod) {\n\t\t\tif (! in_array($request->getMethod(), $this->httpMethods, true)) {\n\t\t\t\treturn false;\n\t\t\t}\n\t\t}\n\t\t//\n\t\treturn $this->matchesUri($uri);\n\t}\n\n\t/**\n\t * Bind the route to a given $request for execution.\n\t *\n\t * @param \\Jeht\\Http\\Request $request\n\t * @return $this\n\t */\n\tpublic function bind(Request $request)\n\t{\n\t\t$this->parameters = $this->router->fetchParameterValuesFromUri(\n\t\t\t$request->getUri()->getPath(), $this->regex\n\t\t);\n\t\t//\n\t\t$this->originalParameters = $this->parameters;\n\t\t//\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Returns the route name\n\t *\n\t * @return string\n\t */\n\tpublic function getName()\n\t{\n\t\treturn $this->name;\n\t}\n\n\t/**\n\t * Returns the route uri\n\t *\n\t * @return string\n\t */\n\tpublic function getUri()\n\t{\n\t\treturn $this->uri;\n\t}\n\n\t/**\n\t * Returns the route handler\n\t *\n\t * @return mixed\n\t */\n\tpublic function getHandler()\n\t{\n\t\treturn $this->handler;\n\t}\n\n\t/**\n\t * Checks if the route has parameters.\n\t *\n\t * @return bool\n\t */\n\tpublic function hasParameters()\n\t{\n\t\treturn isset($this->parameters);\n\t}\n\n\t/**\n\t * Checks if the route parameter $name exists.\n\t *\n\t * @param string $name\n\t * @return bool\n\t */\n\tpublic function hasParameter(string $name)\n\t{\n\t\tif ($this->hasParameters()) {\n\t\t\treturn array_key_exists($name, $this->parameters());\n\t\t}\n\t\t//\n\t\treturn false;\n\t}\n\n\t/**\n\t * Returns all route parameters.\n\t *\n\t * @return $array\n\t * @throws \\LogicException\n\t */\n\tpublic function parameters()\n\t{\n\t\tif ($this->hasParameters()) {\n\t\t\treturn $this->parameters;\n\t\t}\n\t\t//\n\t\tthrow new LogicException('Route is not bound.');\n\t}\n\n\t/**\n\t * Get a given parameter from the route.\n\t *\n\t * @param string $name\n\t * @param mixed $default\n\t * @return mixed\n\t */\n\tpublic function parameter(string $name, $default = null)\n\t{\n\t\treturn Arr::get($this->parameters(), $name, $default);\n\t}\n\n\t/**\n\t * Set a parameter to the given route.\n\t *\n\t * @param string $name\n\t * @param mixed $value\n\t * @return void\n\t */\n\tpublic function setParameter(string $name, $value)\n\t{\n\t\t$this->parameters();\n\t\t//\n\t\t$this->parameters[$name] = $value;\n\t}\n\n\t/**\n\t * Unset a parameter on the route.\n\t *\n\t * @param string $name\n\t * @return void\n\t */\n\tpublic function forgetParameter(string $name)\n\t{\n\t\t$this->parameters();\n\t\t//\n\t\tunset($this->parameters[$name]);\n\t}\n\n\t/**\n\t * Get a key/value list of parameters without null values.\n\t *\n\t * @return array\n\t */\n\tpublic function parametersWithoutNulls()\n\t{\n\t\treturn array_filter($this->parameters(), function($val) {\n\t\t\treturn !is_null($val);\n\t\t});\n\t}\n\n\t/**\n\t * Mark this route as a fallback route.\n\t *\n\t * @return $this\n\t */\n\tpublic function fallback()\n\t{\n\t\t$this->isFallback = true;\n\t\t//\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Set the fallback value.\n\t *\n\t * @param bool $isFallback\n\t * @return $this\n\t */\n\tpublic function setFallback(bool $isFallback)\n\t{\n\t\t$this->isFallback = $isFallback;\n\t\t//\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Returns whether the route is a fallback.\n\t *\n\t * @return bool\n\t */\n\tpublic function isFallback()\n\t{\n\t\treturn $this->isFallback;\n\t}\n\n\t/**\n\t * Set the router.\n\t *\n\t * @param \\Jeht\\Routing\\Route $router\n\t * @return $this\n\t */\n\tpublic function setRouter(Router $router)\n\t{\n\t\t$this->router = $router;\n\t\t//\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Set the container.\n\t *\n\t * @param \\Jeht\\Container\\Container $container\n\t * @return $this\n\t */\n\tpublic function setContainer(Container $container)\n\t{\n\t\t$this->container = $container;\n\t\t//\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Get the HTTP verbs the route responds to.\n\t *\n\t * @return array\n\t */\n\tpublic function methods()\n\t{\n\t\treturn $this->httpMethods;\n\t}\n\n\t/**\n\t * Dynamically access route parameters\n\t *\n\t * @param string $key\n\t * @return mixed\n\t */\n\tpublic function __get($key)\n\t{\n\t\treturn $this->parameter($key);\n\t} \n\n\n\t/**\n\t * Get the value of the action that should be taken on a missing model exception.\n\t *\n\t * @return \\Closure|null\n\t */\n\tpublic function getMissing()\n\t{\n\t\t$missing = $this->action['missing'] ?? null;\n\n\t\treturn is_string($missing) &&\n\t\t\tStr::startsWith($missing, [\n\t\t\t\t'O:47:\"Laravel\\\\SerializableClosure\\\\SerializableClosure',\n\t\t\t]) ? unserialize($missing) : $missing;\n\t}\n\n\t/**\n\t * Define the callable that should be invoked on a missing model exception.\n\t *\n\t * @param  \\Closure  $missing\n\t * @return $this\n\t */\n\tpublic function missing($missing)\n\t{\n\t\t$this->action['missing'] = $missing;\n\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Get all middleware, including the ones from the controller.\n\t *\n\t * @return array\n\t */\n\tpublic function gatherMiddleware()\n\t{\n\t\tif (! is_null($this->computedMiddleware)) {\n\t\t\treturn $this->computedMiddleware;\n\t\t}\n\n\t\t$this->computedMiddleware = [];\n\n\t\treturn $this->computedMiddleware = Router::uniqueMiddleware(\n\t\t\tarray_merge(\n\t\t\t\t$this->middleware(), $this->controllerMiddleware()\n\t\t\t)\n\t\t);\n\t}\n\n\t/**\n\t * Get or set the middlewares attached to the route.\n\t *\n\t * @param  array|string|null  $middleware\n\t * @return $this|array\n\t */\n\tpublic function middleware($middleware = null)\n\t{\n\t\tif (is_null($middleware)) {\n\t\t\treturn (array) ($this->action['middleware'] ?? []);\n\t\t}\n\n\t\tif (! is_array($middleware)) {\n\t\t\t$middleware = func_get_args();\n\t\t}\n\n\t\tforeach ($middleware as $index => $value) {\n\t\t\t$middleware[$index] = (string) $value;\n\t\t}\n\n\t\t$this->action['middleware'] = array_merge(\n\t\t\t(array) ($this->action['middleware'] ?? []), $middleware\n\t\t);\n\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Specify that the \"Authorize\" / \"can\" middleware should be applied\n\t * to the route with the given options.\n\t *\n\t * @param  string  $ability\n\t * @param  array|string  $models\n\t * @return $this\n\t */\n\tpublic function can($ability, $models = [])\n\t{\n\t\treturn empty($models)\n\t\t\t\t\t? $this->middleware(['can:'.$ability])\n\t\t\t\t\t: $this->middleware(['can:'.$ability.','.implode(',', Arr::wrap($models))]);\n\t}\n\n\t/**\n\t * Get the middleware for the route's controller.\n\t *\n\t * @return array\n\t */\n\tpublic function controllerMiddleware()\n\t{\n\t\tif (! $this->isControllerAction()) {\n\t\t\treturn [];\n\t\t}\n\n\t\t[$controllerClass, $controllerMethod] = [\n\t\t\t$this->getControllerClass(),\n\t\t\t$this->getControllerMethod(),\n\t\t];\n\n\t\tif (is_a($controllerClass, HasMiddleware::class, true)) {\n\t\t\treturn $this->staticallyProvidedControllerMiddleware(\n\t\t\t\t$controllerClass, $controllerMethod\n\t\t\t);\n\t\t}\n\n\t\tif (method_exists($controllerClass, 'getMiddleware')) {\n\t\t\treturn $this->controllerDispatcher()->getMiddleware(\n\t\t\t\t$this->getController(), $controllerMethod\n\t\t\t);\n\t\t}\n\n\t\treturn [];\n\t}\n\n\t/**\n\t * Get the statically provided controller middleware for the given class and method.\n\t *\n\t * @param  string  $class\n\t * @param  string  $method\n\t * @return array\n\t */\n\tprotected function staticallyProvidedControllerMiddleware(string $class, string $method)\n\t{\n\t\treturn Collection::for($class::middleware())->reject(function ($middleware) use ($method) {\n\t\t\treturn $this->controllerDispatcher()::methodExcludedByOptions(\n\t\t\t\t$method, ['only' => $middleware->only, 'except' => $middleware->except]\n\t\t\t);\n\t\t})->map->middleware->values()->all();\n\t}\n\n\t/**\n\t * Specify middleware that should be removed from the given route.\n\t *\n\t * @param  array|string  $middleware\n\t * @return $this\n\t */\n\tpublic function withoutMiddleware($middleware)\n\t{\n\t\t$this->action['excluded_middleware'] = array_merge(\n\t\t\t(array) ($this->action['excluded_middleware'] ?? []), Arr::wrap($middleware)\n\t\t);\n\n\t\treturn $this;\n\t}\n\n\t/**\n\t * Get the middleware should be removed from the route.\n\t *\n\t * @return array\n\t */\n\tpublic function excludedMiddleware()\n\t{\n\t\treturn (array) ($this->action['excluded_middleware'] ?? []);\n\t}\n\n\tpublic function serialize()\n\t{\n\t\t$name = $this->name;\n\t\t$httpMethods = $this->httpMethods;\n\t\t$uri = $this->uri;\n\t\t$uriRegex = $this->regex;\n\t\t$action = $this->action;\n\t\t$parameters = $this->parameters;\n\t\t$fallback = $this->fallback;\n\t\t$computedMiddleware = $this->computedMiddleware;\n\t\t//\n\t\treturn serialize(compact(\n\t\t\t'name','httpMethods','uri','regex','action',\n\t\t\t'parameters','fallback','computedMiddleware'\n\t\t));\n\t}\n\n\tpublic function unserialize()\n\t{\n\t\t$name = $this->name;\n\t\t$httpMethods = $this->httpMethods;\n\t\t$uri = $this->uri;\n\t\t$uriRegex = $this->regex;\n\t\t$action = $this->action;\n\t\t$parameters = $this->parameters;\n\t\t$fallback = $this->fallback;\n\t\t$computedMiddleware = $this->computedMiddleware;\n\t}\n\n\n}\n\n",
+			"file": "engine/Jeht/Routing/CompiledRoute.php",
+			"file_size": 14419,
+			"file_write_time": 133215848265831163,
 			"settings":
 			{
-				"buffer_size": 6131,
+				"buffer_size": 13927,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Ground/Support/Providers/RouteServiceProvider.php",
+			"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
 			"settings":
 			{
-				"buffer_size": 2956,
+				"buffer_size": 949,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -550,16 +553,17 @@
 			"file": "engine/Jeht/Routing/Router.php",
 			"settings":
 			{
-				"buffer_size": 15122,
+				"buffer_size": 15437,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Routing/RouteCollection.php",
+			"file": "engine/Jeht/Interfaces/Routing/RouterInterface.php",
 			"settings":
 			{
-				"buffer_size": 11003,
+				"buffer_size": 6800,
+				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		}
@@ -601,15 +605,24 @@
 	"expanded_folders":
 	[
 		"/D/_server/apache/sites/kazuha.local/jeht",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing",
 		"/D/_server/apache/sites/kazuha.local/jeht/vendor",
 		"/D/_server/apache/sites/kazuha.local/contacta",
 		"/D/_server/apache/sites/kazuha.local/contacta/app",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage/cache"
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers"
 	],
 	"file_history":
 	[
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RouteCollection.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/AbstractRouteCollection.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Application.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Container/BoundMethod.php",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Kernel.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers/RouteServiceProvider.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Router.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/Filesystem.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Container/Container.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/ServiceProvider.php",
@@ -620,11 +633,8 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Encryption/Interfaces/EncrypterInterface.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Encryption/Encrypter.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RoutingServiceProvider.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Router.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Application.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/CompiledRouteCollection.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Routing/RouteInterface.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RouteCollection.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Route.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/CompiledRoute.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Routing/RouteCollectionInterface.php",
@@ -722,8 +732,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Env/Parser.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Config/ImmutableRepository.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Env/EnvParser.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Container/BoundMethod.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers/RouteServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/BootProviders.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/FolderTreeCreator.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Container/Util.php",
@@ -735,13 +743,11 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Str.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/EnvironmentDetector.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Ground/CachesConfiguration.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/HtmlString.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Htmlable.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Mix.php"
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/HtmlString.php"
 	],
 	"find":
 	{
-		"height": 65.0
+		"height": 43.0
 	},
 	"find_in_files":
 	{
@@ -755,9 +761,14 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
+			"(\\$[^\\s]+)\\s*=\\s*(\\$\\w+);",
+			"\\Jeht\\Routing\\Route",
+			"Route",
+			"dispatch",
+			"\\)[\\s]*{[^}]*}",
 			"});\n",
 			"@todo",
 			"routeCollection",
@@ -880,19 +891,18 @@
 			"classname",
 			"Utils",
 			"Utils\\",
-			"osu",
-			"log_unused",
-			"unused__",
-			"packins",
-			"    ",
-			"//\n"
+			"osu"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": false,
+		"regex": true,
 		"replace_history":
 		[
+			"\\2 = \\1;",
+			"\\Jeht\\Interfaces\\Routing\\RouteInterface",
+			"RouteInterface",
+			");",
 			"routes",
 			"\\Jeht\\Interfaces\\Routing\\RouteInterface",
 			"Jeht\\Interfaces\\Routing\\RouteInterface",
@@ -962,24 +972,24 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "engine/Jeht/Ground/Application.php",
+					"file": "engine/Jeht/Routing/CompiledRouteCollection.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 31537,
+						"buffer_size": 8084,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3010,
-								3010
+								8081,
+								8081
 							]
 						],
 						"settings":
@@ -988,68 +998,67 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5892.0,
+						"translation.y": 6803.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "engine/Jeht/Routing/CompiledRoute.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 13927,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								13919,
+								13919
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 15349.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 1,
-					"file": "engine/Jeht/Container/BoundMethod.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6131,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 90.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
 					"buffer": 2,
-					"file": "engine/Jeht/Ground/Support/Providers/RouteServiceProvider.php",
+					"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2956,
+						"buffer_size": 949,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2277,
-								2277
+								692,
+								692
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/PHP/PHP.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1894.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -1058,15 +1067,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15122,
+						"buffer_size": 15437,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								15433,
+								15433
 							]
 						],
 						"settings":
@@ -1075,27 +1084,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1185.0,
+						"translation.y": 14473.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "engine/Jeht/Routing/RouteCollection.php",
+					"file": "engine/Jeht/Interfaces/Routing/RouterInterface.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11003,
+						"buffer_size": 6800,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10092,
-								10092
+								4339,
+								4339
 							]
 						],
 						"settings":
@@ -1104,7 +1113,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 8472.0,
+						"translation.y": 3696.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,

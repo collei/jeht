@@ -4,6 +4,7 @@ namespace Jeht\Routing;
 use LogicException;
 use InvalidArgumentException;
 use Serializable;
+use Closure;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Collections\Collection;
@@ -146,9 +147,9 @@ class CompiledRoute implements Serializable, RouteInterface
 	{
 		$callable = $this->action['uses'];
 
-//		if ($this->isSerializedClosure()) {
-//			$callable = unserialize($this->action['uses'])->getClosure();
-//		}
+		if ($this->isSerializedClosure()) {
+			$callable = unserialize($this->action['uses'])->getClosure();
+		}
 
 		return $callable(
 			...array_values(
@@ -698,6 +699,64 @@ class CompiledRoute implements Serializable, RouteInterface
 	public function excludedMiddleware()
 	{
 		return (array) ($this->action['excluded_middleware'] ?? []);
+	}
+
+	/**
+	 * Compiles a closure into a serializable, if any.
+	 *
+	 * @return void
+	 */
+	protected function compileIfClosure($piece)
+	{
+		if ($piece instanceof Closure) {
+			return new SerializableClosure($piece);
+		}
+		//
+		return $piece;
+	}
+
+	/**
+	 * Compiles into a PHP serialized format
+	 *
+	 * @return string
+	 */
+	public function serialize()
+	{
+		$name = $this->name;
+		$httpMethods = $this->httpMethods;
+		$uri = $this->uri;
+		$regex = $this->regex;
+		$action = $this->action;
+		$parameters = $this->parameters;
+		$fallback = $this->fallback;
+		$computedMiddleware = $this->computedMiddleware;
+		//
+		$action['uses'] = $this->compileIfClosure($action['uses']);
+		//
+		return serialize(compact(
+			'name','httpMethods','uri','regex','action',
+			'parameters','fallback','computedMiddleware'
+		));
+	}
+
+	/**
+	 * Restores data from a PHP serialized format.
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function unserialize(string $data)
+	{
+		$restored = unserialize($data);
+		//
+		$this->name = $restored['name'];
+		$this->httpMethods = $restored['httpMethods'];
+		$this->uri = $restored['uri'];
+		$this->regex = $restored['regex'];
+		$this->action = $restored['action'];
+		$this->parameters = $restored['parameters'];
+		$this->fallback = $restored['fallback'];
+		$this->computedMiddleware = $restored['computedMiddleware'];
 	}
 
 }
