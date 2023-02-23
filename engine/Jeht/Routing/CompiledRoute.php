@@ -7,6 +7,7 @@ use Serializable;
 use Closure;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
+use Jeht\Support\Closures;
 use Jeht\Collections\Collection;
 use Jeht\Container\Container;
 use Jeht\Interfaces\Routing\RouteInterface;
@@ -709,7 +710,8 @@ class CompiledRoute implements Serializable, RouteInterface
 	protected function compileIfClosure($piece)
 	{
 		if ($piece instanceof Closure) {
-			return serialize(new SerializableClosure($piece));
+			return Closures::toString($piece);
+			//return serialize(new SerializableClosure($piece));
 		}
 		//
 		return $piece;

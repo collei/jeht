@@ -362,7 +362,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	public function serialize()
 	{
 		$compiled = $this->compiled;
-		$attributes = $this->attributes;
+		$attributes = []; // $this->attributes;
 		//
 		return serialize(compact('compiled','attributes'));
 	}
