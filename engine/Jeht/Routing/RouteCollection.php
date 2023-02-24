@@ -310,4 +310,5 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 			->setRouter($router)
 			->setContainer($container);
 	}
+	
 }

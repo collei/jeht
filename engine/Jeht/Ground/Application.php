@@ -157,7 +157,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 *
 	 * @var array
 	 */
-	protected $basicFolderTree = [
+	protected static $basicFolderTree = [
 		'app',
 		'bootstrap/cache',
 		'config',
@@ -212,8 +212,8 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		$this->detectAppRootUri();
 		$this->registerClientAutoloader();
 		//
-		FolderTreeCreator::for($this->basicFolderTree)
-			->in($this['app.rooturi'])
+		FolderTreeCreator::for(self::$basicFolderTree)
+			->at($this['app.rooturi'])
 			->create();
 	}
 

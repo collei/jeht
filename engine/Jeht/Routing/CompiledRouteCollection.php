@@ -355,27 +355,81 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	}
 
 	/**
-	 * Compiles into a PHP serialized format
+	 * Prepares for the serialization process.
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public function serialize()
+	public function __sleep()
 	{
-		$compiled = array_map(function($item) {
-			return $item->serialize();
-		}, $this->compiled);
+		$this->router = null;
+		$this->container = null;
 		//
-		$attributes = array_map(function($item) {
+		return ['compiled','attributes'];
+	}
+
+	/**
+	 * Restores the object state from a cache or a slumber file.
+	 *
+	 * @return static
+	 */
+	public static function __set_state(array $data): object
+	{
+		return new static(
+			$data['compiled'], $data['attributes']
+		);
+	}
+
+	/**
+	 * Returns an array of properties to be serialized
+	 *
+	 * @return array
+	 */
+	public function __serialize()
+	{
+		$compiled = serialize(array_map(function($item) {
+			return serialize($item);
+		}, $this->compiled));
+		//
+		$attributes = serialize(array_map(function($item) {
 			if (isset($item['action']['uses']) && $item['action']['uses'] instanceof Closure) {
 				$item['action']['uses'] = serialize(
 					new SerializableClosure($item['action']['uses'])
 				);
 			}
 			//
-			return $item;
-		}, $this->attributes);
+			return serialize($item);
+		}, $this->attributes));
 		//
-		return serialize(compact('compiled','attributes'));
+		return compact('compiled','attributes');
+	}
+
+	/**
+	 * Compiles into a PHP serialized format
+	 *
+	 * @return string
+	 */
+	public function serialize()
+	{
+		return serialize($this->__serialize());
+	}
+
+	/**
+	 * Restores data from a PHP serialized format.
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function __unserialize(array $data)
+	{
+		$this->compiled = array_map(function($item) {
+			return unserialize($item);
+		}, unserialize($data['compiled']));
+		//
+		$this->attributes = array_map(function($item) {
+			return unserialize($item);
+		}, unserialize($data['attributes']));
+		//
+		$this->routes = new RouteCollection;
 	}
 
 	/**
@@ -388,9 +442,21 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	{
 		$restored = unserialize($data);
 		//
-		$this->compiled = $restored['compiled'];
-		$this->attributes = $restored['attributes'];
-		$this->routes = new RouteCollection;
+		$this->__unserialize($restored);
+	}
+
+
+	public function saveToFile(string $fileName)
+	{
+		list($compiled, $attributes) = array($this->compiled, $this->attributes);
+		//
+		$data = compact('compiled','attributes');
+		//
+		$content = '<?php return Jeht\Routing\CompiledRouteCollection::__set_state('
+			. var_export($data, true)
+			. ');';
+		//
+		file_put_contents($fileName, $content);
 	}
 
 }

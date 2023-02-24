@@ -27,7 +27,6 @@ class FolderTreeCreator
 	protected function createFolderIfExists(string $folder)
 	{
 		$path = $this->basePath.DIRECTORY_SEPARATOR.$folder;
-		//
 		// Recreate folder if it does not exist yet
 		if (! is_dir($path)) {
 			mkdir($path, 0777, true);
@@ -92,6 +91,28 @@ class FolderTreeCreator
 	}
 
 	/**
+	 * Defines the basepath we work within.
+	 *
+	 * @param string $basePath
+	 * @return static
+	 */
+	public function at(string $basePath)
+	{
+		return $this->setBasePath($basePath);
+	}
+
+	/**
+	 * Defines the folder tree we work with.
+	 *
+	 * @param array $folders
+	 * @return static
+	 */
+	public function with(array $folders)
+	{
+		return $this->setFolders($folders);
+	}
+
+	/**
 	 * Does its dishes.
 	 *
 	 * @return void
@@ -106,7 +127,7 @@ class FolderTreeCreator
 	 *
 	 * @return void
 	 */
-	public static function in(string $basePath)
+	public static function within(string $basePath)
 	{
 		return new static($basePath);
 	}

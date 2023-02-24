@@ -25,6 +25,11 @@ class CompiledRoute implements Serializable, RouteInterface
 	/**
 	 * @var string
 	 */
+	public const SERIALIZED_SIGNATURE = 'O:47:"Laravel\\SerializableClosure\\SerializableClosure';
+
+	/**
+	 * @var string
+	 */
 	private $name;
 
 	/**
@@ -705,7 +710,8 @@ class CompiledRoute implements Serializable, RouteInterface
 	/**
 	 * Compiles a closure into a serializable, if any.
 	 *
-	 * @return void
+	 * @param mixed $piece
+	 * @return mixed
 	 */
 	protected function compileIfClosure($piece)
 	{
@@ -717,27 +723,111 @@ class CompiledRoute implements Serializable, RouteInterface
 	}
 
 	/**
+	 * Decompiles a closure from a serializable, if any.
+	 *
+	 * @param mixed $piece
+	 * @return mixed
+	 */
+	protected function restoreIfCompiledClosure($piece)
+	{
+		if (strpos($piece, self::SERIALIZED_SIGNATURE) === 0) {
+			return unserialize($piece);
+		}
+		//
+		return $piece;
+	}
+
+	/**
+	 * Prepares for the serialization process.
+	 *
+	 * @return void
+	 */
+	public function __sleep()
+	{
+		$this->router = null;
+		$this->container = null;
+		//
+		return [
+			'name','methods','uri','regex','action','parameters',
+			'fallback','middleware','router','container'
+		];
+	}
+
+	/**
+	 * Restores the object state from a cache or a slumber file.
+	 *
+	 * @return static
+	 */
+	public static function __set_state(array $data): object
+	{
+		return new self(
+			$data['name'],
+			$data['methods'],
+			$data['uri'],
+			$data['regex'],
+			$data['action'],
+			$data['parameters'],
+			$data['fallback'],
+			$data['middleware']
+		);
+	}
+
+	/**
+	 * Returns an array of properties to be serialized
+	 *
+	 * @return array
+	 */
+	public function __serialize()
+	{
+		$name = $this->name;
+		$methods = $this->httpMethods;
+		$uri = $this->uri;
+		$regex = $this->regex;
+		$action = $this->action;
+		$parameters = $this->parameters;
+		$fallback = $this->fallback;
+		$middleware = $this->computedMiddleware;
+		//
+		$action['uses'] = $this->compileIfClosure($action['uses']);
+		//
+		$router = $container = null;
+		//
+		return compact(
+			'name','methods','uri','regex','action','parameters',
+			'fallback','middleware','router','container'
+		);
+	}
+
+	/**
 	 * Compiles into a PHP serialized format
 	 *
 	 * @return string
 	 */
 	public function serialize()
 	{
-		$name = $this->name;
-		$httpMethods = $this->httpMethods;
-		$uri = $this->uri;
-		$regex = $this->regex;
-		$action = $this->action;
-		$parameters = $this->parameters;
-		$fallback = $this->fallback;
-		$computedMiddleware = $this->computedMiddleware;
+		return serialize($this->__serialize());
+	}
+
+	/**
+	 * Restores data from a PHP serialized format.
+	 *
+	 * @param string $data
+	 * @return void
+	 */
+	public function __unserialize(array $data)
+	{
+		$data['action']['uses'] = $this->restoreIfCompiledClosure(
+			$data['action']['uses'] ?? 'undefineda'
+		);
 		//
-		$action['uses'] = $this->compileIfClosure($action['uses']);
-		//
-		return serialize(compact(
-			'name','httpMethods','uri','regex','action',
-			'parameters','fallback','computedMiddleware'
-		));
+		$this->name = $data['name'];
+		$this->httpMethods = $data['methods'];
+		$this->uri = $data['uri'];
+		$this->regex = $data['regex'];
+		$this->action = $data['action'];
+		$this->parameters = $data['parameters'];
+		$this->fallback = $data['fallback'];
+		$this->computedMiddleware = $data['middleware'];
 	}
 
 	/**
@@ -750,14 +840,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	{
 		$restored = unserialize($data);
 		//
-		$this->name = $restored['name'];
-		$this->httpMethods = $restored['httpMethods'];
-		$this->uri = $restored['uri'];
-		$this->regex = $restored['regex'];
-		$this->action = $restored['action'];
-		$this->parameters = $restored['parameters'];
-		$this->fallback = $restored['fallback'];
-		$this->computedMiddleware = $restored['computedMiddleware'];
+		$this->__unserialize($restored);
 	}
 
 }
