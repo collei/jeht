@@ -710,8 +710,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	protected function compileIfClosure($piece)
 	{
 		if ($piece instanceof Closure) {
-			return Closures::toString($piece);
-			//return serialize(new SerializableClosure($piece));
+			return serialize(new SerializableClosure($piece));
 		}
 		//
 		return $piece;

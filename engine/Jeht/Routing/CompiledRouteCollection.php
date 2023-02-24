@@ -15,6 +15,7 @@ use Jeht\Support\Arr;
 use Jeht\Collections\Collection;
 use Jeht\Http\Exceptions\NotFoundHttpException;
 use Jeht\Http\Exceptions\MethodNotAllowedHttpException;
+use Laravel\SerializableClosure\SerializableClosure;
 
 
 /**
@@ -353,7 +354,6 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 		return $this->nameList;
 	}
 
-
 	/**
 	 * Compiles into a PHP serialized format
 	 *
@@ -361,8 +361,19 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 */
 	public function serialize()
 	{
-		$compiled = $this->compiled;
-		$attributes = []; // $this->attributes;
+		$compiled = array_map(function($item) {
+			return $item->serialize();
+		}, $this->compiled);
+		//
+		$attributes = array_map(function($item) {
+			if (isset($item['action']['uses']) && $item['action']['uses'] instanceof Closure) {
+				$item['action']['uses'] = serialize(
+					new SerializableClosure($item['action']['uses'])
+				);
+			}
+			//
+			return $item;
+		}, $this->attributes);
 		//
 		return serialize(compact('compiled','attributes'));
 	}
