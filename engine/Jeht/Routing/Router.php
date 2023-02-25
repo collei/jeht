@@ -432,7 +432,7 @@ class Router implements RouterInterface
 			if (is_array($matches)) {
 				foreach ($matches as $key => $value) {
 					if (is_string($key)) {
-						$result[$key] = $value;
+						$result[$key] = urldecode($value);
 					}
 				}
 			}
