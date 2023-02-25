@@ -174,6 +174,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		'storage/framework/cache',
 		'storage/framework/cache/data',
 		'storage/framework/sessions',
+		'storage/framework/stubs',
 		'storage/framework/testing',
 		'storage/framework/views',
 		'storage/logs',

@@ -100,13 +100,6 @@ interface RouteInterface
 	public function getUri();
 
 	/**
-	 * Returns the route handler
-	 *
-	 * @return mixed
-	 */
-	public function getHandler();
-
-	/**
 	 * Checks if the route has parameters.
 	 *
 	 * @return bool

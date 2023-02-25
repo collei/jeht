@@ -310,5 +310,23 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 			->setRouter($router)
 			->setContainer($container);
 	}
-	
+
+	/**
+	 * Create a new RouteCollection instance from an existing
+	 * CompiledRouteCollection instance.
+	 *
+	 * @param  \Jeht\Routing\CompiledRouteCollection  $routes
+	 * @return static
+	 */
+	public static function createFromCompiled(CompiledRouteCollection $routes)
+	{
+		$self = new static;
+		//
+		foreach ($routes as $route) {
+			$self->add($route);
+		}
+		//
+		return $self;
+	}
+
 }

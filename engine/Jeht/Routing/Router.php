@@ -127,16 +127,6 @@ class Router implements RouterInterface
 	}
 
 	/**
-	 * Return the underlying Route collection
-	 *
-	 * @return \Jeht\Http\RouteCollection
-	 */	
-	public function getRoutes()
-	{
-		return $this->routes;
-	}
-
-	/**
 	 * Register a GET route.
 	 *
 	 * @param	string	$uri
@@ -361,6 +351,48 @@ class Router implements RouterInterface
 	}
 
 	/**
+	 * Return the underlying Route collection
+	 *
+	 * @return \Jeht\Http\RouteCollection
+	 */	
+	public function getRoutes()
+	{
+		return $this->routes;
+	}
+
+	/**
+	 * Set the route collection instance.
+	 *
+	 * @param  \Jeht\Routing\RouteCollection  $routes
+	 * @return void
+	 */
+	public function setRoutes(RouteCollection $routes)
+	{
+		foreach ($routes as $route) {
+			$route->setRouter($this)->setContainer($this->container);
+		}
+
+		$this->routes = $routes;
+
+		$this->container->instance('routes', $this->routes);
+	}
+
+	/**
+	 * Set the compiled route collection instance.
+	 *
+	 * @param  array  $routes
+	 * @return void
+	 */
+	public function setCompiledRoutes(array $routes)
+	{
+		$this->routes = (new CompiledRouteCollection($routes['compiled'], $routes['attributes']))
+			->setRouter($this)
+			->setContainer($this->container);
+
+		$this->container->instance('routes', $this->routes);
+	}
+
+	/**
 	 * Register the pending routes with the Router, cleaning the queue
 	 * of pending ones, and then retrieves the Router instance.
 	 *
@@ -431,8 +463,10 @@ class Router implements RouterInterface
 			return $this->runRoute($route, $request);
 		}
 		//
+		$requestUri = $request->getUri();
+		//
 		throw new NotFoundHttpException(
-			'No Route could match for the uri [' . $request->getUri() . '] and no fallback was found.'
+			"No Route could match for the uri [$requestUri] and no fallback was found."
 		);
 	}
 

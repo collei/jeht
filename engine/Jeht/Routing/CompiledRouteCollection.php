@@ -445,18 +445,14 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 		$this->__unserialize($restored);
 	}
 
-
-	public function saveToFile(string $fileName)
+	/**
+	 * Restores the object state from a cache or a slumber file.
+	 *
+	 * @return static
+	 */
+	public static function createFromSlumber(array $data)
 	{
-		list($compiled, $attributes) = array($this->compiled, $this->attributes);
-		//
-		$data = compact('compiled','attributes');
-		//
-		$content = '<?php return Jeht\Routing\CompiledRouteCollection::__set_state('
-			. var_export($data, true)
-			. ');';
-		//
-		file_put_contents($fileName, $content);
+		return static::__set_state($data);
 	}
 
 }

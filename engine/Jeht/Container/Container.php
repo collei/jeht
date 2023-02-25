@@ -1382,6 +1382,16 @@ class Container implements ArrayAccess, ContainerContract
 	}
 
 	/**
+	 * Get the instance for the $abstract and $parameters.
+	 *
+	 * @return mixed
+	 */
+	public static function getInstanceOf(string $abstract, array $parameters = [])
+	{
+		return static::getInstance()->make($abstract, $parameters);
+	}
+
+	/**
 	 * Set the shared instance of the container.
 	 *
 	 * @param  \Jeht\Container\Container|null  $container

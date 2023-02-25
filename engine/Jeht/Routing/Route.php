@@ -123,11 +123,36 @@ class Route implements RouteInterface
 		$this->uri = $uri;
 		$this->handler = $action;
 		//
-		$this->action = $this->parseAction($action);
+		if ($action) {
+			$this->action = $this->parseAction($action);
+		}
 		//
 		$regex = !empty($regex) ? $regex : str_replace('/', '\\/', $uri);
 		//
 		$this->regex = $regex;
+	}
+
+	/**
+	 * Builds a Route instance from a CompiledRoute instance.
+	 *
+	 * @param \Jeht\Http\CompiledRoute
+	 * @return static
+	 */
+	public static function fromCompiledRoute(CompiledRoute $compiled)
+	{
+		$route = (new self(
+			$compiled->getMethods(),
+			$compiled->getUri(),
+			null,
+			$compiled->getRegex(),
+			$compiled->getName()
+		))->setFallback($compiled->isFallback());
+		//
+		$route->action = $compiled->getAction();
+		$route->parameters = $compiled->getParameters();
+		$route->computedMiddleware = $compiled->getMiddleware();
+		//
+		return $route;
 	}
 
 	/**
@@ -147,6 +172,28 @@ class Route implements RouteInterface
 			$this->isFallback,
 			$this->computedMiddleware ?: []
 		));
+	}
+
+	/**
+	 * Compiles the route and returns it.
+	 *
+	 * @return $this
+	 */
+	protected function decompile()
+	{
+		if ($this->compiled) {
+			$this->name = $this->compiled->getName();
+			$this->httpMethods = $this->compiled->getMethods();
+			$this->uri = $this->compiled->getUri();
+			$this->regex = $this->compiled->getRegex();
+			$this->action = $this->compiled->getAction();
+			$this->parameters = $this->compiled->getParameters();
+			$this->originalParameters ?: $this->parameters ?: [];
+			$this->isFallback = $this->compiled->isFallback();
+			$this->computedMiddleware = $this->compiled->getMiddleware() ?: [];
+		}
+		//
+		return $this;
 	}
 
 	/**
@@ -762,6 +809,113 @@ class Route implements RouteInterface
 	{
 		return (array) ($this->action['excluded_middleware'] ?? []);
 	}
+
+	/**
+	 * Prepares for the serialization process.
+	 *
+	 * @return void
+	 * /
+	public function __sleep()
+	{
+		$this->router = null;
+		$this->container = null;
+		//
+		return [
+			'name','methods','uri','regex','action','parameters',
+			'fallback','middleware','router','container'
+		];
+	}
+
+	/**
+	 * Restores the object state from a cache or a slumber file.
+	 *
+	 * @return static
+	 * /
+	public static function __set_state(array $data): object
+	{
+		return new self(
+			$data['name'],
+			$data['methods'],
+			$data['uri'],
+			$data['regex'],
+			$data['action'],
+			$data['parameters'],
+			$data['fallback'],
+			$data['middleware']
+		);
+	}
+
+	/**
+	 * Returns an array of properties to be serialized
+	 *
+	 * @return array
+	 * /
+	public function __serialize()
+	{
+		$name = $this->name;
+		$methods = $this->httpMethods;
+		$uri = $this->uri;
+		$regex = $this->regex;
+		$action = $this->action;
+		$parameters = $this->parameters;
+		$fallback = $this->isFallback();
+		$middleware = $this->computedMiddleware;
+		//
+		$action['uses'] = $this->compileIfClosure($action['uses']);
+		//
+		$router = $container = null;
+		//
+		return compact(
+			'name','methods','uri','regex','action','parameters',
+			'fallback','middleware','router','container'
+		);
+	}
+
+	/**
+	 * Compiles into a PHP serialized format
+	 *
+	 * @return string
+	 * /
+	public function serialize()
+	{
+		return serialize($this->__serialize());
+	}
+
+	/**
+	 * Restores data from a PHP serialized format.
+	 *
+	 * @param string $data
+	 * @return void
+	 * /
+	public function __unserialize(array $data)
+	{
+		$data['action']['uses'] = $this->restoreIfCompiledClosure(
+			$data['action']['uses'] ?? 'undefineda'
+		);
+		//
+		$this->name = $data['name'];
+		$this->httpMethods = $data['methods'];
+		$this->uri = $data['uri'];
+		$this->regex = $data['regex'];
+		$this->action = $data['action'];
+		$this->parameters = $data['parameters'];
+		$this->fallback = $data['fallback'];
+		$this->computedMiddleware = $data['middleware'];
+	}
+
+	/**
+	 * Restores data from a PHP serialized format.
+	 *
+	 * @param string $data
+	 * @return void
+	 * /
+	public function unserialize(string $data)
+	{
+		$restored = unserialize($data);
+		//
+		$this->__unserialize($restored);
+	}
+	///*/
 
 }
 

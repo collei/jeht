@@ -280,7 +280,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	 */
 	public function regex()
 	{
-		return $this->regex;
+		return $this->getRegex();
 	}
 
 	/**
@@ -290,7 +290,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	 */
 	public function uri()
 	{
-		return $this->uri;
+		return $this->getUri();
 	}
 
 	/**
@@ -342,6 +342,16 @@ class CompiledRoute implements Serializable, RouteInterface
 	}
 
 	/**
+	 * Get the HTTP verbs the route responds to.
+	 *
+	 * @return array
+	 */
+	public function getMethods()
+	{
+		return $this->httpMethods;
+	}
+
+	/**
 	 * Returns the route name
 	 *
 	 * @return string
@@ -362,13 +372,33 @@ class CompiledRoute implements Serializable, RouteInterface
 	}
 
 	/**
+	 * Returns the route regex
+	 *
+	 * @return string
+	 */
+	public function getRegex()
+	{
+		return $this->regex;
+	}
+
+	/**
+	 * Returns the route middleware
+	 *
+	 * @return array
+	 */
+	public function getMiddleware()
+	{
+		return $this->computedMiddleware ?? [];
+	}
+
+	/**
 	 * Returns the route handler
 	 *
 	 * @return mixed
 	 */
-	public function getHandler()
+	public function getParameters()
 	{
-		return $this->handler;
+		return $this->parameters ?? [];
 	}
 
 	/**
@@ -530,7 +560,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	 */
 	public function methods()
 	{
-		return $this->httpMethods;
+		return $this->getMethods();
 	}
 
 	/**

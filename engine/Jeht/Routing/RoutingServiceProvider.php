@@ -14,6 +14,7 @@ class RoutingServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->registerRouter();
+		$this->registerRouteCacheAgent();
 		$this->registerControllerDispatcher();
 	}
 
@@ -26,6 +27,18 @@ class RoutingServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton('router', function($app) {
 			return new Router($app);
+		});
+	}
+
+	/**
+	 * Register the RouteCacheGenerator instance
+	 *
+	 * @return void
+	 */
+	protected function registerRouteCacheAgent()
+	{
+		$this->app->singleton('route.cacher', function($app){
+			return new RouteCacheGenerator($app['router'], $app);
 		});
 	}
 
