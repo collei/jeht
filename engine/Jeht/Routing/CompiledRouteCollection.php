@@ -331,7 +331,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 */
 	public function getRoutes()
 	{
-		return array_values($this->allRoutes);
+		return $this->compiled;
 	}
 
 	/**
@@ -446,13 +446,33 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	}
 
 	/**
+	 * Returns a RouteCollection instance with same data.
+	 *
+	 * @return \Jeht\Routing\RouteCollection
+	 */
+	public function toRouteCollection()
+	{
+		$collection = new RouteCollection;
+		//
+		foreach ($this as $route) {
+			$collection->add($route);
+		}
+		//
+		return $collection;
+	}
+
+	/**
 	 * Restores the object state from a cache or a slumber file.
 	 *
 	 * @return static
 	 */
 	public static function createFromSlumber(array $data)
 	{
-		return static::__set_state($data);
+		$static = new static([], []);
+		//
+		$static->__unserialize($data);
+		//
+		return $static;
 	}
 
 }
