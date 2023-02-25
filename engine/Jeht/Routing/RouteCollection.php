@@ -323,7 +323,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 		$self = new static;
 		//
 		foreach ($routes as $route) {
-			$self->add($route);
+			$self->add(Route::fromCompiledRoute($route));
 		}
 		//
 		return $self;

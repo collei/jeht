@@ -3,6 +3,7 @@ namespace Jeht\Routing\Traits;
 
 use Jeht\Support\Arr;
 use Jeht\Support\Reflector;
+use ReflectionFunction;
 use ReflectionFunctionAbstract;
 use ReflectionMethod;
 use ReflectionParameter;

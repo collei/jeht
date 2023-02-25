@@ -3,6 +3,10 @@ namespace Jeht\Routing;
 
 use LogicException;
 use InvalidArgumentException;
+use ReflectionFunction;
+use ReflectionFunctionAbstract;
+use ReflectionMethod;
+use ReflectionParameter;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Collections\Collection;
@@ -12,6 +16,7 @@ use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
 use Jeht\Interfaces\Http\Request;
 use Psr\Http\Message\UriInterface;
 use Laravel\SerializableClosure\SerializableClosure;
+use Jeht\Routing\Traits\RouteDependencyResolverTrait;
 use Jeht\Support\Traits\CallerAware;
 
 /**
@@ -21,6 +26,7 @@ use Jeht\Support\Traits\CallerAware;
 class Route implements RouteInterface
 {
 	use CallerAware;
+	use RouteDependencyResolverTrait;
 
 	/**
 	 * @var string
@@ -135,7 +141,7 @@ class Route implements RouteInterface
 	/**
 	 * Builds a Route instance from a CompiledRoute instance.
 	 *
-	 * @param \Jeht\Http\CompiledRoute
+	 * @param \Jeht\Http\Route
 	 * @return static
 	 */
 	public static function fromCompiledRoute(CompiledRoute $compiled)
@@ -148,11 +154,9 @@ class Route implements RouteInterface
 			$compiled->getName()
 		))->setFallback($compiled->isFallback());
 		//
-		$route->action = $compiled->getAction();
-		$route->parameters = $compiled->getParameters();
-		$route->computedMiddleware = $compiled->getMiddleware();
+		$route->compiled = $compiled;
 		//
-		return $route;
+		return $route->decompile();
 	}
 
 	/**
@@ -250,6 +254,8 @@ class Route implements RouteInterface
 
 		if ($this->isSerializedClosure()) {
 			$callable = unserialize($this->action['uses'])->getClosure();
+		} elseif ($callable instanceof SerializableClosure) {
+			$callable = $callable->getClosure();
 		}
 
 		return $callable(
@@ -809,113 +815,6 @@ class Route implements RouteInterface
 	{
 		return (array) ($this->action['excluded_middleware'] ?? []);
 	}
-
-	/**
-	 * Prepares for the serialization process.
-	 *
-	 * @return void
-	 * /
-	public function __sleep()
-	{
-		$this->router = null;
-		$this->container = null;
-		//
-		return [
-			'name','methods','uri','regex','action','parameters',
-			'fallback','middleware','router','container'
-		];
-	}
-
-	/**
-	 * Restores the object state from a cache or a slumber file.
-	 *
-	 * @return static
-	 * /
-	public static function __set_state(array $data): object
-	{
-		return new self(
-			$data['name'],
-			$data['methods'],
-			$data['uri'],
-			$data['regex'],
-			$data['action'],
-			$data['parameters'],
-			$data['fallback'],
-			$data['middleware']
-		);
-	}
-
-	/**
-	 * Returns an array of properties to be serialized
-	 *
-	 * @return array
-	 * /
-	public function __serialize()
-	{
-		$name = $this->name;
-		$methods = $this->httpMethods;
-		$uri = $this->uri;
-		$regex = $this->regex;
-		$action = $this->action;
-		$parameters = $this->parameters;
-		$fallback = $this->isFallback();
-		$middleware = $this->computedMiddleware;
-		//
-		$action['uses'] = $this->compileIfClosure($action['uses']);
-		//
-		$router = $container = null;
-		//
-		return compact(
-			'name','methods','uri','regex','action','parameters',
-			'fallback','middleware','router','container'
-		);
-	}
-
-	/**
-	 * Compiles into a PHP serialized format
-	 *
-	 * @return string
-	 * /
-	public function serialize()
-	{
-		return serialize($this->__serialize());
-	}
-
-	/**
-	 * Restores data from a PHP serialized format.
-	 *
-	 * @param string $data
-	 * @return void
-	 * /
-	public function __unserialize(array $data)
-	{
-		$data['action']['uses'] = $this->restoreIfCompiledClosure(
-			$data['action']['uses'] ?? 'undefineda'
-		);
-		//
-		$this->name = $data['name'];
-		$this->httpMethods = $data['methods'];
-		$this->uri = $data['uri'];
-		$this->regex = $data['regex'];
-		$this->action = $data['action'];
-		$this->parameters = $data['parameters'];
-		$this->fallback = $data['fallback'];
-		$this->computedMiddleware = $data['middleware'];
-	}
-
-	/**
-	 * Restores data from a PHP serialized format.
-	 *
-	 * @param string $data
-	 * @return void
-	 * /
-	public function unserialize(string $data)
-	{
-		$restored = unserialize($data);
-		//
-		$this->__unserialize($restored);
-	}
-	///*/
 
 }
 

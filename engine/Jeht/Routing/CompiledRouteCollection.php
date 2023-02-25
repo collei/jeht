@@ -455,7 +455,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 		$collection = new RouteCollection;
 		//
 		foreach ($this as $route) {
-			$collection->add($route);
+			$collection->add(Route::fromCompiledRoute($route));
 		}
 		//
 		return $collection;
