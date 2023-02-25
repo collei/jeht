@@ -760,12 +760,8 @@ class CompiledRoute implements Serializable, RouteInterface
 	 */
 	protected function restoreIfCompiledClosure($piece)
 	{
-		if ($piece instanceof SerializableClosure) {
-			return $piece->getClosure();
-		}
-		//
 		if (strpos($piece, self::SERIALIZED_SIGNATURE) === 0) {
-			return unserialize($piece);
+			return unserialize($piece)->getClosure();
 		}
 		//
 		return $piece;

@@ -197,6 +197,10 @@ class Route implements RouteInterface
 			$this->computedMiddleware = $this->compiled->getMiddleware() ?: [];
 		}
 		//
+		if ($this->isSerializedClosure()) {
+			$this->action['uses'] = unserialize($this->action['uses'])->getClosure();
+		}
+		//
 		return $this;
 	}
 
@@ -254,8 +258,6 @@ class Route implements RouteInterface
 
 		if ($this->isSerializedClosure()) {
 			$callable = unserialize($this->action['uses'])->getClosure();
-		} elseif ($callable instanceof SerializableClosure) {
-			$callable = $callable->getClosure();
 		}
 
 		return $callable(
