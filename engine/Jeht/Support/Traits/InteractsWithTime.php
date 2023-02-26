@@ -2,6 +2,7 @@
 namespace Jeht\Support\Traits;
 
 use DateInterval;
+use DateTime;
 use DateTimeInterface;
 
 /**
@@ -68,13 +69,24 @@ trait InteractsWithTime
 	}
 
 	/**
-	 * Get the current system time as a UNIX timestamp.
+	 * Get the current system time as a \DateTime instance.
 	 *
 	 * @return \DateTime
 	 */
 	protected function now()
 	{
 		return new DateTime("now");
+	}
+
+	/**
+	 * Get one of the most far future dates that could be comfortably achieved
+	 * as a \DateTime instance.
+	 *
+	 * @return \DateTime
+	 */
+	protected function forever()
+	{
+		return new DateTime("2999-12-31");
 	}
 
 	/**

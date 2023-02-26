@@ -230,6 +230,32 @@ class File implements FileInterface
 	}
 
 	/**
+	 * Returns the content of the file (if readable). Returns false on fail.
+	 *
+	 * @return string|false
+	 */
+	public function getContents()
+	{
+		if (! $this->isReadable()) {
+			return false;
+		}
+		//
+		return file_get_contents($this->getPath());
+	}
+
+	/**
+	 * Write the content to the file.
+	 * Returns the count of written bytes on success, or false on fail.
+	 *
+	 * @param mixed $anything
+	 * @return int|false
+	 */
+	public function putContents($anything)
+	{
+		return file_put_contents($this->getPath(), $anything);
+	}
+
+	/**
 	 * Copies the file to the specified $destination.
 	 * Returns a corresponding instance of \Jeht\Interfaces\Filesystem\File.
 	 * 

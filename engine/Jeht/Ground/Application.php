@@ -214,7 +214,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		$this->registerClientAutoloader();
 		//
 		FolderTreeCreator::for(self::$basicFolderTree)
-			->at($this['app.rooturi'])
+			->at($basePath)
 			->create();
 	}
 
@@ -1393,6 +1393,8 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	{
 		foreach ([
 			'app' => [self::class, \Jeht\Interfaces\Ground\Application::class, \Jeht\Interfaces\Container\Container::class, \Psr\Container\ContainerInterface::class],
+			'cache' => [\Jeht\Cache\CacheManager::class, \Jeht\Cache\Interfaces\CacheManagerInterface::class],
+			'cache.store' => [\Jeht\Cache\Drivers\DefaultCacheDriver::class, \Jeht\Cache\Interfaces\CacheDriverInterface::class],
 			'config' => [\Jeht\Config\Repository::class, \Jeht\Interfaces\Config\Repository::class],
 			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\StringEncrypter::class],
 			'files' => [\Jeht\Filesystem\Filesystem::class],

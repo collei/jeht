@@ -261,6 +261,10 @@ class Folder implements FolderInterface
 				$result[$name] = File::for($fullPath);
 			} elseif (self::TYPE_FOLDER === $target && is_dir($fullPath)) {
 				$result[$name] = static::for($fullPath);
+			} else {
+				$result[$name] = is_dir($fullPath)
+					? static::for($fullPath)
+					: File::for($fullPath);
 			}
 		}
 		//

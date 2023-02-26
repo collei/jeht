@@ -24,9 +24,11 @@ class FolderTreeCreator
 	 * @param string $folder
 	 * @return void
 	 */
-	protected function createFolderIfExists(string $folder)
+	protected function createFolder(string $folder)
 	{
 		$path = $this->basePath.DIRECTORY_SEPARATOR.$folder;
+		//
+		clearstatcache();
 		// Recreate folder if it does not exist yet
 		if (! is_dir($path)) {
 			mkdir($path, 0777, true);
@@ -38,10 +40,10 @@ class FolderTreeCreator
 	 *
 	 * @return static
 	 */
-	protected function createFoldersIfTheyExist()
+	protected function createFolders()
 	{
 		foreach ($this->folders as $folder) {
-			$this->createFolderIfExists($folder);
+			$this->createFolder($folder);
 		}
 		//
 		return $this;
@@ -119,7 +121,7 @@ class FolderTreeCreator
 	 */
 	public function create()
 	{
-		$this->createFoldersIfTheyExist($this->folders);
+		$this->createFolders($this->folders);
 	}
 
 	/**
