@@ -8,6 +8,9 @@ use Jeht\Interfaces\Ground\CachesConfiguration;
 use Jeht\Interfaces\Ground\CachesRoutes;
 use Jeht\Ground\Loaders\Autoloader;
 use Jeht\Ground\Loaders\AliasLoader;
+use Jeht\Ground\Events\Bootstrapping;
+use Jeht\Ground\Events\Bootstrapped;
+use Jeht\Events\EventServiceProvider;
 use Jeht\Routing\RoutingServiceProvider;
 use Jeht\Collections\Collection;
 use Jeht\Filesystem\Filesystem;
@@ -260,7 +263,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	protected function registerBaseServiceProviders()
 	{
-		//$this->register(new EventServiceProvider($this));
+		$this->register(new EventServiceProvider($this));
 		//$this->register(new LogServiceProvider($this));
 		$this->register(new RoutingServiceProvider($this));
 	}
@@ -276,11 +279,11 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		$this->hasBeenBootstrapped = true;
 
 		foreach ($bootstrappers as $bootstrapper) {
-			//$this['events']->dispatch('bootstrapping: '.$bootstrapper, [$this]);
+			$this['events']->dispatch(Bootstrapping::create($this, compact('bootstrapper')));
 
 			$this->make($bootstrapper)->bootstrap($this);
 
-			//$this['events']->dispatch('bootstrapped: '.$bootstrapper, [$this]);
+			$this['events']->dispatch(Bootstrapped::create($this, compact('bootstrapper')));
 		}
 	}
 
@@ -306,7 +309,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function beforeBootstrapping($bootstrapper, Closure $callback)
 	{
-		//$this['events']->listen('bootstrapping: '.$bootstrapper, $callback);
+		$this['events']->listen(Bootstrapping::with(compact('bootstrapper')), $callback);
 	}
 
 	/**
@@ -318,7 +321,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function afterBootstrapping($bootstrapper, Closure $callback)
 	{
-		//$this['events']->listen('bootstrapped: '.$bootstrapper, $callback);
+		$this['events']->listen(Bootstrapped::with(compact('bootstrapper')), $callback);
 	}
 
 	/**
