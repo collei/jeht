@@ -46,6 +46,11 @@ class Folder implements FolderInterface
 	protected $items;
 
 	/**
+	 * @var bool
+	 */
+	protected $itemsAsNative = false;
+
+	/**
 	 * Creates and returns a Folder instance for the given $path.
 	 *
 	 * @param string $path
@@ -221,6 +226,30 @@ class Folder implements FolderInterface
 	}
 
 	/**
+	 * Instructs to return files as instances of \SplFileInfo. 
+	 *
+	 * @return $this
+	 */
+	public function asNative()
+	{
+		$this->itemsAsNative = true;
+		//
+		return $this;
+	}
+
+	/**
+	 * Instructs to return files as instances of \Jeht\Filesystem\File. 
+	 *
+	 * @return $this
+	 */
+	public function asJeht()
+	{
+		$this->itemsAsNative = false;
+		//
+		return $this;
+	}
+
+	/**
 	 * Does the search in the filesystem if needed or when instructed to do so,
 	 * skipping '.' and '..', and internally caches the result.
 	 * Otherwise, does nothing.
@@ -258,13 +287,18 @@ class Folder implements FolderInterface
 			$fullPath = $this->path.DIRECTORY_SEPARATOR.$name;
 			//
 			if (self::TYPE_FILE === $target && is_file($fullPath)) {
-				$result[$name] = File::for($fullPath);
+				$result[$name] = $this->itemsAsNative
+					? new SplFileInfo($fullPath)
+					: File::for($fullPath);
 			} elseif (self::TYPE_FOLDER === $target && is_dir($fullPath)) {
 				$result[$name] = static::for($fullPath);
 			} else {
 				$result[$name] = is_dir($fullPath)
 					? static::for($fullPath)
-					: File::for($fullPath);
+					: ($this->itemsAsNative
+							? new SplFileInfo($fullPath)
+							: File::for($fullPath)
+					);
 			}
 		}
 		//

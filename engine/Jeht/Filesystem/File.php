@@ -2,6 +2,7 @@
 namespace Jeht\Filesystem;
 
 use Jeht\Interfaces\Filesystem\File as FileInterface;
+use SplFileInfo;
 
 /** 
  * A file
@@ -44,6 +45,17 @@ class File implements FileInterface
 	public static function for(string $path)
 	{
 		return new static($path);
+	}
+
+	/**
+	 * Creates a File instance from a \SplFileInfo instance.
+	 *
+	 * @param \SplFileInfo $file
+	 * @return static
+	 */
+	public static function fromNative(SplFileInfo $file)
+	{
+		return new static($file->getRealPath() || $file->getPathname());
 	}
 
 	/**
@@ -435,6 +447,16 @@ class File implements FileInterface
 		}
 		//
 		return $fileStream;
+	}
+
+	/**
+	 * Converts this instance to a SplFileInfo instance.
+	 *
+	 * @return \SplFileInfo
+	 */
+	public function toNative()
+	{
+		return new SplFileInfo($this->getPath());
 	}
 
 }

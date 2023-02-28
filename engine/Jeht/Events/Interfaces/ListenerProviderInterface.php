@@ -9,6 +9,15 @@ use Psr\EventDispatcher\ListenerProviderInterface as PsrListenerProviderInterfac
 interface ListenerProviderInterface extends PsrListenerProviderInterface
 {
 	/**
+	 * Register an event listener for the given event instance.
+	 *
+	 * @param object $listener
+	 * @param object $event
+	 * @return $this
+	 */
+	public function addListener(object $listener, object $event);
+
+	/**
 	 * @param object $event
 	 *   An event for which to return the relevant listeners.
 	 * @return iterable<callable>

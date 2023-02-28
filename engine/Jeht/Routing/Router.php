@@ -736,5 +736,22 @@ class Router implements RouterInterface
 		return $this;
 	}
 
+	/**
+	 * Caches the routes if needed or when forced to.
+	 *
+	 * @param bool $force = false
+	 * @return bool
+	 */
+	public function cache(bool $force = false)
+	{
+		if ($cacheAgent = $app['route.cacher']) {
+			$cacheAgent
+				->setCollection($this->routes)
+				->cacheIfNeeded($force);
+			//
+			return true;
+		}
+	}
+
 }
 

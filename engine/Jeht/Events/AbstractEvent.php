@@ -2,83 +2,82 @@
 namespace Jeht\Events;
 
 use Jeht\Events\Interfaces\EventInterface;
+use Jeht\Events\Traits\EventsWithResponsePayload;
+use Jeht\Interfaces\Support\Jsonable;
 use ReflectionClass;
+use JsonSerializable;
 
 /**
  * Basic capabilities for the extending Event classes.
  *
  */
-abstract class AbstractEvent implements EventInterface
+abstract class AbstractEvent implements EventInterface, JsonSerializable, Jsonable
 {
 	/**
-	 * @var object
+	 * @var mixed
 	 */
-	protected $sender;
+	protected $payload;
 
 	/**
-	 * @var array
-	 */
-	protected $payload = [];
-
-	/**
-	 * @var array
-	 */
-	protected $responsePayload = [];
-
-	/**
-	 * Creates an instance of descendant classes without calling constructors.
+	 * Creates an instance of the event with optional payload.
 	 *
-	 * @return static
+	 * @param mixed $payload
+	 * @return void
 	 */
-	protected static function birth()
+	public function __construct($payload = null)
 	{
-		$refl = new ReflectionClass(static::class);
-		//
-		return $refl->newInstanceWithoutConstructor();
+		$this->payload = $payload;
 	}
 
 	/**
-	 * Creates an event for the dispatcher. It must have a sender object.
-	 * It may have optional payload items.
+	 * Creates an event for the dispatcher. It may have optional payload.
 	 *
-	 * @param object $sender
-	 * @param array $payload = []
+	 * @param mixed $payload
 	 * @return static
 	 */
-	public static function create(object $sender, array $payload = [])
+	public static function create($payload = null)
+	{
+		return new static($payload);
+	}
+
+	/**
+	 * Creates an event with optional payload.
+	 *
+	 * @param mixed $payload
+	 * @return static
+	 */
+	public static function with($payload)
 	{
 		$event = static::birth();
-		$event->sender = $sender;
 		//
-		foreach ($payload as $key => $value) {
-			$event->set($key, $value);
-		}
+		$event->set($payload);
 		//
 		return $event;
 	}
 
 	/**
-	 * Creates an event with optional payload item(s).
+	 * Specify data which should be serialized to JSON.
 	 *
-	 * @param array $payload = []
-	 * @return static
+	 * @return mixed
 	 */
-	public static function with(array $payload = [])
+	public function jsonSerialize()
 	{
-		$event = static::birth();
+		$event = get_class($this);
+		$payload = $this->payload;
+		$response = $this->responsePayload ?? null;
 		//
-		foreach ($payload as $key => $value) {
-			$event->set($key, $value);
-		}
-		//
-		return $event;
+		return compact('event','payload','response');
 	}
 
-	public function details()
+	/**
+	 * Convert the object to its JSON representation.
+	 *
+	 * @param  int  $options
+	 * @return string
+	 */
+	public function toJson($options = 0)
 	{
-		[$payload, $response] = [$this->payload, $this->responsePayload];
-
-		return json_encode(compact('payload','response'));
+		return json_encode($this, $options);
 	}
 
 	/**
@@ -86,76 +85,30 @@ abstract class AbstractEvent implements EventInterface
 	 *
 	 * @return string
 	 */
-	public function eventName()
+	public function name()
 	{
 		return static::class;
 	}
 
 	/**
-	 * Returns the event sender object.
-	 *
-	 * @return object
-	 */
-	public function sender()
-	{
-		return $this->sender;
-	}
-
-	/**
 	 * Returns details about the event.
 	 *
-	 * @param string $key
 	 * @return mixed
 	 */
-	public function get(string $key)
+	public function get()
 	{
-		return $this->payload[$key] ?? null;
+		return $this->payload ?? null;
 	}
 
 	/**
 	 * Defines details about the event.
 	 *
-	 * @param string $key
-	 * @param mixed $value
+	 * @param mixed $payload
 	 * @return void
 	 */
-	protected function set(string $key, $value)
+	protected function set($payload)
 	{
-		$this->payload[$key] = $value;
-	}
-
-	/**
-	 * Defines a response item to the emitter.
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return void
-	 */
-	public function respond(string $key, $value)
-	{
-		$this->responsePayload[$key] = $value;
-	}
-
-	/**
-	 * Retrieves any response details on the event.
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function getResponse(string $key)
-	{
-		return $this->responsePayload[$key] ?? null;
-	}
-
-	/**
-	 * Cancels a response item.
-	 *
-	 * @param string $key
-	 * @return void
-	 */
-	public function cancelResponse(string $key)
-	{
-		unset($this->responsePayload[$key]);
+		$this->payload = $payload;
 	}
 
 	/**

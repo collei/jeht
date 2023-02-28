@@ -12,47 +12,14 @@ interface EventInterface
 	 *
 	 * @return string
 	 */
-	public function eventName();
+	public function name();
 
 	/**
-	 * Returns the event sender object.
+	 * Returns the event payload, if set.
 	 *
-	 * @return object
-	 */
-	public function sender();
-
-	/**
-	 * Returns details about the event.
-	 *
-	 * @param string $key
 	 * @return mixed
 	 */
-	public function get(string $key);
-
-	/**
-	 * Defines a response item to the emitter.
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return void
-	 */
-	public function respond(string $key, $value);
-
-	/**
-	 * Retrieves any response details on the event.
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function getResponse(string $key);
-
-	/**
-	 * Cancels a response item.
-	 *
-	 * @param string $key
-	 * @return void
-	 */
-	public function cancelResponse(string $key);
+	public function get();
 
 	/**
 	 * Returns true if this instance matches another instance.

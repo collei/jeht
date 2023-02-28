@@ -10,6 +10,7 @@ use Jeht\Ground\Loaders\Autoloader;
 use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Ground\Events\Bootstrapping;
 use Jeht\Ground\Events\Bootstrapped;
+use Jeht\Ground\Events\LocaleUpdated;
 use Jeht\Events\EventServiceProvider;
 use Jeht\Routing\RoutingServiceProvider;
 use Jeht\Collections\Collection;
@@ -279,11 +280,11 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		$this->hasBeenBootstrapped = true;
 
 		foreach ($bootstrappers as $bootstrapper) {
-			$this['events']->dispatch(Bootstrapping::create($this, compact('bootstrapper')));
+			$this['events']->dispatch(new Bootstrapping($bootstrapper));
 
 			$this->make($bootstrapper)->bootstrap($this);
 
-			$this['events']->dispatch(Bootstrapped::create($this, compact('bootstrapper')));
+			$this['events']->dispatch(new Bootstrapped($bootstrapper));
 		}
 	}
 
@@ -309,7 +310,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function beforeBootstrapping($bootstrapper, Closure $callback)
 	{
-		$this['events']->listen(Bootstrapping::with(compact('bootstrapper')), $callback);
+		$this['events']->listen(new Bootstrapping($bootstrapper), $callback);
 	}
 
 	/**
@@ -321,7 +322,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	public function afterBootstrapping($bootstrapper, Closure $callback)
 	{
-		$this['events']->listen(Bootstrapped::with(compact('bootstrapper')), $callback);
+		$this['events']->listen(new Bootstrapped($bootstrapper), $callback);
 	}
 
 	/**
@@ -1360,7 +1361,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 
 		//$this['translator']->setLocale($locale);
 
-		//$this['events']->dispatch(new LocaleUpdated($locale));
+		$this['events']->dispatch(new LocaleUpdated($locale));
 	}
 
 	/**
@@ -1400,6 +1401,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 			'cache.store' => [\Jeht\Cache\Drivers\DefaultCacheDriver::class, \Jeht\Cache\Interfaces\CacheDriverInterface::class],
 			'config' => [\Jeht\Config\Repository::class, \Jeht\Interfaces\Config\Repository::class],
 			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\StringEncrypter::class],
+			'events' => [\Jeht\Events\Dispatcher::class, \Jeht\Events\Interfaces\DispatcherInterface::class],
 			'files' => [\Jeht\Filesystem\Filesystem::class],
 			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
 			'router' => [\Jeht\Routing\Router::class, \Jeht\Interfaces\Routing\RouterInterface::class],

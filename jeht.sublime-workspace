@@ -4,6 +4,30 @@
 		"selected_items":
 		[
 			[
+				"items",
+				"itemsAsNative"
+			],
+			[
+				"preg_ma",
+				"preg_match"
+			],
+			[
+				"payl",
+				"payload"
+			],
+			[
+				"pa",
+				"payload"
+			],
+			[
+				"Bootstra",
+				"Bootstrapped"
+			],
+			[
+				"resp",
+				"responsePayload"
+			],
+			[
 				"load",
 				"loadAllKeys"
 			],
@@ -156,10 +180,6 @@
 				"statusCode"
 			],
 			[
-				"resp",
-				"response"
-			],
-			[
 				"response",
 				"responseContent"
 			],
@@ -205,10 +225,6 @@
 			],
 			[
 				"preg_",
-				"preg_match_all"
-			],
-			[
-				"preg_ma",
 				"preg_match_all"
 			],
 			[
@@ -498,22 +514,6 @@
 			[
 				"func_get_a",
 				"func_get_args"
-			],
-			[
-				"socket_se",
-				"socket_set_nonblock"
-			],
-			[
-				"que",
-				"queue"
-			],
-			[
-				"dateDiff",
-				"dateDiffInMicroseconds"
-			],
-			[
-				"queue",
-				"queueItem"
 			]
 		]
 	},
@@ -523,51 +523,43 @@
 			"file": "/D/_server/apache/sites/kazuha.local/contacta/index.php",
 			"settings":
 			{
-				"buffer_size": 1258,
+				"buffer_size": 824,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Cache/Drivers/DefaultCacheDriver.php",
+			"file": "engine/Jeht/Events/AbstractEvent.php",
 			"settings":
 			{
-				"buffer_size": 6880,
+				"buffer_size": 2260,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Cache/Interfaces/CacheDriverInterface.php",
+			"file": "/D/_server/apache/sites/kazuha.local/contacta/app/Listeners/EnfeitandoPavao.php",
 			"settings":
 			{
-				"buffer_size": 2219,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/Jeht/Filesystem/File.php",
-			"settings":
-			{
-				"buffer_size": 9856,
+				"buffer_size": 247,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Filesystem/Folder.php",
+			"file": "engine/Jeht/Events/ListenerProvider.php",
 			"settings":
 			{
-				"buffer_size": 6263,
+				"buffer_size": 3036,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "engine/Jeht/Cache/InvalidArgumentException.php",
+			"file": "engine/Jeht/Support/Traits/InheritanceAware.php",
 			"settings":
 			{
-				"buffer_size": 386,
+				"buffer_size": 1039,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -576,16 +568,7 @@
 			"file": "engine/Jeht/Ground/Application.php",
 			"settings":
 			{
-				"buffer_size": 31791,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "kernel.php",
-			"settings":
-			{
-				"buffer_size": 972,
+				"buffer_size": 32017,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -630,31 +613,65 @@
 		"/D/_server/apache/sites/kazuha.local/jeht",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/Drivers",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/Interfaces",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Events",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Facades",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Traits",
 		"/D/_server/apache/sites/kazuha.local/contacta",
-		"/D/_server/apache/sites/kazuha.local/contacta/bootstrap",
-		"/D/_server/apache/sites/kazuha.local/contacta/bootstrap/cache",
+		"/D/_server/apache/sites/kazuha.local/contacta/app",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Listeners",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers",
 		"/D/_server/apache/sites/kazuha.local/contacta/config",
-		"/D/_server/apache/sites/kazuha.local/contacta/public",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage/framework",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage/framework/cache",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage/framework/cache/data",
-		"/D/_server/apache/sites/kazuha.local/contacta/storage/framework/views"
+		"/D/_server/apache/sites/kazuha.local/contacta/public"
 	],
 	"file_history":
 	[
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/EventServiceProvider.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/EventInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Dispatcher.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/ListenerInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/EventListenerInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/DispatcherInterface.php",
+		"/D/_server/apache/sites/kazuha.local/contacta/app/Listeners/EnfeitandoPavao.php",
+		"/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers/EventServiceProvider.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Events/LocaleUpdated.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Events/DiscoverEvents.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Arr.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Facades/App.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/Folder.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Str.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/File.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Application.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Traits/EventsWithPayload.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Traits/EventsWithResponsePayload.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/kernel.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Events/Bootstrapped.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Events/Bootstrapping.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/AbstractEvent.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/AbstractStoppableEvent.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Event.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/ListenerProviderInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/StoppableEventInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/ListenerProviderInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/DispatcherInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/StoppableEventInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/EventInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/StoppableEvent.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr/EventDispatcher/Event.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr/EventDispatcher/EventDispatcherInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr/EventDispatcher/ListenerProviderInterface.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/InvalidArgumentException.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/Drivers/DefaultCacheDriver.php",
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Events/Interfaces/Dispatcher.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/CacheManager.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/Interfaces/CacheManagerInterface.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/FolderTreeCreator.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/Drivers/DefaultCacheDriver.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/config/app.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Cache/CacheServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/Router.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/routes/web.php",
@@ -665,7 +682,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/DeferrableProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/CompiledRoute.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RoutingServiceProvider.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Application.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/bootstrap/cache/routes-v7.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/CompiledRouteCollection.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/AbstractRouteCollection.php",
@@ -675,7 +691,6 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RouteCacheGenerator.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/storage/stubs/routes.stub",
 		"/D/_server/apache/sites/kazuha.local/contacta/bootstrap/cache/routes-v7.php.aro",
-		"/D/_server/apache/sites/kazuha.local/jeht/kernel.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Support/Providers/RouteServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/vendor/laravel/serializable-closure/src/SerializableClosure.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Closures.php",
@@ -685,7 +700,6 @@
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Kernel.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Filesystem/Filesystem.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/ServiceProvider.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Arr.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Http/JsonResponse.php",
 		"/D/_server/apache/sites/kazuha.local/contacta/app/Providers/RouteServiceProvider.php",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Encryption/Interfaces/EncrypterInterface.php",
@@ -744,39 +758,7 @@
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Safety/Encryption/LICENSE.md",
 		"/D/_server/apache/sites/kazuha.local/jeht/README.md",
 		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Streams/StreamUtils.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Streams/Stream.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Psr/Http/Message/ResponseInterface.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Streams/StreamFactory.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Http/Kernel.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Http/Kernel.php",
-		"/D/_server/apache/sites/kazuha.local/collei-framework/vendor/collei/collei/src/Collei/Http/Cookie.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Streams/StringStream.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Streams/NullStream.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/ResponsePreparator.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/ArrayObject.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Stringable.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/IndexController.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/RouteDispatcher.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Http/HttpRequestException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Http/HttpResponseException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Routing/ControllerDispatcherInterface.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Routing/ControlerDispatcher.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Routing/Registrar.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Env.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Http/MethodNotAllowedHttpException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Http/HttpException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Http/NotFoundHttpException.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Exceptions/Http/HttpExceptionInterface.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/Routing/Route.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Repository.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/Controller.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/LoadEnvironmentVariables.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/EdificioController.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/CidadeController.php",
-		"/D/_server/apache/sites/kazuha.local/contacta/app/Http/Controllers/BairroController.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Env/Parser.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Interfaces/Support/Env/Repository.php",
-		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Ground/Bootstrap/LoadEnvironmentVariables.txt"
+		"/D/_server/apache/sites/kazuha.local/jeht/engine/Jeht/Support/Streams/Stream.php"
 	],
 	"find":
 	{
@@ -795,9 +777,16 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": false,
+		"case_sensitive": true,
 		"find_history":
 		[
+			"Bootstra",
+			"LocaleUpdated",
+			"create",
+			"LocaleUpdated",
+			"collect",
+			"compact('bootstrapper')",
+			"collect",
 			"getFilePath",
 			"app.rootu",
 			"createFolderIfDoesNotExist",
@@ -918,14 +907,7 @@
 			"serviceProviders",
 			"routeRegistrar",
 			"registerRoute",
-			"alias(",
-			"Illuminate\\",
-			"Illuminate\\Contracts",
-			"Illuminate\\Contracts\\Foundation",
-			"Illuminate",
-			"pathInfo",
-			"getalias(",
-			"baseDir"
+			"alias("
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -933,6 +915,9 @@
 		"regex": false,
 		"replace_history":
 		[
+			"Collection::for",
+			"$bootstrapper",
+			"Collection::for",
 			"createFolder",
 			"createFolders",
 			"createFolderIfDoesNotExist",
@@ -1015,7 +1000,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -1024,15 +1009,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1258,
+						"buffer_size": 824,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								840,
-								840
+								767,
+								767
 							]
 						],
 						"settings":
@@ -1043,24 +1028,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "engine/Jeht/Cache/Drivers/DefaultCacheDriver.php",
+					"file": "engine/Jeht/Events/AbstractEvent.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6880,
+						"buffer_size": 2260,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2861,
-								2861
+								1301,
+								1301
 							]
 						],
 						"settings":
@@ -1069,91 +1054,32 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1320.0,
+						"translation.y": 1067.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "engine/Jeht/Cache/Interfaces/CacheDriverInterface.php",
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 2219,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "engine/Jeht/Filesystem/File.php",
+					"file": "/D/_server/apache/sites/kazuha.local/contacta/app/Listeners/EnfeitandoPavao.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9856,
+						"buffer_size": 247,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4333,
-								4344
+								239,
+								239
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 4754.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "engine/Jeht/Filesystem/Folder.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6263,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5228,
-								5228
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/PHP/PHP.sublime-syntax"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1163,48 +1089,78 @@
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "engine/Jeht/Cache/InvalidArgumentException.php",
+					"buffer": 3,
+					"file": "engine/Jeht/Events/ListenerProvider.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 386,
+						"buffer_size": 3036,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								386,
-								386
+								2567,
+								2567
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax"
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1694.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 4,
+					"file": "engine/Jeht/Support/Traits/InheritanceAware.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1039,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1009,
+								1009
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 198.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "engine/Jeht/Ground/Application.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 31791,
+						"buffer_size": 32017,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6818,
-								6818
+								5704,
+								5704
 							]
 						],
 						"settings":
@@ -1213,39 +1169,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4981.0,
+						"translation.y": 5927.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "kernel.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 972,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								738,
-								738
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

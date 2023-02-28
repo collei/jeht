@@ -884,7 +884,7 @@ abstract class Str
 	 * @param  string|null  $default
 	 * @return array<int, string|null>
 	 */
-	public static function parseCallback($callback, $default = null)
+	public static function parseCallback(string $callback, string $default = null)
 	{
 		return static::contains($callback, '@') ? explode('@', $callback, 2) : [$callback, $default];
 	}
@@ -896,7 +896,7 @@ abstract class Str
 	 * @param  string|string[]  $needles
 	 * @return bool
 	 */
-	public static function contains($haystack, $needles)
+	public static function contains(string $haystack, $needles)
 	{
 		foreach ((array) $needles as $needle) {
 			if ($needle !== '' && mb_strpos($haystack, $needle) !== false) {
@@ -905,6 +905,60 @@ abstract class Str
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine if a given string matches the wildcard pattern.
+	 *
+	 * @param  string  $wildcarded
+	 * @param  string  $subject
+	 * @return bool
+	 */
+	public static function is(string $wildcarded, string $subject)
+	{
+		$regex = self::wildcardToRegex($wildcarded, '/');
+		//
+		return 1 === preg_match($regex, $subject);
+	}
+
+	/**
+	 * Replaces ONLY the FIRST occurrence of $search in $subject.
+	 *
+	 * @param  string  $search
+	 * @param  string  $replace
+	 * @param  string  $subject
+	 * @return string
+	 */
+	public static function replaceFirst(string $search, string $replace, string $subject)
+	{
+		// difference is heere related to the next
+		$pos = strpos($subject, $search);
+		//
+		if (false !== $pos) {
+			$subject = substr_replace($subject, $replace, $pos, strlen($search));
+		}
+		//
+		return $subject;
+	}
+
+	/**
+	 * Replaces ONLY the LAST occurrence of $search in $subject.
+	 *
+	 * @param  string  $search
+	 * @param  string  $replace
+	 * @param  string  $subject
+	 * @return string
+	 */
+	public static function replaceLast(string $search, string $replace, string $subject)
+	{
+		// yea, there is a difference heere from the last
+		$pos = strrpos($subject, $search);
+		//
+		if (false !== $pos) {
+			$subject = substr_replace($subject, $replace, $pos, strlen($search));
+		}
+		//
+		return $subject;
 	}
 
 }

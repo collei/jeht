@@ -32,5 +32,4 @@ class CacheServiceProvider extends ServiceProvider implements DeferrableProvider
 		return ['cache', 'cache.store'];
 	}
 
-
 }
