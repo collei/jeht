@@ -8,6 +8,7 @@ use Jeht\Events\Interfaces\EventListenerInterface;
 use Jeht\Events\Interfaces\ListenerProviderInterface;
 use Jeht\Events\Exceptions\EventListenerException;
 use Jeht\Interfaces\Ground\Application;
+use Jeht\Support\Reflector;
 
 /**
  * Defines a dispatcher for events.
@@ -72,17 +73,19 @@ class Dispatcher implements DispatcherInterface
 	/**
 	 * Invoke the given listener with the given event.
 	 *
-	 * @param object $listener
+	 * @param string|object $listener
 	 * @param object $event
 	 * @return void
 	 */
-	protected function invokeListener(object $listener, object $event)
+	protected function invokeListener($listener, object $event)
 	{
-		if ($listener instanceof EventListenerInterface && $event instanceof EventInterface) {
-			$listener->handle($event);
-		} elseif ($listener instanceof ListenerInterface) {
-			$listener->handle($event);
-		} elseif ($listener instanceof Closure) {
+		[$listener, $argumentTypes] = $this->resolveListener($listener);
+		//
+		if (!$this->eventIsOfOneOfTypes($event, $argumentTypes)) {
+			return;
+		}
+		//
+		if ($listener instanceof Closure) {
 			$listener($event);
 		} elseif (method_exists($listener, 'handle')) {
 			$listener->handle($event);
@@ -92,6 +95,22 @@ class Dispatcher implements DispatcherInterface
 			//
 			throw new EventListenerException($message);
 		}
+	}
+
+	/**
+	 * Checks if the given event belongs to the list of clases/interfaces.
+	 *
+	 * @param object $event
+	 * @param array $argumentTypes
+	 * @return bool
+	 */
+	protected function eventIsOfOneOfTypes(object $event, $argumentTypes)
+	{
+		$class = get_class($event);
+		$interfaces = class_implements($event);
+		//
+		return in_array($class, $argumentTypes)
+			|| count(array_intersect($interfaces, $argumentTypes)) > 0;
 	}
 
 	/**
@@ -108,6 +127,67 @@ class Dispatcher implements DispatcherInterface
 		}
 		//
 		return $this;
+	}
+
+	/**
+	 * Register an event subscriber with the dispatcher.
+	 *
+	 * @param  object|string  $subscriber
+	 * @return void
+	 */
+	public function subscribe($subscriber)
+	{
+		$subscriber = $this->resolveSubscriber($subscriber);
+		//
+		$events = $subscriber->subscribe($this);
+		//
+		if (is_array($events)) {
+			foreach ($events as $event => $listeners) {
+				foreach (Arr::wrap($listeners) as $listener) {
+					if (is_string($listener) && method_exists($subscriber, $listener)) {
+						$this->listen($event, [get_class($subscriber), $listener]);
+						//
+						continue;
+					}
+					//
+					$this->listen($event, $listener);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Resolve the listener instance.
+	 *
+	 * @param  object|string  $listener
+	 * @return array
+	 */
+	protected function resolveListener($listener)
+	{
+		if (is_string($listener) && class_exists($listener)) {
+			$listener = $this->app->make($listener);
+		}
+		//
+		$parameterTypes = ($listener instanceof Closure)
+			? Reflector::getFirstParameterTypeClassNames($listener)
+			: Reflector::getFirstParameterTypeClassNames([$listener, 'handle']);
+		//
+		return array($listener, $parameterTypes);
+	}
+
+	/**
+	 * Resolve the subscriber instance.
+	 *
+	 * @param  object|string  $subscriber
+	 * @return mixed
+	 */
+	protected function resolveSubscriber($subscriber)
+	{
+		if (is_string($subscriber) && class_exists($subscriber)) {
+			return $this->app->make($subscriber);
+		}
+		//
+		return $subscriber;
 	}
 
 }

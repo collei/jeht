@@ -83,8 +83,7 @@ class EventServiceProvider extends ServiceProvider
 			return $cache[get_class($this)] ?? [];
 		} else {
 			return array_merge_recursive(
-				$this->discoveredEvents(),
-				$this->listens()
+				$this->discoveredEvents(), $this->listens()
 			);
 		}
 	}
@@ -149,7 +148,7 @@ class EventServiceProvider extends ServiceProvider
 	 */
 	protected function eventDiscoveryBasePath()
 	{
-		return base_path();
+		return $this->app->basePath();
 	}
 }
 

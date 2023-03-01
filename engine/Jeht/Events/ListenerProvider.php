@@ -13,25 +13,17 @@ class ListenerProvider implements ListenerProviderInterface
 	use InheritanceAware;
 
 	/**
-	 * @var object[]
-	 */
-	protected $events;
-
-	/**
 	 * @var object[][]
 	 */
 	protected $listeners;
 
 	/**
-	 * Register an event listener for the given event (a class or interface name).
+	 * Create a new instance of hte provider.
 	 *
-	 * @param object $listener
-	 * @param string $eventClassName
 	 * @return void
 	 */
 	public function __construct()
 	{
-		$this->events = [];
 		$this->listeners = [];
 	}
 
@@ -44,8 +36,6 @@ class ListenerProvider implements ListenerProviderInterface
 	 */
 	public function addListener($listener, $event)
 	{
-		$this->insertEvent($event);
-		//
 		$class = is_object($event) ? get_class($event) : $event;
 		//
 		$this->insertListener($listener, $class);
@@ -64,23 +54,6 @@ class ListenerProvider implements ListenerProviderInterface
 	}
 
 	/**
-	 * Register a reference to an event instance.
-	 *
-	 * @param string|object $event
-	 * @return void
-	 */
-	protected function insertEvent($event)
-	{
-		$eventName = is_object($event) ? get_class($event) : $event;
-		//
-		if (! in_array($eventName, $this->events, true)) {
-			$this->events[] = is_object($event)
-				? $event
-				: (new $event());
-		}
-	}
-
-	/**
 	 * Register an event listener for the given event (a class or interface name).
 	 *
 	 * @param string|object|callable $listener
@@ -93,8 +66,8 @@ class ListenerProvider implements ListenerProviderInterface
 			$this->listeners[$eventClassName] = []; 
 		}
 		//
-		$this->listeners[$eventClassName][] = is_string($listener)
-			? new $listener()
+		$this->listeners[$eventClassName][] = is_object($listener)
+			? get_class($listener)
 			: $listener;
 	}
 

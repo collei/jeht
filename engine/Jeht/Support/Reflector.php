@@ -2,6 +2,7 @@
 namespace Jeht\Support;
 
 use ReflectionClass;
+use ReflectionFunction;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionUnionType;
@@ -103,6 +104,51 @@ class Reflector
 		}
 
 		return array_filter($unionTypes);
+	}
+
+	/**
+	 * Get the class names of the first parameter's type of the given function
+	 * or method, including union types.
+	 *
+	 * @param	string|array|callable  $function
+	 * @return	array[]
+	 */
+	public static function getFirstParameterTypeClassNames($function)
+	{
+		$results = [];
+		//
+		if ($function = self::getReflectionFunctionFrom($function)) {
+			$parameters = $function->getParameters();
+			//
+			if (count($parameters) > 0) {
+				$results = self::getParameterClassNames($parameters[0]);
+			}
+		}
+		//
+		return $results;
+	}
+
+	/**
+	 * Get a ReflectionFunction or a ReflectionMethod for a $function.
+	 *
+	 * @param  string|array|callable  $parameter
+	 * @return \ReflectionFunction|\ReflectionMethod
+	 */
+	public static function getReflectionFunctionFrom($function)
+	{
+		if ($function instanceof Closure) {
+			return new ReflectionFunction($function);
+		}
+		//
+		if (is_string($function) && false !== strpos($function, '@')) {
+			$function = explode('@', $function);
+		}
+		//
+		if (is_array($function) && count($function) > 1) {
+			return new ReflectionMethod($function[0], $function[1]);
+		}
+		//
+		return null;
 	}
 
 	/**

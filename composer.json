@@ -11,7 +11,8 @@
 	"license": "MIT",
 	"require": {
 		"php": "^7.3 || ^8.0",
-		"laravel/serializable-closure": "*"
+		"laravel/serializable-closure": "*",
+		"monolog/monolog": "^2.9"
 	},
 	"autoload": {
 		"psr-4": {

@@ -4,6 +4,7 @@ namespace Jeht\Support\Facades;
 use Mockery;
 use RuntimeException;
 use Mockery\MockInterface;
+use Jeht\Ground\Application;
 
 /**
  * Adapted from Laravel's Illuminate\Support\Facades\Facade implementation
@@ -160,7 +161,7 @@ abstract class Facade
 			return static::$resolvedInstance[$name];
 		}
 
-		return static::$resolvedInstance[$name] = static::$app[$name];
+		return static::$resolvedInstance[$name] = (static::$app ?? Application::getInstance())[$name];
 	}
 
 	/**

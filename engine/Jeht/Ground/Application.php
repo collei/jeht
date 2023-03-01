@@ -12,6 +12,7 @@ use Jeht\Ground\Events\Bootstrapping;
 use Jeht\Ground\Events\Bootstrapped;
 use Jeht\Ground\Events\LocaleUpdated;
 use Jeht\Events\EventServiceProvider;
+use Jeht\Log\LogServiceProvider;
 use Jeht\Routing\RoutingServiceProvider;
 use Jeht\Collections\Collection;
 use Jeht\Filesystem\Filesystem;
@@ -265,7 +266,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	protected function registerBaseServiceProviders()
 	{
 		$this->register(new EventServiceProvider($this));
-		//$this->register(new LogServiceProvider($this));
+		$this->register(new LogServiceProvider($this));
 		$this->register(new RoutingServiceProvider($this));
 	}
 
@@ -437,7 +438,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	}
 
 	/**
-	 * Get the base path of the Laravel installation.
+	 * Get the base path of the kernel client App.
 	 *
 	 * @param  string  $path
 	 * @return string
@@ -543,9 +544,9 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 *
 	 * @return string
 	 */
-	public function storagePath()
+	public function storagePath($path = '')
 	{
-		return $this->storagePath ?: $this->basePath.DIRECTORY_SEPARATOR.'storage';
+		return ($this->storagePath ?: $this->basePath.DIRECTORY_SEPARATOR.'storage').($path ? DIRECTORY_SEPARATOR.$path : $path);
 	}
 
 	/**
@@ -1403,6 +1404,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\StringEncrypter::class],
 			'events' => [\Jeht\Events\Dispatcher::class, \Jeht\Events\Interfaces\DispatcherInterface::class],
 			'files' => [\Jeht\Filesystem\Filesystem::class],
+			'log' => [\Jeht\Log\LogManager::class, \Psr\Log\LoggerInterface::class],
 			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
 			'router' => [\Jeht\Routing\Router::class, \Jeht\Interfaces\Routing\RouterInterface::class],
 			'routes' => [\Jeht\Routing\RouteCollection::class],
