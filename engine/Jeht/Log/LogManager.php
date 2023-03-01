@@ -3,7 +3,7 @@ namespace Jeht\Log;
 
 use Closure;
 use Jeht\Support\Str;
-use Jeht\Support\Traits\Tappable;
+use Jeht\Support\Traits\TapsValues;
 use InvalidArgumentException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\ErrorLogHandler;
@@ -28,7 +28,7 @@ use Throwable;
 class LogManager implements LoggerInterface
 {
 	use ParsesLogConfiguration;
-	use Tappable;
+	use TapsValues;
 
 	/**
 	 * The application instance.
@@ -180,12 +180,12 @@ class LogManager implements LoggerInterface
 		$config = $this->configurationFor('emergency');
 
 		$handler = new StreamHandler(
-			$config['path'] ?? $this->app->storagePath().'/logs/laravel.log',
+			$config['path'] ?? $this->app->storagePath().'/logs/jeht.log',
 			$this->level(['level' => 'debug'])
 		);
 
 		return new Logger(
-			new Monolog('laravel', $this->prepareHandlers([$handler])),
+			new Monolog('jeht', $this->prepareHandlers([$handler])),
 			$this->app['events']
 		);
 	}
