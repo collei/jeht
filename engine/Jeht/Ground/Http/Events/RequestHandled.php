@@ -1,27 +1,10 @@
 <?php
 namespace Jeht\Ground\Http\Events;
 
-/**
- * Adapted from Laravel's Illuminate\Foundation\Http\Events\RequestHandled
- * @link https://laravel.com/api/8.x/Illuminate/Foundation/Http/Events/RequestHandled.html
- * @link https://github.com/laravel/framework/blob/8.x/src/Illuminate/Foundation/Http/Events/RequestHandled.php
- */
-class RequestHandled
+use Jeht\Events\AbstractEvent;
+
+class RequestHandled extends AbstractEvent
 {
-	/**
-	 * The request instance.
-	 *
-	 * @var \Jeht\Http\Request
-	 */
-	public $request;
-
-	/**
-	 * The response instance.
-	 *
-	 * @var \Jeht\Http\Response
-	 */
-	public $response;
-
 	/**
 	 * Create a new event instance.
 	 *
@@ -31,8 +14,25 @@ class RequestHandled
 	 */
 	public function __construct($request, $response)
 	{
-		$this->request = $request;
-		$this->response = $response;
+		parent::__construct(compact('request','response'));
 	}
+
+	/**
+	 * Exposed readonly properties
+	 *
+	 * @property \Jeht\Http\Request $request
+	 * @property \Jeht\Http\Response $response
+	 */
+	public function __get(string $name)
+	{
+		if (! in_array($name, ['request', 'response'], true)) {
+			return;
+		}
+		//
+		$properties = $this->payload;
+		//
+		return $properties[$name] ?? null;
+	}
+
 }
 
