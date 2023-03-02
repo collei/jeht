@@ -166,6 +166,14 @@ class Route implements RouteInterface
 	 */
 	public function compile()
 	{
+		if ($this->action['uses'] instanceof Closure) {
+			if (\PHP_VERSION_ID >= 70400) {
+				$this->action['uses'] = serialize(new SerializableClosure($this->action['uses']));
+			} else {
+				$this->action['uses'] = null;
+			}
+		}
+		//
 		return ($this->compiled = new CompiledRoute(
 			$this->name,
 			$this->httpMethods,

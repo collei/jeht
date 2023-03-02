@@ -31,6 +31,11 @@ class Folder implements FolderInterface
 	protected $folderName;
 
 	/**
+	 * @var string
+	 */
+	protected $regex = null;
+
+	/**
 	 * @var bool
 	 */
 	protected $remote;
@@ -44,6 +49,11 @@ class Folder implements FolderInterface
 	 * @var array
 	 */
 	protected $items;
+
+	/**
+	 * @var bool
+	 */
+	protected $asPathList = false;
 
 	/**
 	 * @var bool
@@ -287,22 +297,30 @@ class Folder implements FolderInterface
 			$fullPath = $this->path.DIRECTORY_SEPARATOR.$name;
 			//
 			if (self::TYPE_FILE === $target && is_file($fullPath)) {
-				$result[$name] = $this->itemsAsNative
-					? new SplFileInfo($fullPath)
-					: File::for($fullPath);
+				$result[$name] = $this->getFileObject($fullPath);
 			} elseif (self::TYPE_FOLDER === $target && is_dir($fullPath)) {
 				$result[$name] = static::for($fullPath);
 			} else {
 				$result[$name] = is_dir($fullPath)
 					? static::for($fullPath)
-					: ($this->itemsAsNative
-							? new SplFileInfo($fullPath)
-							: File::for($fullPath)
-					);
+					: $this->getFileObject($fullPath);
 			}
 		}
 		//
 		return $result;
+	}
+
+	/**
+	 * Returns a File related object according to the $itemsAsNative setting.
+	 *
+	 * @param string $fullPath
+	 * @return \SplFileInfo|\Jeht\Filesystem\File
+	 */
+	protected function getFileObject(string $fullPath)
+	{
+		return $this->itemsAsNative
+					? new SplFileInfo($fullPath)
+					: File::for($fullPath);
 	}
 
 	/**
@@ -338,6 +356,12 @@ class Folder implements FolderInterface
 	 */
 	public function get()
 	{
+		if ($pattern = $this->regex) {
+			return array_filter($this->items, function($item) use ($pattern){
+				return 1 === preg_match($pattern, $item->getName());
+			});
+		}
+		//
 		return $this->items;
 	} 
 
@@ -346,7 +370,7 @@ class Folder implements FolderInterface
 	 *
 	 * @return array
 	 */
-	public function asPathList()
+	public function getAsPathList()
 	{
 		return array_map(function($item){
 			return $item->path();
@@ -360,11 +384,9 @@ class Folder implements FolderInterface
 	 */
 	public function withName(string $name)
 	{
-		$pattern = Str::wildcardToRegex($name, '#');
+		$this->regex = Str::wildcardToRegex($name, '#');
 		//
-		return array_filter($this->items, function($item) use ($pattern){
-			return 1 === preg_match($pattern, $item->getName());
-		});
+		return $this;
 	}
 
 }

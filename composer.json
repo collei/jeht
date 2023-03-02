@@ -18,6 +18,9 @@
 		"psr-4": {
 			"Jeht\\": "engine/Jeht",
 			"Psr\\": "engine/Psr"
-		}
+		},
+		"files": [
+			"engine/functions.php"
+		]
 	}
 }

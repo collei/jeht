@@ -438,9 +438,9 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 * @param string $data
 	 * @return void
 	 */
-	public function unserialize(string $data)
+	public function unserialize($serialized)
 	{
-		$restored = unserialize($data);
+		$restored = unserialize($serialized);
 		//
 		$this->__unserialize($restored);
 	}

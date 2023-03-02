@@ -88,7 +88,7 @@ class LoadConfiguration
 		//
 		$configPath = realpath($app->configPath());
 		//
-		foreach (Folder::for($configPath)->files()->withName('*.php') as $name => $file) {
+		foreach (Folder::for($configPath)->files()->withName('*.php')->get() as $name => $file) {
 			$folder = $this->getNestedFolder($file, $configPath);
 			//
 			$files[$folder.$file->getFileName()] = $file->getPath();

@@ -11,6 +11,7 @@ use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Ground\Events\Bootstrapping;
 use Jeht\Ground\Events\Bootstrapped;
 use Jeht\Ground\Events\LocaleUpdated;
+use Jeht\Ground\Support\Providers\HelperServiceProvider;
 use Jeht\Events\EventServiceProvider;
 use Jeht\Log\LogServiceProvider;
 use Jeht\Routing\RoutingServiceProvider;
@@ -20,6 +21,7 @@ use Jeht\Filesystem\FolderTreeCreator;
 use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Support\Env\Env;
+use Jeht\Support\HelperLoader;
 use Jeht\Support\ServiceProvider;
 
 class Application extends Container implements ApplicationInterface, CachesConfiguration, CachesRoutes
@@ -30,6 +32,13 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 * @var string
 	 */
 	protected $basePath;
+
+	/**
+	 * The base path for the Jeht webapp kernel.
+	 *
+	 * @var string
+	 */
+	protected $kernelPath;
 
 	/**
 	 * The autoloader for the client webapp classes.
@@ -265,6 +274,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	 */
 	protected function registerBaseServiceProviders()
 	{
+		$this->register(new HelperServiceProvider($this));
 		$this->register(new EventServiceProvider($this));
 		$this->register(new LogServiceProvider($this));
 		$this->register(new RoutingServiceProvider($this));
@@ -435,6 +445,17 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		$this->instance('path', $path);
 
 		return $this;
+	}
+
+	/**
+	 * Get the base path of the Jeht webapp kernel.
+	 *
+	 * @param  string  $path
+	 * @return string
+	 */
+	public function kernelPath($path = '')
+	{
+		return $this->kernelPath.($path ? DIRECTORY_SEPARATOR.$path : $path);
 	}
 
 	/**
@@ -1404,6 +1425,7 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\StringEncrypter::class],
 			'events' => [\Jeht\Events\Dispatcher::class, \Jeht\Events\Interfaces\DispatcherInterface::class],
 			'files' => [\Jeht\Filesystem\Filesystem::class],
+			'helper.loader' => [\Jeht\Support\HelperLoader::class],
 			'log' => [\Jeht\Log\LogManager::class, \Psr\Log\LoggerInterface::class],
 			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
 			'router' => [\Jeht\Routing\Router::class, \Jeht\Interfaces\Routing\RouterInterface::class],
