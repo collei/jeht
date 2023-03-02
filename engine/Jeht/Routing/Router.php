@@ -744,7 +744,7 @@ class Router implements RouterInterface
 	 */
 	public function cache(bool $force = false)
 	{
-		if ($cacheAgent = $app['route.cacher']) {
+		if ($cacheAgent = $this->container['route.cacher']) {
 			$cacheAgent
 				->setCollection($this->routes)
 				->cacheIfNeeded($force);

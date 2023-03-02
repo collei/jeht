@@ -734,6 +734,41 @@ class Request implements RequestInterface
 		);
 	}
 
+	/**
+	 * Returns the given $name field value, or all at once.
+	 *
+	 * @param string $name = null
+	 * @param mixed $default
+	 * @return mixed 
+	 */
+	public function input(string $name = null, $default = null)
+	{
+		if (is_null($name)) {
+			if (is_array($this->parsedBodyContent)) {
+				return $this->parsedBodyContent + $this->queryStringParams + $this->attributes;
+			}
+			//
+			return $this->queryStringParams + $this->attributes;
+		}
+		//
+		if (is_array($this->parsedBodyContent)) {
+			return $this->parsedBodyContent[$name]
+				?? $this->queryStringParams[$name]
+				?? $this->attributes[$name]
+				?? $default;
+		}
+		//
+		if (is_object($this->parsedBodyContent)) {
+			return Arr::get(
+				$this->parsedBodyContent,
+				$name,
+				$this->queryStringParams[$name] ?? $this->attributes[$name] ?? $default
+			);
+		}
+		//
+		return $default;
+	}
+
 }
 
 
