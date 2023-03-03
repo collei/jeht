@@ -735,7 +735,8 @@ class Request implements RequestInterface
 	}
 
 	/**
-	 * Returns the given $name field value, or all at once.
+	 * Returns the given $name field value from the POST and GET fields.
+	 * POST fields are priorized.
 	 *
 	 * @param string $name = null
 	 * @param mixed $default
@@ -745,16 +746,15 @@ class Request implements RequestInterface
 	{
 		if (is_null($name)) {
 			if (is_array($this->parsedBodyContent)) {
-				return $this->parsedBodyContent + $this->queryStringParams + $this->attributes;
+				return $this->parsedBodyContent + $this->queryStringParams;
 			}
 			//
-			return $this->queryStringParams + $this->attributes;
+			return $this->queryStringParams;
 		}
 		//
 		if (is_array($this->parsedBodyContent)) {
 			return $this->parsedBodyContent[$name]
 				?? $this->queryStringParams[$name]
-				?? $this->attributes[$name]
 				?? $default;
 		}
 		//
@@ -762,11 +762,120 @@ class Request implements RequestInterface
 			return Arr::get(
 				$this->parsedBodyContent,
 				$name,
-				$this->queryStringParams[$name] ?? $this->attributes[$name] ?? $default
+				$this->queryStringParams[$name] ?? $default
 			);
 		}
 		//
 		return $default;
+	}
+
+	/**
+	 * Returns the server parameter $name, or null if not found.
+	 * If parameter is ommited, returns all server parameters at once.
+	 *
+	 * @param string $name
+	 * @return string|array|null
+	 */
+	public function server(string $name = null)
+	{
+		if ($name) {
+			return $this->serverParams[$name]
+				?? $this->serverParams[strtoupper($name)]
+				?? null;
+		}
+		//
+		return $this->serverParams;
+	}
+
+	/**
+	 * Returns the query parameter $name, or null if not found.
+	 * If parameter is ommited, returns all query parameters at once.
+	 *
+	 * @param string $name
+	 * @return string|array|null
+	 */
+	public function query(string $name = null)
+	{
+		if ($name) {
+			return $this->queryStringParams[$name] ?? null;
+		}
+		//
+		return $this->queryStringParams;
+	}
+
+	/**
+	 * Alias of input()
+	 *
+	 * @param string $name = null
+	 * @param mixed $default
+	 * @return mixed 
+	 */
+	public function request(string $name = null, $default = null)
+	{
+		return $this->input($name, $default);
+	}
+
+	/**
+	 * Returns the cookie of $name, or null if not found.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function cookie(string $name)
+	{
+		return $this->cookieParams[$name] ?? null;
+	}
+
+	/**
+	 * Returns all cookies at once, if any.
+	 *
+	 * @return array|null
+	 */
+	public function cookies()
+	{
+		return $this->cookieParams;
+	}
+
+	/**
+	 * Returns the file of $name, or null if not found.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function file(string $name)
+	{
+		return Arr::get($this->uploadedFiles, $name, null);
+	}
+
+	/**
+	 * Returns all files at once, if any.
+	 *
+	 * @return array|null
+	 */
+	public function files()
+	{
+		return $this->uploadedFiles;
+	}
+
+	/**
+	 * Returns the attribute of $name, or null if not found.
+	 *
+	 * @param string $name
+	 * @return mixed
+	 */
+	public function attribute(string $name)
+	{
+		return $this->attributes[$name] ?? null;
+	}
+
+	/**
+	 * Returns all attributes at once, if any.
+	 *
+	 * @return array|null
+	 */
+	public function attributes()
+	{
+		return $this->attributes;
 	}
 
 }
