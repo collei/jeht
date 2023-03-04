@@ -11,6 +11,11 @@ use RangeException;
  */
 abstract class Str
 {
+	protected static $snakeCache = [];
+	protected static $studlyCache = [];
+	protected static $camelCache = [];
+
+
 	/**
 	 * Generate a random string, using a cryptographically secure 
 	 * pseudorandom number generator (random_int)
@@ -70,7 +75,10 @@ abstract class Str
 	 */
 	public static function isCamel(string $camel)
 	{
-		return \preg_match('/^((\G(?!^)|\b[a-zA-Z][a-z\d]*)([A-Z][a-z\d]*)*|[a-z][a-z\d]*)$/', $camel) === 1;
+		return 1 === \preg_match(
+			'/^((\G(?!^)|\b[a-zA-Z][a-z\d]*)([A-Z][a-z\d]*)*|[a-z][a-z\d]*)$/',
+			$camel
+		);
 	}
 
 	/**
@@ -81,7 +89,16 @@ abstract class Str
 	 */
 	public static function toCamel(string $snake)
 	{
-		return \lcfirst(\implode('', \array_map(function($p){ return \ucfirst($p); }, \explode('_',$snake))));
+		if (isset(static::$camelCache[$snake])) {
+			return static::$camelCache[$snake];
+		}
+		//
+		return static::$camelCache[$snake] = \lcfirst(
+			\implode(
+				'',
+				\array_map(function($p){ return \ucfirst($p); }, \explode('_',$snake))
+			)
+		);
 	}
 
 	/**
@@ -99,11 +116,12 @@ abstract class Str
 	 *	Converts thisComplexName to this_complex_name
 	 *
 	 *	@param	string	$camel
+	 *	@param	string	$delimiter = '_'
 	 *	@return	string
 	 */
-	public static function toSnake(string $camel)
+	public static function toSnake(string $camel, string $delimiter = '_')
 	{
-		return \strtolower(\preg_replace('/(\G(?!^)|\b[a-zA-Z][a-z]*)([A-Z][a-z]*|\d+)/', '$1_$2', $camel));
+		return static::snake($camel, $delimiter);
 	}
 
 	/**
@@ -959,6 +977,60 @@ abstract class Str
 		}
 		//
 		return $subject;
+	}
+
+	/**
+	 * Convert a string to snake case.
+	 *
+	 * @param  string  $value
+	 * @param  string  $delimiter
+	 * @return string
+	 */
+	public static function snake($value, $delimiter = '_')
+	{
+		$key = $value;
+
+		if (isset(static::$snakeCache[$key][$delimiter])) {
+			return static::$snakeCache[$key][$delimiter];
+		}
+
+		if (! ctype_lower($value)) {
+			$value = preg_replace('/\s+/u', '', ucwords($value));
+
+			$value = static::lower(preg_replace('/(.)(?=[A-Z])/u', '$1'.$delimiter, $value));
+		}
+
+		return static::$snakeCache[$key][$delimiter] = $value;
+	}
+
+	/**
+	 * Convert a value to studly caps case.
+	 *
+	 * @param  string  $value
+	 * @return string
+	 */
+	public static function studly($value)
+	{
+		$key = $value;
+
+		if (isset(static::$studlyCache[$key])) {
+			return static::$studlyCache[$key];
+		}
+
+		$value = ucwords(str_replace(['-', '_'], ' ', $value));
+
+		return static::$studlyCache[$key] = str_replace(' ', '', $value);
+	}
+
+	/**
+	 *	Returns a full-lowercased string.
+	 *
+	 *	@param	string	$string
+	 *	@return	string
+	 */
+	public static function lower(string $string)
+	{
+		return \strtolower($string);
 	}
 
 }
