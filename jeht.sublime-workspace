@@ -532,7 +532,7 @@
 			"file": "README.md",
 			"settings":
 			{
-				"buffer_size": 1398,
+				"buffer_size": 1521,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -949,7 +949,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -978,7 +978,7 @@
 						"translation.y": 12392.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -987,15 +987,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1398,
+						"buffer_size": 1521,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								227,
-								227
+								1399,
+								1399
 							]
 						],
 						"settings":
@@ -1003,10 +1003,10 @@
 							"syntax": "Packages/Markdown/Markdown.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 315.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

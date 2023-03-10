@@ -35,3 +35,9 @@ Note it is just a rough project schedule with no guarantee implied as human life
 MIT License. See LICENSE file for details.
 
 **IMPORTANT NOTE:** This project has several parts taken from, or inspired upon, other projects (e.g., Laravel, Symfony, and so on), so these parts MUST be credited to their original authors. Hence, you will see LICENSE notes on some parts among the code comment sections. 
+
+## Support
+* Accepting donations through BTC. A few SAT would be appreciated^^
+```
+1CtoobRfoL4pHJ5i24dVCtGWcYcRtBLMaz
+```
