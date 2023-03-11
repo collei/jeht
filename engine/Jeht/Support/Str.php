@@ -11,10 +11,77 @@ use RangeException;
  */
 abstract class Str
 {
-	protected static $snakeCache = [];
-	protected static $studlyCache = [];
-	protected static $camelCache = [];
+	/**
+	 *	Pluralizer schema for English nouns.
+	 *
+	 *	@var array
+	 *	@link https://www.grammarly.com/blog/plural-nouns/
+	 *	@since 2023-03-01
+	 */
+	protected const EN_PLURALIZE = [
+		'rules:add' => [
+			'as' => 'ses',	'es' => 'ses',	'os' => 'ses',
+			'az' => 'zes',	'ez' => 'zes',	'iz' => 'zes',	'oz' => 'zes',	'uz' => 'zes',
+			'ss' => 'es',	'sh' => 'es',	'ch' => 'es',
+			'ay' => 's',	'ey' => 's',	'oy' => 's',	'uy' => 's',
+			'ao' => 's',	'eo' => 's',	'io' => 's',	'uo' => 's',
+			'x' => 'es',	'z' => 'es',	's' => 'es',	'o' => 'es',
+		],
+		'rules:change' => [
+			'us' => 'i',	'is' => 'es',	'rion' => 'ria',
+			'fe' => 'ves',	'f' => 'ves',
+			'y' => 'ies',
+		],
+		'except' => [
+			'roof' => 'roofs',
+			'belief' => 'beliefs',
+			'chef' => 'chefs',
+			'chief' => 'chiefs',
+			'photo' => 'photos',
+			'piano' => 'pianos',
+			'halo' => 'halos',
+			'gas' => 'gases',
+			'man' => 'men',
+			'woman' => 'women',
+			'child' => 'children',
+			'person' => 'people',
+			'foot' => 'feet',
+			'tooth' => 'teeth',
+			'mouse' => 'mice',
+			'goose' => 'geese',
+		],
+		'invariant' => [
+			'sheep','series','species','deer','fish','crossroads','aircraft',
+		],
+	];
 
+	/**
+	 *	Keep cache of resolved plurals.
+	 *
+	 *	@var array
+	 */
+	protected static $EN_PLURAL_CACHE = [];
+
+	/**
+	 *	Keep cache of resolved snake_case transforms.
+	 *
+	 *	@var array
+	 */
+	protected static $snakeCache = [];
+
+	/**
+	 *	Keep cache of resolved StudlyCase transforms.
+	 *
+	 *	@var array
+	 */
+	protected static $studlyCache = [];
+
+	/**
+	 *	Keep cache of resolved camelCase transforms.
+	 *
+	 *	@var array
+	 */
+	protected static $camelCache = [];
 
 	/**
 	 * Generate a random string, using a cryptographically secure 
@@ -28,7 +95,6 @@ abstract class Str
 	 * 
 	 *	@author	Scott Arciszewski <https://stackoverflow.com/users/2224584/scott-arciszewski>
 	 *	@since	2015-06-29	from https://stackoverflow.com/questions/4356289/php-random-string-generator/31107425#31107425 (viewed 2021-11-02)
-	 *
 	 *
 	 *	@param	int		$length		How many characters do we want?
 	 *	@param	string	$keyspace	A string of all possible characters to select from
@@ -1033,6 +1099,60 @@ abstract class Str
 		return \strtolower($string);
 	}
 
-}
+	/**
+	 *	Returns the pluralized version of English nouns.
+	 *
+	 *	@param	string	$singular
+	 *	@return	string
+	 */
+	public static function pluralize(string $singular): string
+	{
+		$noun = static::lower($singular);
+		//
+		if (in_array($noun, static::EN_PLURALIZE['invariant'])) {
+			return $singular;
+		}
+		//
+		if ($plural = static::$EN_PLURAL_CACHE[$noun] ?? null) {
+			return $plural;
+		}
+		//
+		if ($plural = static::EN_PLURALIZE['except'][$noun] ?? null) {
+			static::$EN_PLURAL_CACHE[$noun] = $plural;
+			//
+			return $plural;
+		}
+		//
+		$lengths = [4, 2, 1];
+		//
+		foreach ($lengths as $len) {
+			//
+			// avoid crash it would happen when word ending tries
+			// to be longer than the word itself !
+			if ($len >= strlen($noun)) {
+				continue;
+			}
+			//
+			// let's prepare the ending
+			$ending = substr($noun, -$len);
+			//
+			if ($res = static::EN_PLURALIZE['rules:add'][$ending] ?? null) {
+				return static::$EN_PLURAL_CACHE[$noun] = $plural = $noun.$res;
+				//
+				return $plural;
+			}
+			//
+			if ($res = static::EN_PLURALIZE['rules:change'][$ending] ?? null) {
+				static::$EN_PLURAL_CACHE[$noun] = $plural = substr($noun, 0, -$len).$res;
+				//
+				return $plural;
+			}
+		}
+		//
+		static::$EN_PLURAL_CACHE[$noun] = $plural = $noun.'s';
+		//
+		return $plural;
+	} 
 
+}
 
