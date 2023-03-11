@@ -3,9 +3,9 @@ namespace Jeht\Support;
 
 use Closure;
 //use Jeht\Console\Application as Artisan;
-use Jeht\Interfaces\Ground\CachesConfiguration;
-use Jeht\Interfaces\Ground\CachesRoutes;
-use Jeht\Interfaces\Support\DeferrableProvider;
+use Jeht\Ground\Interfaces\CachesConfiguration;
+use Jeht\Ground\Interfaces\CachesRoutes;
+use Jeht\Support\Interfaces\DeferrableProvider;
 //use Jeht\Database\Eloquent\Factory as ModelFactory;
 //use Jeht\View\Compilers\BladeCompiler;
 
@@ -14,7 +14,7 @@ abstract class ServiceProvider
 	/**
 	 * The application instance.
 	 *
-	 * @var \Jeht\Interfaces\Ground\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected $app;
 
@@ -49,7 +49,7 @@ abstract class ServiceProvider
 	/**
 	 * Create a new service provider instance.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public function __construct($app)

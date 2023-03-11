@@ -1,18 +1,18 @@
 <?php
 namespace Jeht\Support\Env;
 
-use Jeht\Interfaces\Support\Env\Parser as EnvParserInterface;
+use Jeht\Support\Env\Interfaces\Parser as EnvParserInterface;
 use Jeht\Support\Str;
 
 class Env
 {
 	/**
-	 * @var \Jeht\Interfaces\Support\Env\Parser
+	 * @var \Jeht\Support\Env\Interfaces\Env
 	 */
 	protected static $putenv = true;
 
 	/**
-	 * @var \Jeht\Interfaces\Support\Env\Repository
+	 * @var \Jeht\Support\Env\Interfaces\Env
 	 */
 	protected static $repository;
 
@@ -24,7 +24,7 @@ class Env
 	/**
 	 * Returns the repository. Creates it anew if needed.
 	 *
-	 * @return \Jeht\Interfaces\Support\Env\Repository
+	 * @return \Jeht\Support\Env\Interfaces\Env
 	 */
 	protected static function getRepository()
 	{

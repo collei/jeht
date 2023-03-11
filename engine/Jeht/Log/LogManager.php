@@ -33,7 +33,7 @@ class LogManager implements LoggerInterface
 	/**
 	 * The application instance.
 	 *
-	 * @var \Jeht\Interfaces\Ground\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected $app;
 
@@ -61,7 +61,7 @@ class LogManager implements LoggerInterface
 	/**
 	 * Create a new Log manager instance.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public function __construct($app)
@@ -371,7 +371,7 @@ class LogManager implements LoggerInterface
 	 * @return \Psr\Log\LoggerInterface
 	 *
 	 * @throws \InvalidArgumentException
-	 * @throws \Jeht\Interfaces\Container\BindingResolutionException
+	 * @throws \Jeht\Container\Interfaces\BindingResolutionException
 	 */
 	protected function createMonologDriver(array $config)
 	{

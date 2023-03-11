@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Http;
 
-use Jeht\Interfaces\Support\Stringable;
+use Jeht\Support\Interfaces\Stringable;
 use Jeht\Support\Traits\InteractsWithTime;
 use DateTimeInterface;
 

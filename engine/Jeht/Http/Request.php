@@ -5,7 +5,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriInterface;
 
-use Jeht\Interfaces\Http\Request as RequestInterface;
+use Jeht\Http\Interfaces\Request as RequestInterface;
 
 class Request implements RequestInterface
 {

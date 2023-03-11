@@ -4,8 +4,8 @@ namespace Jeht\Routing;
 use Countable;
 use IteratorAggregate;
 use ArrayIterator;
-use Jeht\Interfaces\Routing\RouteCollectionInterface;
-use Jeht\Interfaces\Routing\RouteInterface;
+use Jeht\Routing\Interfaces\RouteCollectionInterface;
+use Jeht\Routing\Interfaces\RouteInterface;
 use Jeht\Http\Request;
 use Jeht\Http\HttpMethods;
 use Jeht\Container\Container;
@@ -26,8 +26,8 @@ abstract class AbstractRouteCollection implements Countable, IteratorAggregate, 
 	 * Handle the matched route.
 	 *
 	 * @param  \Jeht\Http\Request  $request
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface|null  $route
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface|null  $route
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\NotFoundHttpException
 	 */
@@ -73,10 +73,10 @@ abstract class AbstractRouteCollection implements Countable, IteratorAggregate, 
 	/**
 	 * Determine if a route in the array matches the request.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface[]  $routes
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface[]  $routes
 	 * @param  \Jeht\Http\Request  $request
 	 * @param  bool  $includingMethod
-	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
+	 * @return \Jeht\Routing\Interfaces\RouteInterface|null
 	 */
 	protected function matchAgainstRoutes(array $routes, $request, $includingMethod = true)
 	{
@@ -94,7 +94,7 @@ abstract class AbstractRouteCollection implements Countable, IteratorAggregate, 
 	 *
 	 * @param  \Jeht\Http\Request  $request
 	 * @param  string[]  $methods
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\MethodNotAllowedHttpException
 	 */

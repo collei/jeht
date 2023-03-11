@@ -110,7 +110,7 @@ if (! function_exists('app')) {
 	 *
 	 * @param  string|null  $abstract
 	 * @param  array  $parameters
-	 * @return mixed|\Jeht\Interfaces\Ground\Application
+	 * @return mixed|\Jeht\Ground\Interfaces\Application
 	 */
 	function app($abstract = null, array $parameters = [])
 	{

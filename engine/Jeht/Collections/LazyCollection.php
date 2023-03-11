@@ -4,7 +4,7 @@ namespace Jeht\Collections;
 use ArrayIterator;
 use Closure;
 use DateTimeInterface;
-use Jeht\Interfaces\Support\CanBeEscapedWhenCastToString;
+use Jeht\Support\Interfaces\CanBeEscapedWhenCastToString;
 use Jeht\Collections\Traits\EnumeratesValues;
 use Jeht\Support\Traits\Macroable;
 use IteratorAggregate;

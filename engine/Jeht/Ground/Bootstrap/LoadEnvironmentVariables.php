@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Ground\Bootstrap;
 
-use Jeht\Interfaces\Ground\Application;
+use Jeht\Ground\Interfaces\Application;
 use Jeht\Support\Env\Env;
 use Jeht\Exceptions\Filesystem\FileNotFoundException;
 
@@ -16,7 +16,7 @@ class LoadEnvironmentVariables
 	/**
 	 * Bootstrap the given application.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public function bootstrap(Application $app)
@@ -37,7 +37,7 @@ class LoadEnvironmentVariables
 	/**
 	 * Detect if a custom environment file matching the APP_ENV exists.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	protected function checkForSpecificEnvironmentFile($app)
@@ -66,7 +66,7 @@ class LoadEnvironmentVariables
 	/**
 	 * Load a custom environment file.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @param  string  $file
 	 * @return bool
 	 */
@@ -84,7 +84,7 @@ class LoadEnvironmentVariables
 	/**
 	 * Initializes the Env helper class.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	protected function createEnv($app)

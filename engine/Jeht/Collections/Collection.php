@@ -4,7 +4,7 @@ namespace Jeht\Collections;
 use ArrayAccess;
 use ArrayIterator;
 use Jeht\Support\Arr;
-use Jeht\Interfaces\Support\CanBeEscapedWhenCastToString;
+use Jeht\Support\Interfaces\CanBeEscapedWhenCastToString;
 use Jeht\Collections\Traits\EnumeratesValues;
 use Jeht\Support\Traits\Macroable;
 use stdClass;

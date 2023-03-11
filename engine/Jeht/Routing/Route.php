@@ -11,9 +11,9 @@ use Jeht\Support\Arr;
 use Jeht\Support\Str;
 use Jeht\Collections\Collection;
 use Jeht\Container\Container;
-use Jeht\Interfaces\Routing\RouteInterface;
-use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
-use Jeht\Interfaces\Http\Request;
+use Jeht\Routing\Interfaces\RouteInterface;
+use Jeht\Routing\Interfaces\ControllerDispatcherInterface;
+use Jeht\Http\Interfaces\Request;
 use Psr\Http\Message\UriInterface;
 use Laravel\SerializableClosure\SerializableClosure;
 use Jeht\Routing\Traits\RouteDependencyResolverTrait;
@@ -327,7 +327,7 @@ class Route implements RouteInterface
 	/**
 	 * Get the dispatcher for the route's controller.
 	 *
-	 * @return \Jeht\Interfaces\Routing\ControllerDispatcherInterface
+	 * @return \Jeht\Routing\Interfaces\ControllerDispatcherInterface
 	 */
 	public function controllerDispatcher()
 	{
@@ -418,7 +418,7 @@ class Route implements RouteInterface
 	/**
 	 * Checks if the given $requestUri matches the route.
 	 *
-	 * @param Jeht\Interfaces\Http\Request $request
+	 * @param Jeht\Http\Interfaces\Request $request
 	 * @param bool $includingMethod
 	 * @return bool
 	 */

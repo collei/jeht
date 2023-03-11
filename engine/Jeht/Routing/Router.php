@@ -3,8 +3,8 @@ namespace Jeht\Routing;
 
 use Jeht\Ground\Application;
 use Jeht\Collections\Collection;
-use Jeht\Interfaces\Routing\RouteInterface;
-use Jeht\Interfaces\Routing\RouterInterface;
+use Jeht\Routing\Interfaces\RouteInterface;
+use Jeht\Routing\Interfaces\RouterInterface;
 use Jeht\Http\Request;
 use Jeht\Http\ResponsePreparator;
 use Closure;
@@ -48,7 +48,7 @@ class Router implements RouterInterface
 	protected $middlewareGroups = [];
 
 	/**
-	 * @var \Jeht\Interfaces\Routing\RouteInterface
+	 * @var \Jeht\Routing\Interfaces\RouteInterface
 	 */
 	protected $currentRoute = [];
 
@@ -444,7 +444,7 @@ class Router implements RouterInterface
 	/**
 	 * Register the route witht the router.
 	 *
-	 * @param \Jeht\Interfaces\Routing\RouteInterface
+	 * @param \Jeht\Routing\Interfaces\RouteInterface
 	 */
 	public function registerRoute(RouteInterface $route)
 	{
@@ -473,7 +473,7 @@ class Router implements RouterInterface
 	/**
 	 * Run the specified $route for the given $request
 	 *
-	 * @param \Jeht\Interfaces\Routing\RouteInterface
+	 * @param \Jeht\Routing\Interfaces\RouteInterface
 	 * @param \Jeht\Http\Request
 	 */
 	protected function runRoute(RouteInterface $route, Request $request)
@@ -523,7 +523,7 @@ class Router implements RouterInterface
 	/**
 	 * Gather the middleware for the given route with resolved class names.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
 	 * @return array
 	 */
 	public function gatherRouteMiddleware(RouteInterface $route)

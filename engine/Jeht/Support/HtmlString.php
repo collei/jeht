@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Support;
 
-use Jeht\Interfaces\Support\Htmlable;
+use Jeht\Support\Interfaces\Htmlable;
 
 class HtmlString implements Htmlable
 {

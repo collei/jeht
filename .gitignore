@@ -1,3 +1,8 @@
 /vendor/
 /storage/framework/
 .htaccess
+
+#Developement
+*.sublime-project
+*.sublime-workspace
+

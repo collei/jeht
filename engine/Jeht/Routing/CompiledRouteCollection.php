@@ -6,8 +6,8 @@ use Serializable;
 use Closure;
 use IteratorAggregate;
 use ArrayIterator;
-use Jeht\Interfaces\Routing\RouteInterface;
-use Jeht\Interfaces\Routing\RouteCollectionInterface;
+use Jeht\Routing\Interfaces\RouteInterface;
+use Jeht\Routing\Interfaces\RouteCollectionInterface;
 use Jeht\Http\Request;
 use Jeht\Http\HttpMethods;
 use Jeht\Container\Container;
@@ -103,8 +103,8 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	/**
 	 * Add a Route instance to the collection.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 */
 	public function add(RouteInterface $route)
 	{
@@ -139,7 +139,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 * Find the first route matching a given request.
 	 *
 	 * @param  \Jeht\Http\Request  $request
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\MethodNotAllowedHttpException
 	 * @throws \Jeht\Exceptions\Http\NotFoundHttpException
@@ -160,8 +160,8 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 * Handle the matched route.
 	 *
 	 * @param  \Jeht\Http\Request  $request
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface|null  $route
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface|null  $route
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\NotFoundHttpException
 	 */
@@ -207,10 +207,10 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	/**
 	 * Determine if a route in the array matches the request.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface[]  $routes
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface[]  $routes
 	 * @param  \Jeht\Http\Request  $request
 	 * @param  bool  $includingMethod
-	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
+	 * @return \Jeht\Routing\Interfaces\RouteInterface|null
 	 */
 	protected function matchAgainstRoutes(array $routes, $request, $includingMethod = true)
 	{
@@ -228,7 +228,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 *
 	 * @param  \Jeht\Http\Request  $request
 	 * @param  string[]  $methods
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\MethodNotAllowedHttpException
 	 */
@@ -284,7 +284,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 * Get routes from the collection by method.
 	 *
 	 * @param  string|null  $method
-	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
+	 * @return \Jeht\Routing\Interfaces\RouteInterface[]
 	 */
 	public function get($method = null)
 	{
@@ -306,7 +306,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 * Get a route instance by its name.
 	 *
 	 * @param  string  $name
-	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
+	 * @return \Jeht\Routing\Interfaces\RouteInterface|null
 	 */
 	public function getByName($name)
 	{
@@ -317,7 +317,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	 * Get a route instance by its controller action.
 	 *
 	 * @param  string  $action
-	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
+	 * @return \Jeht\Routing\Interfaces\RouteInterface|null
 	 */
 	public function getByAction($action)
 	{
@@ -327,7 +327,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	/**
 	 * Get all of the routes in the collection.
 	 *
-	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
+	 * @return \Jeht\Routing\Interfaces\RouteInterface[]
 	 */
 	public function getRoutes()
 	{
@@ -347,7 +347,7 @@ class CompiledRouteCollection extends AbstractRouteCollection implements Countab
 	/**
 	 * Get all of the routes keyed by their name.
 	 *
-	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
+	 * @return \Jeht\Routing\Interfaces\RouteInterface[]
 	 */
 	public function getRoutesByName()
 	{

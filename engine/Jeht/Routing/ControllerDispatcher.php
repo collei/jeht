@@ -2,8 +2,8 @@
 namespace Jeht\Routing;
 
 use Jeht\Container\Container;
-use Jeht\Interfaces\Routing\RouteInterface;
-use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
+use Jeht\Routing\Interfaces\RouteInterface;
+use Jeht\Routing\Interfaces\ControllerDispatcherInterface;
 use Jeht\Routing\Traits\RouteDependencyResolverTrait;
 use Jeht\Collections\Collection;
 
@@ -36,7 +36,7 @@ class ControllerDispatcher implements ControllerDispatcherInterface
 	/**
 	 * Dispatch a request to a given controller and method.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
 	 * @param  mixed  $controller
 	 * @param  string  $method
 	 * @return mixed

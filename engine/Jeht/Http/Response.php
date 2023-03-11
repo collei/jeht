@@ -4,7 +4,7 @@ namespace Jeht\Http;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\ResponseInterface;
 use Stringable as NativeStringable;
-use Jeht\Interfaces\Support\Stringable;
+use Jeht\Support\Interfaces\Stringable;
 
 /**
  * Representation of an outgoing, server-side response.
@@ -186,7 +186,7 @@ class Response implements ResponseInterface
 			$this->body = '' . $body . '';
 		} else {
 			$message = 'Body must be a string or instanceof \Stringable'
-				. ' or instanceof [\Jeht\Interfaces\Support\Stringable]'
+				. ' or instanceof [\Jeht\Support\Interfaces\Stringable]'
 				. ' or instanceof [\Jeht\Support\Streams\Stream]'
 				. ' or instanceof [\Psr\Http\Message\StreamInterface].';
 			//

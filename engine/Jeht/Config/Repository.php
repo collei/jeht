@@ -2,7 +2,7 @@
 namespace Jeht\Config;
 
 use ArrayAccess;
-use Jeht\Interfaces\Config\Repository as RepositoryInterface;
+use Jeht\Config\Interfaces\RepositoryInterface;
 use Jeht\Support\Arr;
 
 /**

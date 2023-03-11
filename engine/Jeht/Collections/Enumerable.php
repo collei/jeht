@@ -2,8 +2,8 @@
 namespace Jeht\Collections;
 
 use Countable;
-use Jeht\Interfaces\Support\Arrayable;
-use Jeht\Interfaces\Support\Jsonable;
+use Jeht\Support\Interfaces\Arrayable;
+use Jeht\Support\Interfaces\Jsonable;
 use IteratorAggregate;
 use JsonSerializable;
 

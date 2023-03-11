@@ -2,7 +2,7 @@
 namespace Jeht\Cache;
 
 use Jeht\Support\ServiceProvider;
-use Jeht\Interfaces\Support\DeferrableProvider;
+use Jeht\Support\Interfaces\DeferrableProvider;
 
 class CacheServiceProvider extends ServiceProvider implements DeferrableProvider
 {

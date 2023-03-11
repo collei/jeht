@@ -5,7 +5,7 @@ use Jeht\Cache\Interfaces\CacheManagerInterface;
 use Jeht\Cache\Interfaces\CacheDriverInterface;
 use Jeht\Cache\Drivers\DefaultCacheDriver;
 use Jeht\Ground\Application;
-use Jeht\Interfaces\Support\Stringable;
+use Jeht\Support\Interfaces\Stringable;
 use Stringable as NativeStringable;
 
 class CacheManager implements CacheManagerInterface

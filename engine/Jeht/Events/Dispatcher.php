@@ -7,7 +7,7 @@ use Jeht\Events\Interfaces\ListenerInterface;
 use Jeht\Events\Interfaces\EventListenerInterface;
 use Jeht\Events\Interfaces\ListenerProviderInterface;
 use Jeht\Events\Exceptions\EventListenerException;
-use Jeht\Interfaces\Ground\Application;
+use Jeht\Ground\Interfaces\Application;
 use Jeht\Support\Reflector;
 
 /**
@@ -16,7 +16,7 @@ use Jeht\Support\Reflector;
 class Dispatcher implements DispatcherInterface
 {
 	/**
-	 * @var \Jeht\Interfaces\Ground\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected $app;
 
@@ -28,7 +28,7 @@ class Dispatcher implements DispatcherInterface
 	/**
 	 * Create a new Dispatcher instance.
 	 *
-	 * @param \Jeht\Interfaces\Ground\Application $app
+	 * @param \Jeht\Ground\Interfaces\Application $app
 	 * @return void
 	 */
 	public function __construct(Application $app)

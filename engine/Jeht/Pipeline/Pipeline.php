@@ -4,8 +4,8 @@ namespace Jeht\Pipeline;
 use Closure;
 use Throwable;
 use RuntimeException;
-use Jeht\Interfaces\Container\Container;
-use Jeht\Interfaces\Pipeline\Pipeline as PipelineInterface;
+use Jeht\Container\Interfaces\Container;
+use Jeht\Pipeline\Interfaces\Pipeline as PipelineInterface;
 
 /**
  * Adapted from Laravel's Illuminate\Pipeline\Pipeline
@@ -17,7 +17,7 @@ class Pipeline implements PipelineInterface
 	/**
 	 * The container implementation.
 	 *
-	 * @var \Jeht\Interfaces\Container\Container
+	 * @var \Jeht\Container\Interfaces\Container
 	 */
 	protected $container;
 
@@ -45,7 +45,7 @@ class Pipeline implements PipelineInterface
 	/**
 	 * Create a new class instance.
 	 *
-	 * @param  \Jeht\Interfaces\Container\Container|null  $container
+	 * @param  \Jeht\Container\Interfaces\Container|null  $container
 	 * @return void
 	 */
 	public function __construct(Container $container = null)
@@ -209,7 +209,7 @@ class Pipeline implements PipelineInterface
 	/**
 	 * Get the container instance.
 	 *
-	 * @return \Jeht\Interfaces\Container\Container
+	 * @return \Jeht\Container\Interfaces\Container
 	 *
 	 * @throws \RuntimeException
 	 */
@@ -225,7 +225,7 @@ class Pipeline implements PipelineInterface
 	/**
 	 * Set the container instance.
 	 *
-	 * @param  \Jeht\Interfaces\Container\Container  $container
+	 * @param  \Jeht\Container\Interfaces\Container  $container
 	 * @return $this
 	 */
 	public function setContainer(Container $container)

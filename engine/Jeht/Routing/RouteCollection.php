@@ -4,8 +4,8 @@ namespace Jeht\Routing;
 use Countable;
 use IteratorAggregate;
 use ArrayIterator;
-use Jeht\Interfaces\Routing\RouteCollectionInterface;
-use Jeht\Interfaces\Routing\RouteInterface;
+use Jeht\Routing\Interfaces\RouteCollectionInterface;
+use Jeht\Routing\Interfaces\RouteInterface;
 use Jeht\Http\Request;
 use Jeht\Http\HttpMethods;
 use Jeht\Container\Container;
@@ -60,8 +60,8 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	/**
 	 * Add a Route instance to the collection.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 */
 	public function add(RouteInterface $route)
 	{
@@ -74,7 +74,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	/**
 	 * Add the given route to the arrays of routes.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
 	 * @return void
 	 */
 	protected function addToCollections($route)
@@ -91,7 +91,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	/**
 	 * Add the route to any look-up tables if necessary.
 	 *
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
 	 * @return void
 	 */
 	protected function addLookups($route)
@@ -117,7 +117,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	 * Add a route to the controller action dictionary.
 	 *
 	 * @param  array  $action
-	 * @param  \Jeht\Interfaces\Routing\RouteInterface  $route
+	 * @param  \Jeht\Routing\Interfaces\RouteInterface  $route
 	 * @return void
 	 */
 	protected function addToActionList($action, $route)
@@ -165,7 +165,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	 * Find the first route matching a given request.
 	 *
 	 * @param  \Jeht\Http\Request  $request
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 *
 	 * @throws \Jeht\Exceptions\Http\MethodNotAllowedHttpException
 	 * @throws \Jeht\Exceptions\Http\NotFoundHttpException
@@ -225,7 +225,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	 * Get routes from the collection by method.
 	 *
 	 * @param  string|null  $method
-	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
+	 * @return \Jeht\Routing\Interfaces\RouteInterface[]
 	 */
 	public function get($method = null)
 	{
@@ -247,7 +247,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	 * Get a route instance by its name.
 	 *
 	 * @param  string  $name
-	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
+	 * @return \Jeht\Routing\Interfaces\RouteInterface|null
 	 */
 	public function getByName($name)
 	{
@@ -258,7 +258,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	 * Get a route instance by its controller action.
 	 *
 	 * @param  string  $action
-	 * @return \Jeht\Interfaces\Routing\RouteInterface|null
+	 * @return \Jeht\Routing\Interfaces\RouteInterface|null
 	 */
 	public function getByAction($action)
 	{
@@ -268,7 +268,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	/**
 	 * Get all of the routes in the collection.
 	 *
-	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
+	 * @return \Jeht\Routing\Interfaces\RouteInterface[]
 	 */
 	public function getRoutes()
 	{
@@ -288,7 +288,7 @@ class RouteCollection extends AbstractRouteCollection implements Countable, Iter
 	/**
 	 * Get all of the routes keyed by their name.
 	 *
-	 * @return \Jeht\Interfaces\Routing\RouteInterface[]
+	 * @return \Jeht\Routing\Interfaces\RouteInterface[]
 	 */
 	public function getRoutesByName()
 	{

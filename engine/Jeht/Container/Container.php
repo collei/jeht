@@ -9,7 +9,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionParameter;
 use TypeError;
-use Jeht\Interfaces\Container\Container as ContainerContract;
+use Jeht\Container\Interfaces\Container as ContainerContract;
 
 class Container implements ArrayAccess, ContainerContract
 {

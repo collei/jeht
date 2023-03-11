@@ -3,7 +3,7 @@ namespace Jeht\Events;
 
 use Jeht\Events\Interfaces\EventInterface;
 use Jeht\Events\Traits\EventsWithResponsePayload;
-use Jeht\Interfaces\Support\Jsonable;
+use Jeht\Support\Interfaces\Jsonable;
 use ReflectionClass;
 use JsonSerializable;
 

@@ -2,11 +2,11 @@
 namespace Jeht\Ground\Bootstrap;
 
 use Exception;
-use Jeht\Interfaces\Ground\Application;
-use Jeht\Interfaces\Config\Repository as RepositoryInterface;
+use Jeht\Ground\Interfaces\Application;
+use Jeht\Config\Interfaces\RepositoryInterface;
 use Jeht\Config\Repository;
 use Jeht\Filesystem\Folder;
-use Jeht\Interfaces\Filesystem\File;
+use Jeht\Filesystem\Interfaces\File;
 
 /**
  * Adapted from Laravel's Illuminate\Foundation\Bootstrap\LoadConfiguration
@@ -18,7 +18,7 @@ class LoadConfiguration
 	/**
 	 * Bootstrap the given application
 	 *
-	 * @param \Jeht\Interfaces\Ground\Application $app
+	 * @param \Jeht\Ground\Interfaces\Application $app
 	 * @return void
 	 */
 	public function bootstrap(Application $app)
@@ -58,8 +58,8 @@ class LoadConfiguration
 	/**
 	 * Load the configuration items from all of the files.
 	 *
-	 * @param \Jeht\Interfaces\Ground\Application $app
-	 * @param \Jeht\Interfaces\Config\Repository $repository
+	 * @param \Jeht\Ground\Interfaces\Application $app
+	 * @param \Jeht\Config\Interfaces\Repository $repository
 	 * @return void
 	 * @throws \Exception
 	 */
@@ -79,7 +79,7 @@ class LoadConfiguration
 	/**
 	 * Get all the configuration files for the application.
 	 *
-	 * @param \Jeht\Interfaces\Ground\Application $app
+	 * @param \Jeht\Ground\Interfaces\Application $app
 	 * @return array
 	 */
 	protected function getConfigurationFiles(Application $app)
@@ -102,7 +102,7 @@ class LoadConfiguration
 	/**
 	 * Get the configuration file nesting path.
 	 *
-	 * @param \Jeht\Interfaces\Filesystem\File $file
+	 * @param \Jeht\Filesystem\Interfaces\File $file
 	 * @param string $configPath
 	 * @return string
 	 */

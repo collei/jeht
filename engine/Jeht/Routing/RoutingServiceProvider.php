@@ -2,7 +2,7 @@
 namespace Jeht\Routing;
 
 use Jeht\Support\ServiceProvider;
-use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
+use Jeht\Routing\Interfaces\ControllerDispatcherInterface;
 
 class RoutingServiceProvider extends ServiceProvider
 {

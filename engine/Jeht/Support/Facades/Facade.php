@@ -16,7 +16,7 @@ abstract class Facade
 	/**
 	 * The application instance being facaded.
 	 *
-	 * @var \Jeht\Interfaces\Ground\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected static $app;
 
@@ -188,7 +188,7 @@ abstract class Facade
 	/**
 	 * Get the application instance behind the facade.
 	 *
-	 * @return \Jeht\Interfaces\Ground\Application
+	 * @return \Jeht\Ground\Interfaces\Application
 	 */
 	public static function getFacadeApplication()
 	{
@@ -198,7 +198,7 @@ abstract class Facade
 	/**
 	 * Set the application instance.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public static function setFacadeApplication($app)

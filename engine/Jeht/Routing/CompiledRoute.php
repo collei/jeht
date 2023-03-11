@@ -10,8 +10,8 @@ use Jeht\Support\Str;
 use Jeht\Support\Closures;
 use Jeht\Collections\Collection;
 use Jeht\Container\Container;
-use Jeht\Interfaces\Routing\RouteInterface;
-use Jeht\Interfaces\Routing\ControllerDispatcherInterface;
+use Jeht\Routing\Interfaces\RouteInterface;
+use Jeht\Routing\Interfaces\ControllerDispatcherInterface;
 use Jeht\Interfaces\Http\Request;
 use Psr\Http\Message\UriInterface;
 use Laravel\SerializableClosure\SerializableClosure;
@@ -216,7 +216,7 @@ class CompiledRoute implements Serializable, RouteInterface
 	/**
 	 * Get the dispatcher for the route's controller.
 	 *
-	 * @return \Jeht\Interfaces\Routing\ControllerDispatcherInterface
+	 * @return \Jeht\Routing\Interfaces\ControllerDispatcherInterface
 	 */
 	public function controllerDispatcher()
 	{

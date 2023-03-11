@@ -3,15 +3,15 @@ namespace Jeht\Container;
 
 use Closure;
 use Jeht\Support\Arr;
-use Jeht\Interfaces\Container\Container;
-use Jeht\Interfaces\Container\ContextualBindingBuilder as ContextualBindingBuilderContract;
+use Jeht\Container\Interfaces\Container;
+use Jeht\Container\Interfaces\ContextualBindingBuilder as ContextualBindingBuilderContract;
 
 class ContextualBindingBuilder implements ContextualBindingBuilderContract
 {
 	/**
 	 * The underlying container instance.
 	 *
-	 * @var \Jeht\Interfaces\Container\Container
+	 * @var \Jeht\Container\Interfaces\Container
 	 */
 	protected $container;
 
@@ -32,7 +32,7 @@ class ContextualBindingBuilder implements ContextualBindingBuilderContract
 	/**
 	 * Create a new contextual binding builder.
 	 *
-	 * @param  \Jeht\Interfaces\Container\Container  $container
+	 * @param  \Jeht\Container\Interfaces\Container  $container
 	 * @param  string|array  $concrete
 	 * @return void
 	 */

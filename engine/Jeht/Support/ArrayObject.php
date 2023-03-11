@@ -2,7 +2,7 @@
 namespace Jeht\Support;
 
 use ArrayObject as BaseArrayObject;
-use Jeht\Interfaces\Support\Arrayable;
+use Jeht\Support\Interfaces\Arrayable;
 use JsonSerializable;
 use Jeht\Collections\Collection;
 

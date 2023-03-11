@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Ground\Bootstrap;
 
-use Jeht\Interfaces\Ground\Application;
+use Jeht\Ground\Interfaces\Application;
 
 /**
  * Adapted from Laravel's Illuminate\Foundation\Bootstrap\RegisterProviders
@@ -14,7 +14,7 @@ class RegisterProviders
 	/**
 	 * Bootstrap the given application.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public function bootstrap(Application $app)

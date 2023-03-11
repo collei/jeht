@@ -2,7 +2,7 @@
 namespace Jeht\Ground;
 
 use Exception;
-use Jeht\Interfaces\Ground\Application as ApplicationContract;
+use Jeht\Ground\Interfaces\Application as ApplicationContract;
 use Jeht\Filesystem\Filesystem;
 
 /**
@@ -16,7 +16,7 @@ class ProviderRepository
 	/**
 	 * The application implementation.
 	 *
-	 * @var \Jeht\Interfaces\Ground\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected $app;
 
@@ -37,7 +37,7 @@ class ProviderRepository
 	/**
 	 * Create a new service repository instance.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @param  \Jeht\Filesystem\Filesystem  $files
 	 * @param  string  $manifestPath
 	 * @return void

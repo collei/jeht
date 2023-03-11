@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Routing;
 
-use Jeht\Interfaces\Routing\RouteFactoryInterface;
+use Jeht\Routing\Interfaces\RouteFactoryInterface;
 use Jeht\Http\HttpMethods;
 use Jeht\Support\Str;
 use Jeht\Support\Arr;
@@ -281,7 +281,7 @@ class RouteFactory implements RouteFactoryInterface
 	/**
 	 * Generates and returns the resulting RouteInterface instance.
 	 *
-	 * @return \Jeht\Interfaces\Routing\RouteInterface
+	 * @return \Jeht\Routing\Interfaces\RouteInterface
 	 */
 	public function fetch()
 	{

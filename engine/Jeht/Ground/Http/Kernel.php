@@ -2,8 +2,8 @@
 namespace Jeht\Ground\Http;
 
 use Jeht\Interfaces\Debug\ExceptionHandler;
-use Jeht\Interfaces\Ground\Application;
-use Jeht\Interfaces\Http\Kernel as KernelContract;
+use Jeht\Ground\Interfaces\Application;
+use Jeht\Http\Interfaces\Kernel as KernelContract;
 use Jeht\Ground\Http\Events\RequestHandled;
 use Jeht\Routing\Pipeline;
 use Jeht\Routing\Router;
@@ -17,7 +17,7 @@ class Kernel implements KernelContract
 	/**
 	 * The application implementation.
 	 *
-	 * @var \Jeht\Interfaces\Ground\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected $app;
 
@@ -85,7 +85,7 @@ class Kernel implements KernelContract
 	/**
 	 * Create a new HTTP kernel instance.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @param  \Jeht\Routing\Router  $router
 	 * @return void
 	 */
@@ -450,7 +450,7 @@ class Kernel implements KernelContract
 	/**
 	 * Get the Laravel application instance.
 	 *
-	 * @return \Jeht\Interfaces\Ground\Application
+	 * @return \Jeht\Ground\Interfaces\Application
 	 */
 	public function getApplication()
 	{
@@ -460,7 +460,7 @@ class Kernel implements KernelContract
 	/**
 	 * Set the Laravel application instance.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return $this
 	 */
 	public function setApplication(Application $app)

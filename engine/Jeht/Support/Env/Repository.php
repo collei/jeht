@@ -1,8 +1,8 @@
 <?php
 namespace Jeht\Support\Env;
 
-use Jeht\Interfaces\Support\Env\Parser as EnvParserInterface;
-use Jeht\Interfaces\Support\Env\Repository as EnvRepositoryInterface;
+use Jeht\Support\Env\Interfaces\Parser as EnvParserInterface;
+use Jeht\Support\Env\Interfaces\Repository as EnvRepositoryInterface;
 use Jeht\Exceptions\Filesystem\FileNotFoundException;
 
 class Repository implements EnvRepositoryInterface

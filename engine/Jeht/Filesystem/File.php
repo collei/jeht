@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Filesystem;
 
-use Jeht\Interfaces\Filesystem\File as FileInterface;
+use Jeht\Filesystem\Interfaces\File as FileInterface;
 use SplFileInfo;
 
 /** 
@@ -269,19 +269,19 @@ class File implements FileInterface
 
 	/**
 	 * Copies the file to the specified $destination.
-	 * Returns a corresponding instance of \Jeht\Interfaces\Filesystem\File.
+	 * Returns a corresponding instance of \Jeht\Filesystem\Interfaces\File.
 	 * 
 	 * It should throw an exception when:
 	 * - the source file does not exist
 	 * - the destination folder does not exist
 	 * - is there any file at $destination with same name
 	 *
-	 * @param string|\Jeht\Interfaces\Filesystem\Folder
-	 * @return \Jeht\Interfaces\Filesystem\File|null
+	 * @param string|\Jeht\Filesystem\Interfaces\Folder
+	 * @return \Jeht\Filesystem\Interfaces\File|null
 	 * @throws \RuntimeException if the source file or the $destination folder
 	 *   does not exist, or if yet there is a $destination file
 	 * @throws \InvalidArgumentException if $destination is not either
-	 *   a string or an instance of \Jeht\Interfaces\Filesystem\Folder.
+	 *   a string or an instance of \Jeht\Filesystem\Interfaces\Folder.
 	 */
 	public function copyTo($destination)
 	{
@@ -330,7 +330,7 @@ class File implements FileInterface
 
 	/**
 	 * Moves the file to the specified $destination.
-	 * Returns a corresponding instance of \Jeht\Interfaces\Filesystem\File.
+	 * Returns a corresponding instance of \Jeht\Filesystem\Interfaces\File.
 	 *
 	 * It should throw an exception when:
 	 * - the source file does not exist
@@ -338,13 +338,13 @@ class File implements FileInterface
 	 * - is there any file at $destination with same name
 	 * - the source file is a remote file
 	 *
-	 * @param string|\Jeht\Interfaces\Filesystem\Folder
+	 * @param string|\Jeht\Filesystem\Interfaces\Folder
 	 * @return bool
 	 * @throws \RuntimeException if source file or $destination folder does not exist
 	 * @throws \RuntimeException if a $destination file already exists
 	 * @throws \RuntimeException when moveTo() gets called by the 2nd, 3rd, Nth time
 	 * @throws \InvalidArgumentException if $destination is not either
-	 *   a string or an instance of \Jeht\Interfaces\Filesystem\Folder.
+	 *   a string or an instance of \Jeht\Filesystem\Interfaces\Folder.
 	 * @throws \Jeht\Exceptions\InvalidOperationException
 	 *   if the source file is a remote file
 	 */
@@ -406,14 +406,14 @@ class File implements FileInterface
 	}
 
 	/**
-	 * Opens and returns a \Jeht\Interfaces\Filesystem\FileStream instance.
+	 * Opens and returns a \Jeht\Filesystem\Interfaces\FileStream instance.
 	 *
 	 * It should throw an exception when:
 	 * - the source file does not exist
 	 * - the source file is unable to be opened for reading
 	 *
 	 * @param string|null	stream mode as used by fopen(). Defaults to 'r'.
-	 * @return \Jeht\Interfaces\Filesystem\FileStream
+	 * @return \Jeht\Filesystem\Interfaces\FileStream
 	 * @throws \RuntimeException if the source file does not exist or
 	 *   it is unable to be opened for reading.
 	 * @throws \InvalidArgumentException if $mode is invalid or not recognized.

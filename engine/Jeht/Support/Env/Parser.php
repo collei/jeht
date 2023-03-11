@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Support\Env;
 
-use Jeht\Interfaces\Support\Env\Parser as EnvParserInterface;
+use Jeht\Support\Env\Interfaces\Parser as EnvParserInterface;
 use Jeht\Support\Str;
 
 class Parser implements EnvParserInterface

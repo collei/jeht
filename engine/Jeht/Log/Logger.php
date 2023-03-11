@@ -2,9 +2,9 @@
 namespace Jeht\Log;
 
 use Closure;
-use Jeht\Interfaces\Events\Dispatcher;
-use Jeht\Interfaces\Support\Arrayable;
-use Jeht\Interfaces\Support\Jsonable;
+use Jeht\Events\Interfaces\Dispatcher;
+use Jeht\Support\Interfaces\Arrayable;
+use Jeht\Support\Interfaces\Jsonable;
 use Jeht\Log\Events\MessageLogged;
 use Jeht\Events\Interfaces\DispatcherInterface;
 use Psr\Log\LoggerInterface;

@@ -3,9 +3,9 @@ namespace Jeht\Ground;
 
 use Closure;
 use Jeht\Container\Container;
-use Jeht\Interfaces\Ground\Application as ApplicationInterface;
-use Jeht\Interfaces\Ground\CachesConfiguration;
-use Jeht\Interfaces\Ground\CachesRoutes;
+use Jeht\Ground\Interfaces\Application as ApplicationInterface;
+use Jeht\Ground\Interfaces\CachesConfiguration;
+use Jeht\Ground\Interfaces\CachesRoutes;
 use Jeht\Ground\Loaders\Autoloader;
 use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Ground\Events\Bootstrapping;
@@ -1418,23 +1418,23 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 	public function registerCoreContainerAliases()
 	{
 		foreach ([
-			'app' => [self::class, \Jeht\Interfaces\Ground\Application::class, \Jeht\Interfaces\Container\Container::class, \Psr\Container\ContainerInterface::class],
+			'app' => [self::class, \Jeht\Ground\Interfaces\Application::class, \Jeht\Container\Interfaces\Container::class, \Psr\Container\ContainerInterface::class],
 			'cache' => [\Jeht\Cache\CacheManager::class, \Jeht\Cache\Interfaces\CacheManagerInterface::class],
 			'cache.store' => [\Jeht\Cache\Drivers\DefaultCacheDriver::class, \Jeht\Cache\Interfaces\CacheDriverInterface::class],
-			'config' => [\Jeht\Config\Repository::class, \Jeht\Interfaces\Config\Repository::class],
-			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\Encrypter::class, \Jeht\Interfaces\Encryption\StringEncrypter::class],
+			'config' => [\Jeht\Config\Repository::class, \Jeht\Config\Interfaces\Repository::class],
+			'encrypter' => [\Jeht\Encryption\Encrypter::class, \Jeht\Encryption\Interfaces\Encrypter::class, \Jeht\Encryption\Interfaces\StringEncrypter::class],
 			'events' => [\Jeht\Events\Dispatcher::class, \Jeht\Events\Interfaces\DispatcherInterface::class],
 			'files' => [\Jeht\Filesystem\Filesystem::class],
 			'helper.loader' => [\Jeht\Support\HelperLoader::class],
 			'log' => [\Jeht\Log\LogManager::class, \Psr\Log\LoggerInterface::class],
-			'request' => [\Jeht\Http\Request::class, \Jeht\Interfaces\Http\Request::class],
-			'router' => [\Jeht\Routing\Router::class, \Jeht\Interfaces\Routing\RouterInterface::class],
+			'request' => [\Jeht\Http\Request::class, \Jeht\Http\Interfaces\Request::class],
+			'router' => [\Jeht\Routing\Router::class, \Jeht\Routing\Interfaces\RouterInterface::class],
 			'routes' => [\Jeht\Routing\RouteCollection::class],
 			'url' => [\Jeht\Http\UriFactory::class, \Psr\Http\Message\UriInterface::class],
 //			'session' => [\Jeht\Session\SessionManager::class],
-//			'session.store' => [\Jeht\Session\Store::class, \Jeht\Interfaces\Session\Session::class],
-//			'validator' => [\Jeht\Validation\Factory::class, \Jeht\Interfaces\Validation\Factory::class],
-//			'view' => [\Jeht\View\Factory::class, \Jeht\Interfaces\View\Factory::class],
+//			'session.store' => [\Jeht\Session\Store::class, \Jeht\Session\Interfaces\Session::class],
+//			'validator' => [\Jeht\Validation\Factory::class, \Jeht\Validation\Interfaces\Factory::class],
+//			'view' => [\Jeht\View\Factory::class, \Jeht\View\Interfaces\Factory::class],
 		] as $key => $aliases) {
 			foreach ($aliases as $alias) {
 				$this->alias($key, $alias);

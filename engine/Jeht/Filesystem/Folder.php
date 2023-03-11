@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Filesystem;
 
-use Jeht\Interfaces\Filesystem\Folder as FolderInterface;
+use Jeht\Filesystem\Interfaces\Folder as FolderInterface;
 use Jeht\Support\Str;
 
 class Folder implements FolderInterface

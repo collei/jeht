@@ -3,10 +3,10 @@ namespace Jeht\Http;
 
 use Jeht\Container\Container;
 use JsonSerializable;
-use Jeht\Interfaces\Support\Responsable;
-use Jeht\Interfaces\Support\Jsonable;
-use Jeht\Interfaces\Support\Arrayable;
-use Jeht\Interfaces\Support\Stringable;
+use Jeht\Support\Interfaces\Responsable;
+use Jeht\Support\Interfaces\Jsonable;
+use Jeht\Support\Interfaces\Arrayable;
+use Jeht\Support\Interfaces\Stringable;
 use Jeht\Support\ArrayObject;
 
 class ResponsePreparator

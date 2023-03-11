@@ -1,7 +1,7 @@
 <?php
 namespace Jeht\Ground\Bootstrap;
 
-use Jeht\Interfaces\Ground\Application;
+use Jeht\Ground\Interfaces\Application;
 use Jeht\Ground\Loaders\AliasLoader;
 use Jeht\Ground\PackageManifest;
 use Jeht\Support\Facades\Facade;
@@ -17,7 +17,7 @@ class RegisterFacades
 	/**
 	 * Bootstrap the given application.
 	 *
-	 * @param  \Jeht\Interfaces\Ground\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public function bootstrap(Application $app)
