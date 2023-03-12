@@ -29,15 +29,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 //use Symfony\Component\HttpFoundation\Exception\SuspiciousOperationException;
-use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 //use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
-use Whoops\Handler\HandlerInterface;
-use Whoops\Run as Whoops;
+use Jeht\Support\Traits\ConfigAware;
 
 /**
  * Adapted from Illuminate\Foundation\Exceptions\Handler
@@ -48,11 +45,12 @@ use Whoops\Run as Whoops;
 class Handler implements ExceptionHandlerContract
 {
 	use ReflectsClosures;
+	use ConfigAware;
 
 	/**
 	 * The container implementation.
 	 *
-	 * @var \Illuminate\Contracts\Container\Container
+	 * @var Jeht\Container\Interfaces\Container
 	 */
 	protected $container;
 
@@ -66,7 +64,7 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * The callbacks that should be used during reporting.
 	 *
-	 * @var \Illuminate\Foundation\Exceptions\ReportableHandler[]
+	 * @var Jeht\Ground\Exceptions\ReportableHandler[]
 	 */
 	protected $reportCallbacks = [];
 
@@ -116,7 +114,7 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Create a new exception handler instance.
 	 *
-	 * @param  \Illuminate\Contracts\Container\Container  $container
+	 * @param  Jeht\Container\Interfaces\Container  $container
 	 * @return void
 	 */
 	public function __construct(Container $container)
@@ -140,7 +138,7 @@ class Handler implements ExceptionHandlerContract
 	 * Register a reportable callback.
 	 *
 	 * @param  callable  $reportUsing
-	 * @return \Illuminate\Foundation\Exceptions\ReportableHandler
+	 * @return Jeht\Ground\Exceptions\ReportableHandler
 	 */
 	public function reportable(callable $reportUsing)
 	{
@@ -320,7 +318,7 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Throwable  $e
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 *
@@ -404,7 +402,7 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Convert an authentication exception into a response.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Illuminate\Auth\AuthenticationException  $exception
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
@@ -419,7 +417,7 @@ class Handler implements ExceptionHandlerContract
 	 * Create a response object from the given validation exception.
 	 *
 	 * @param  \Illuminate\Validation\ValidationException  $e
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function convertValidationExceptionToResponse(ValidationException $e, $request)
@@ -436,9 +434,9 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Convert a validation exception into a response.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Illuminate\Validation\ValidationException  $exception
-	 * @return \Illuminate\Http\Response
+	 * @return \Jeht\Http\Response
 	 */
 	protected function invalid($request, ValidationException $exception)
 	{
@@ -450,9 +448,9 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Convert a validation exception into a JSON response.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Illuminate\Validation\ValidationException  $exception
-	 * @return \Illuminate\Http\JsonResponse
+	 * @return \Jeht\Http\JsonResponse
 	 */
 	protected function invalidJson($request, ValidationException $exception)
 	{
@@ -465,7 +463,7 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Determine if the exception handler response should be JSON.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Throwable  $e
 	 * @return bool
 	 */
@@ -477,21 +475,21 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Prepare a response for the given exception.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Throwable  $e
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 */
 	protected function prepareResponse($request, Throwable $e)
 	{
-		if (! $this->isHttpException($e) && config('app.debug')) {
-			return $this->toIlluminateResponse($this->convertExceptionToResponse($e), $e);
+		if (! $this->isHttpException($e) && $this->config('app.debug')) {
+			return $this->toJehtResponse($this->convertExceptionToResponse($e), $e);
 		}
 
 		if (! $this->isHttpException($e)) {
 			$e = new HttpException(500, $e->getMessage());
 		}
 
-		return $this->toIlluminateResponse(
+		return $this->toJehtResponse(
 			$this->renderHttpException($e), $e
 		);
 	}
@@ -500,11 +498,11 @@ class Handler implements ExceptionHandlerContract
 	 * Create a Symfony response for the given exception.
 	 *
 	 * @param  \Throwable  $e
-	 * @return \Symfony\Component\HttpFoundation\Response
+	 * @return \Jeht\Http\Response
 	 */
 	protected function convertExceptionToResponse(Throwable $e)
 	{
-		return new SymfonyResponse(
+		return new Response(
 			$this->renderExceptionContent($e),
 			$this->isHttpException($e) ? $e->getStatusCode() : 500,
 			$this->isHttpException($e) ? $e->getHeaders() : []
@@ -519,56 +517,7 @@ class Handler implements ExceptionHandlerContract
 	 */
 	protected function renderExceptionContent(Throwable $e)
 	{
-		try {
-			return config('app.debug') && class_exists(Whoops::class)
-						? $this->renderExceptionWithWhoops($e)
-						: $this->renderExceptionWithSymfony($e, config('app.debug'));
-		} catch (Exception $e) {
-			return $this->renderExceptionWithSymfony($e, config('app.debug'));
-		}
-	}
-
-	/**
-	 * Render an exception to a string using "Whoops".
-	 *
-	 * @param  \Throwable  $e
-	 * @return string
-	 */
-	protected function renderExceptionWithWhoops(Throwable $e)
-	{
-		return tap(new Whoops, function ($whoops) {
-			$whoops->appendHandler($this->whoopsHandler());
-
-			$whoops->writeToOutput(false);
-
-			$whoops->allowQuit(false);
-		})->handleException($e);
-	}
-
-	/**
-	 * Get the Whoops handler for the application.
-	 *
-	 * @return \Whoops\Handler\Handler
-	 */
-	protected function whoopsHandler()
-	{
-		try {
-			return app(HandlerInterface::class);
-		} catch (BindingResolutionException $e) {
-			return (new WhoopsHandler)->forDebug();
-		}
-	}
-
-	/**
-	 * Render an exception to a string using Symfony.
-	 *
-	 * @param  \Throwable  $e
-	 * @param  bool  $debug
-	 * @return string
-	 */
-	protected function renderExceptionWithSymfony(Throwable $e, $debug)
-	{
-		$renderer = new HtmlErrorRenderer($debug);
+		$renderer = new HtmlErrorRenderer($this->config('app.debug'));
 
 		return $renderer->render($e)->getAsString();
 	}
@@ -576,8 +525,8 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Render the given HttpException.
 	 *
-	 * @param  \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface  $e
-	 * @return \Symfony\Component\HttpFoundation\Response
+	 * @param  \Jeht\Http\Exceptions\HttpExceptionInterface  $e
+	 * @return \Jeht\Http\Response
 	 */
 	protected function renderHttpException(HttpExceptionInterface $e)
 	{
@@ -615,15 +564,15 @@ class Handler implements ExceptionHandlerContract
 	}
 
 	/**
-	 * Map the given exception into an Illuminate response.
+	 * Map the given exception into a Jeht response.
 	 *
-	 * @param  \Symfony\Component\HttpFoundation\Response  $response
+	 * @param  \Jeht\Http\Response  $response
 	 * @param  \Throwable  $e
-	 * @return \Illuminate\Http\Response
+	 * @return \Jeht\Http\Response
 	 */
-	protected function toIlluminateResponse($response, Throwable $e)
+	protected function toJehtResponse($response, Throwable $e)
 	{
-		if ($response instanceof SymfonyRedirectResponse) {
+		if ($response instanceof RedirectResponse) {
 			$response = new RedirectResponse(
 				$response->getTargetUrl(), $response->getStatusCode(), $response->headers->all()
 			);
@@ -639,9 +588,9 @@ class Handler implements ExceptionHandlerContract
 	/**
 	 * Prepare a JSON response for the given exception.
 	 *
-	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Jeht\Http\Request  $request
 	 * @param  \Throwable  $e
-	 * @return \Illuminate\Http\JsonResponse
+	 * @return \Jeht\Http\JsonResponse
 	 */
 	protected function prepareJsonResponse($request, Throwable $e)
 	{
@@ -661,7 +610,7 @@ class Handler implements ExceptionHandlerContract
 	 */
 	protected function convertExceptionToArray(Throwable $e)
 	{
-		return config('app.debug') ? [
+		return $this->config('app.debug') ? [
 			'message' => $e->getMessage(),
 			'exception' => get_class($e),
 			'file' => $e->getFile(),
@@ -683,7 +632,11 @@ class Handler implements ExceptionHandlerContract
 	 */
 	public function renderForConsole($output, Throwable $e)
 	{
-		(new ConsoleApplication)->renderThrowable($e, $output);
+		$stderr = fopen('php://stderr', 'w');
+		fwrite($stderr, print_r($output, true));
+		fclose($stderr);
+
+		//(new ConsoleApplication)->renderThrowable($e, $output);
 	}
 
 	/**

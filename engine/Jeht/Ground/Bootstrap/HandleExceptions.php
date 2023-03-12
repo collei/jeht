@@ -1,15 +1,15 @@
 <?php
-namespace Illuminate\Foundation\Bootstrap;
+namespace Jeht\Ground\Bootstrap;
 
 use ErrorException;
 use Exception;
-use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Log\LogManager;
+use Jeht\Debug\Interfaces\ExceptionHandler;
+use Jeht\Ground\Interfaces\Application;
+use Jeht\Log\LogManager;
 use Monolog\Handler\NullHandler;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\ErrorHandler\Error\FatalError;
+use Jeht\Error\Error\FatalError;
 use Throwable;
+use Jeht\Support\Traits\Withable;
 
 /**
  * Adapted from Laravel's Illuminate\Foundation\Bootstrap\HandleExceptions
@@ -18,6 +18,8 @@ use Throwable;
  */
 class HandleExceptions
 {
+	use Withable;
+
 	/**
 	 * Reserved memory so that errors can be displayed properly on memory exhaustion.
 	 *
@@ -28,14 +30,14 @@ class HandleExceptions
 	/**
 	 * The application instance.
 	 *
-	 * @var \Illuminate\Contracts\Foundation\Application
+	 * @var \Jeht\Ground\Interfaces\Application
 	 */
 	protected $app;
 
 	/**
 	 * Bootstrap the given application.
 	 *
-	 * @param  \Illuminate\Contracts\Foundation\Application  $app
+	 * @param  \Jeht\Ground\Interfaces\Application  $app
 	 * @return void
 	 */
 	public function bootstrap(Application $app)
@@ -105,7 +107,7 @@ class HandleExceptions
 
 		$this->ensureDeprecationLoggerIsConfigured();
 
-		with($logger->channel('deprecations'), function ($log) use ($message, $file, $line) {
+		$this->with($logger->channel('deprecations'), function ($log) use ($message, $file, $line) {
 			$log->warning(sprintf('%s in %s on line %s',
 				$message, $file, $line
 			));
@@ -119,7 +121,7 @@ class HandleExceptions
 	 */
 	protected function ensureDeprecationLoggerIsConfigured()
 	{
-		with($this->app['config'], function ($config) {
+		$this->with($this->app['config'], function ($config) {
 			if ($config->get('logging.channels.deprecations')) {
 				return;
 			}
@@ -139,7 +141,7 @@ class HandleExceptions
 	 */
 	protected function ensureNullLogDriverIsConfigured()
 	{
-		with($this->app['config'], function ($config) {
+		$this->with($this->app['config'], function ($config) {
 			if ($config->get('logging.channels.null')) {
 				return;
 			}
@@ -186,7 +188,14 @@ class HandleExceptions
 	 */
 	protected function renderForConsole(Throwable $e)
 	{
-		$this->getExceptionHandler()->renderForConsole(new ConsoleOutput, $e);
+		$saida_de_erro = [
+			__FILE__,
+			__LINE__,
+			__METHOD__,
+			'PHP.Jeht.ErrorHandler: ' . PHP_EOL . print_r($e, true) . PHP_EOL . '-------------------' . PHP_EOL
+		];
+
+		$this->getExceptionHandler()->renderForConsole($saida_de_erro, $e);
 	}
 
 	/**
@@ -219,7 +228,7 @@ class HandleExceptions
 	 *
 	 * @param  array  $error
 	 * @param  int|null  $traceOffset
-	 * @return \Symfony\Component\ErrorHandler\Error\FatalError
+	 * @return \Jeht\Error\Error\FatalError
 	 */
 	protected function fatalErrorFromPhpError(array $error, $traceOffset = null)
 	{
@@ -251,7 +260,7 @@ class HandleExceptions
 	/**
 	 * Get an instance of the exception handler.
 	 *
-	 * @return \Illuminate\Contracts\Debug\ExceptionHandler
+	 * @return \Jeht\Debug\Interfaces\ExceptionHandler
 	 */
 	protected function getExceptionHandler()
 	{

@@ -1481,6 +1481,16 @@ class Application extends Container implements ApplicationInterface, CachesConfi
 		return $this->namespace = 'App\\';
 	}
 
+	/**
+	 * Get the application config repository.
+	 *
+	 * @return \Jeht\Config\Repository
+	 */
+	public function getConfigRepository()
+	{
+		return $this['config'];
+	}
+
 }
 
 
