@@ -4,6 +4,7 @@ namespace Jeht\Log;
 use Closure;
 use Jeht\Support\Str;
 use Jeht\Support\Traits\TapsValues;
+use Jeht\Support\Traits\Withable;
 use InvalidArgumentException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\ErrorLogHandler;
@@ -29,6 +30,7 @@ class LogManager implements LoggerInterface
 {
 	use ParsesLogConfiguration;
 	use TapsValues;
+	use Withable;
 
 	/**
 	 * The application instance.
@@ -129,7 +131,7 @@ class LogManager implements LoggerInterface
 	protected function get($name, ?array $config = null)
 	{
 		try {
-			return $this->channels[$name] ?? with($this->resolve($name, $config), function ($logger) use ($name) {
+			return $this->channels[$name] ?? $this->with($this->resolve($name, $config), function ($logger) use ($name) {
 				return $this->channels[$name] = $this->tap($name, new Logger($logger, $this->app['events']));
 			});
 		} catch (Throwable $e) {

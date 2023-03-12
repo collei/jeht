@@ -1,6 +1,7 @@
 <?php
 
 use Jeht\Container\Container;
+use Jeht\Collections\Collection;
 //use Illuminate\Contracts\Auth\Access\Gate;
 //use Illuminate\Contracts\Auth\Factory as AuthFactory;
 //use Illuminate\Contracts\Broadcasting\Factory as BroadcastFactory;
@@ -251,6 +252,19 @@ if (! function_exists('cache')) {
 		}
 
 		return app('cache')->put(key($arguments[0]), reset($arguments[0]), $arguments[1] ?? null);
+	}
+}
+
+if (! function_exists('collect')) {
+	/**
+	 * Returns the given array as a Collection instance.
+	 *
+	 * @param  array  $array
+	 * @return \Jeht\Collections\Collection
+	 */
+	function collect(iterable $array = [])
+	{
+		return Collection::for($array);
 	}
 }
 

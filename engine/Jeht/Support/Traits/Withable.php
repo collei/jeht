@@ -1,6 +1,8 @@
 <?php
 namespace Jeht\Support\Traits;
 
+use Closure;
+
 trait Withable
 {
 	/**

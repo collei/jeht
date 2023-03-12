@@ -9,7 +9,7 @@ trait Tappable
 	 * @param  callable|null  $callback
 	 * @return $this|\Jeht\Support\HigherOrderTapProxy
 	 */
-	public function tap($callback = null)
+	public function tapMe($callback = null)
 	{
 		return $this->tapValue($this, $callback);
 	}
